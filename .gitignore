@@ -1,0 +1,9 @@
+/*
+!.gitignore
+!build.gradle
+!/sample
+!/lib
+!kotlin.gradle
+!LICENSE
+!README.md
+!settings.gradle
