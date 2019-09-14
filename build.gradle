@@ -1,4 +1,7 @@
 buildscript {
+    ext {
+        jacocoVersion = "0.8.4"
+    }
     apply from: 'kotlin.gradle'
 
     repositories {
@@ -9,8 +12,36 @@ buildscript {
     }
 }
 
-allprojects {
-    repositories {
-        jcenter()
+repositories {
+    mavenCentral()
+}
+
+apply plugin: 'jacoco'
+
+jacoco {
+  toolVersion = jacocoVersion
+}
+
+task jacocoTestReport(type: JacocoReport) {
+    evaluationDependsOnChildren()
+    reports {
+        xml.enabled true
+        html.enabled true
+        csv.enabled false
     }
+    def projects = subprojects.findAll {
+        it.pluginManager.hasPlugin("jacoco")
+    }
+    getAdditionalSourceDirs().from(files(projects.sourceSets.main.allSource.srcDirs))
+    getSourceDirectories().from(files(projects.sourceSets.main.allSource.srcDirs))
+    getClassDirectories().from(files(projects.sourceSets.main.output))
+    getExecutionData().from(files(projects.jacocoTestReport.executionData))
+}
+
+task clean(type: Delete) {
+    delete rootProject.buildDir
+}
+
+dependencies {
+    jacocoAnt "org.jacoco:org.jacoco.ant:$jacocoVersion"
 }
