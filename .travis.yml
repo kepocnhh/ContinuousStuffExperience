@@ -19,5 +19,5 @@ script:
   - gradle jacocoTestReport
 
 after_script:
-  - ./cc-test-reporter format-coverage -d -t jacoco ./build/reports/jacoco/jacocoTestReport/jacocoTestReport.xml
+  - JACOCO_SOURCE_PATH="lib/src/main/kotlin lib2/src/main/kotlin" ./cc-test-reporter format-coverage -d -t jacoco ./build/reports/jacoco/jacocoTestReport/jacocoTestReport.xml
   - ./cc-test-reporter upload-coverage -d
