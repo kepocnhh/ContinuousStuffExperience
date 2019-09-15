@@ -3,11 +3,11 @@ Testing continuous integration and continuous delivery and / or continuous deplo
 
 ### Roadmap:
 
+- [x] test coverage
+- [x] testing
 - [ ] check code style
 - [ ] check warnings
 - [ ] code analysis
-- [ ] test coverage
-- [ ] testing
 - [ ] blocking pull/merge requests
 - [ ] automatic merge
 - [ ] assembly

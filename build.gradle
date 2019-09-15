@@ -45,3 +45,46 @@ task clean(type: Delete) {
 dependencies {
     jacocoAnt "org.jacoco:org.jacoco.ant:$jacocoVersion"
 }
+
+task checkReadme(type: DefaultTask) {
+    def fileName = "README.md"
+    def file = file(fileName)
+    if(file == null || !file.exists()) {
+        throw new IllegalStateException("File $fileName must exist!")
+    }
+    def text = file.getText("UTF-8")
+    if(text == null || text.isEmpty()) {
+        throw new IllegalStateException("File $fileName must not be empty!")
+    }
+    def split = text.split("\n")
+    if(split == null || split.length == 0) {
+        throw new IllegalStateException("File $fileName must not be empty!")
+    }
+    def firstLine = split[0]
+
+    def jacocoTestCoverageResult = getJacocoTestCoverageResult()
+    println "jacocoTestCoverageResult: ${jacocoTestCoverageResult}"//todo
+}
+
+private def getJacocoTestCoverageResult() {
+    def file = file("./build/reports/jacoco/jacocoTestReport/jacocoTestReport.xml")
+    if(file == null || !file.exists()) {
+        throw new IllegalStateException("File jacocoTestReport.xml must exist!")
+    }
+    def xmlParser = new XmlParser()
+    xmlParser.setFeature("http://apache.org/xml/features/disallow-doctype-decl", false) 
+    xmlParser.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false)
+    def root = xmlParser.parseText(file.getText("UTF-8"))
+    def result = 1.0
+    def counters = root.counter.each {
+        def missed = it.@missed.toInteger()
+        def covered = it.@covered.toInteger()
+        println "missed: ${missed}/covered: ${covered}"
+        def sum = missed + covered
+        result = (result + covered / sum) / 2
+    }
+    return result
+}
+private def createBadgeUrl(String urlTitle, String urlValue, String color) {
+    return "https://img.shields.io/badge/$urlText-$urlValue-$color.svg?style=flat"
+}
