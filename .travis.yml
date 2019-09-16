@@ -7,6 +7,9 @@ env:
   global:
     - CC_TEST_REPORTER_ID=$code_climate_test_reporter_id
 
+install:
+  - true #will prevent Travis from executing `gradle assemble`
+
 before_script:
   - curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
   - chmod +x ./cc-test-reporter
@@ -15,8 +18,9 @@ before_script:
 script:
   - gradle clean
   - gradle test
-  - gradle jacocoTestCoverageVerification
   - gradle jacocoTestReport
+  - gradle jacocoTestCoverageVerification
+  - gradle checkReadme
 
 after_script:
   - JACOCO_SOURCE_PATH="lib/src/main/kotlin lib2/src/main/kotlin" ./cc-test-reporter format-coverage -d -t jacoco ./build/reports/jacoco/jacocoTestReport/jacocoTestReport.xml
