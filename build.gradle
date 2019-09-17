@@ -24,18 +24,27 @@ jacoco {
 
 task jacocoTestReport(type: JacocoReport) {
     evaluationDependsOnChildren()
+    def projects = subprojects.findAll {
+        it.pluginManager.hasPlugin("jacoco") && it.tasks.find { it.name == "test" } != null
+    }
+    dependsOn projects.tasks.test
     reports {
         xml.enabled true
         html.enabled true
         csv.enabled false
     }
-    def projects = subprojects.findAll {
-        it.pluginManager.hasPlugin("jacoco")
-    }
     getAdditionalSourceDirs().from(files(projects.sourceSets.main.allSource.srcDirs))
     getSourceDirectories().from(files(projects.sourceSets.main.allSource.srcDirs))
     getClassDirectories().from(files(projects.sourceSets.main.output))
     getExecutionData().from(files(projects.jacocoTestReport.executionData))
+}
+
+task jacocoTestCoverageVerification {
+    dependsOn jacocoTestReport
+    doLast {
+        def result = getJacocoTestCoverageResult()
+        println "\ttest coverage result: " + (100*result).toLong().toString() + "%"
+    }
 }
 
 task clean(type: Delete) {
@@ -44,4 +53,70 @@ task clean(type: Delete) {
 
 dependencies {
     jacocoAnt "org.jacoco:org.jacoco.ant:$jacocoVersion"
+}
+
+task checkReadme() {
+    dependsOn jacocoTestReport
+    doLast {
+        def jacocoTestCoverageResult = getJacocoTestCoverageResult()
+        def jacocoTestCoverageBadgeUrl = createBadgeUrl(
+            "test_coverage",
+            (100*jacocoTestCoverageResult).toLong().toString() + "%25",
+            getJacocoTestCoverageResultBadgeColor(jacocoTestCoverageResult)
+        )
+        def readmeFileName = "README.md"
+        def readmeText = getFileText(readmeFileName)
+        if(readmeText == null || readmeText.isEmpty()) {
+            throw new IllegalStateException("File $readmeFileName must not be empty!")
+        }
+        def jacocoTestCoverageBadge = "![test coverage]($jacocoTestCoverageBadgeUrl)"
+        if(!readmeText.contains(jacocoTestCoverageBadge)) {
+            throw new IllegalStateException(
+                "File $readmeFileName must contains test coverage result badge:\n$jacocoTestCoverageBadge"
+            )
+        }
+    }
+}
+
+private def getFileText(String fileName) {
+    def file = file(fileName)
+    if(file == null || !file.exists()) {
+        throw new IllegalStateException("File $fileName must exist!")
+    }
+    return file.getText("UTF-8")
+}
+
+private def getJacocoTestCoverageResult() {
+    def file = file("./build/reports/jacoco/jacocoTestReport/jacocoTestReport.xml")
+    if(file == null || !file.exists()) {
+        throw new IllegalStateException("File jacocoTestReport.xml must exist!")
+    }
+    def xmlParser = new XmlParser()
+    xmlParser.setFeature("http://apache.org/xml/features/disallow-doctype-decl", false) 
+    xmlParser.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false)
+    def root = xmlParser.parseText(file.getText("UTF-8"))
+    def result = 1.0
+    def counters = root.counter.each {
+        def missed = it.@missed.toInteger()
+        def covered = it.@covered.toInteger()
+        def sum = missed + covered
+        result = (result + covered / sum) / 2
+    }
+    return result
+}
+
+private def getJacocoTestCoverageResultBadgeColor(double result) {
+    if(result > 1 || result < 0) {
+        throw new IllegalStateException("Test coverage must be in [0..1]!")
+    } else if(result < 0.5) {
+        return "d50000"
+    } else if(result < 0.75) {
+        return "ffd600"
+    } else {
+        return "00c853"
+    }
+}
+
+private def createBadgeUrl(String urlTitle, String urlValue, String color) {
+    return "https://img.shields.io/badge/$urlTitle-$urlValue-${color}.svg?style=flat"
 }
