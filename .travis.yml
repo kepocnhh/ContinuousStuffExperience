@@ -17,9 +17,10 @@ before_script:
 
 script:
   - gradle clean
-  - gradle test
-  - gradle jacocoTestReport
-  - gradle jacocoTestCoverageVerification
+  - gradle runTests
+  - gradle collectTestReports
+  - gradle collectTestCoverageReports
+  - gradle runTestCoverageVerification
   - gradle checkReadme
 
 after_script:
