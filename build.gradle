@@ -68,6 +68,7 @@ task collectTestCoverageReport(type: JacocoReport) {
             if(!it.isDirectory())
             if(!it.name.contains("jacoco-sessions"))
             if(it.name.endsWith(".html")) {
+                println it
                 result += getFileText(it.absolutePath)
             }
         }

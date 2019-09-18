@@ -16,7 +16,7 @@ fi
 echo "make dir $path..."
 mkdir -p $path
 echo "move test coverage report"
-mv ${TRAVIS_BUILD_DIR}/build/reports/coverage/html* $path
+mv ${TRAVIS_BUILD_DIR}/build/reports/coverage/html/* $path
 
 git -C ~/gh-pages add --all .
 git -C ~/gh-pages commit -m "add ${signature} test coverage report"
