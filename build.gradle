@@ -21,7 +21,7 @@ apply plugin: 'jacoco'
 
 evaluationDependsOnChildren()
 
-task collectTestReports(type: TestReport) {
+task collectTestReport(type: TestReport) {
 	destinationDir = file("$buildDir/reports/tests")
 	testResultDirs = subprojects*.test.binResultsDir
 }
@@ -45,17 +45,17 @@ jacoco {
 }
 
 def testCoverageReportPath = "$buildDir/reports/coverage"
-def testCoverageReportXmlFileName = "testCoverageReport.xml"
+def testCoverageReportXmlFullPath = "$testCoverageReportPath/xml/testCoverageReport.xml"
 
-task collectTestCoverageReports(type: JacocoReport) {
+task collectTestCoverageReport(type: JacocoReport) {
     def projects = subprojects.findAll {
         it.pluginManager.hasPlugin("jacoco") && it.tasks.find { it.name == "test" } != null
     }
     reports {
         xml.enabled true
-        xml.destination file("$testCoverageReportPath/$testCoverageReportXmlFileName")
+        xml.destination file(testCoverageReportXmlFullPath)
         html.enabled true
-        html.destination file(testCoverageReportPath)
+        html.destination file("$testCoverageReportPath/html")
         csv.enabled false
     }
     getAdditionalSourceDirs().from(files(projects.sourceSets.main.allSource.srcDirs))
@@ -63,17 +63,23 @@ task collectTestCoverageReports(type: JacocoReport) {
     getClassDirectories().from(files(projects.sourceSets.main.output))
     getExecutionData().from(files(projects.jacocoTestReport.executionData))
     doLast {
-        def hash = getTestCoverageReportHash(
-        	"$testCoverageReportPath/$testCoverageReportXmlFileName",
-        	"SHA-512"
-    	)
-        file("$testCoverageReportPath/signature") << hash
+        def result = ""
+        file(testCoverageReportPath).eachFileRecurse {
+            if(!it.isDirectory())
+            if(!it.name.contains("jacoco-sessions"))
+            if(it.name.endsWith(".html")) {
+                result += getFileText(it.absolutePath)
+            }
+        }
+        def signatureFile = file("$testCoverageReportPath/signature")
+        signatureFile.delete()
+        signatureFile << result.digest("SHA-512")
     }
 }
 
 task runTestCoverageVerification {
     doLast {
-        def result = getTestCoverageResult("$testCoverageReportPath/$testCoverageReportXmlFileName")
+        def result = getTestCoverageResult(testCoverageReportXmlFullPath)
         println "\ttest coverage result: " + (100*result).toLong().toString() + "%"
     }
 }
@@ -88,7 +94,7 @@ dependencies {
 
 task checkReadme() {
     doLast {
-        def testCoverageResult = getTestCoverageResult("$testCoverageReportPath/$testCoverageReportXmlFileName")
+        def testCoverageResult = getTestCoverageResult(testCoverageReportXmlFullPath)
         def testCoverageBadgeUrl = createBadgeUrl(
             "test_coverage",
             (100*testCoverageResult).toLong().toString() + "%25",
@@ -103,7 +109,7 @@ task checkReadme() {
         if(hash == null || hash.isEmpty()) {
             throw new IllegalStateException("Test coverage signature must not be empty!")
         }
-        def testCoverageReportUrl = "https://kepocnhh.github.io/ContinuousStuffExperience/reports/$hash/coverage"
+        def testCoverageReportUrl = "https://kepocnhh.github.io/ContinuousStuffExperience/reports/coverage/$hash"
         def testCoverageBadge = "[![test coverage]($testCoverageBadgeUrl)]($testCoverageReportUrl)"
         if(!readmeText.contains(testCoverageBadge)) {
             throw new IllegalStateException(

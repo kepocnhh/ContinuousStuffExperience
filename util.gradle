@@ -7,10 +7,7 @@ private def getFileText(String filePath) {
 }
 
 private def getTestCoverageResult(String filePath) {
-    def xmlParser = new XmlParser()
-    xmlParser.setFeature("http://apache.org/xml/features/disallow-doctype-decl", false) 
-    xmlParser.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false)
-    def root = xmlParser.parseText(getFileText(filePath))
+    def root = parseXml(getFileText(filePath))
     def result = 1.0
     def counters = root.counter.each {
         def missed = it.@missed.toInteger()
@@ -19,6 +16,13 @@ private def getTestCoverageResult(String filePath) {
         result = (result + covered / sum) / 2
     }
     return result
+}
+
+private def parseXml(String data) {
+    def xmlParser = new XmlParser()
+    xmlParser.setFeature("http://apache.org/xml/features/disallow-doctype-decl", false) 
+    xmlParser.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false)
+    return xmlParser.parseText(data)
 }
 
 private def getTestCoverageResultBadgeColor(double result) {
@@ -42,10 +46,7 @@ ext {
     getTestCoverageResult = this.&getTestCoverageResult
 
     getTestCoverageReportHash = { String filePath, String hashType ->
-        def xmlParser = new XmlParser()
-        xmlParser.setFeature("http://apache.org/xml/features/disallow-doctype-decl", false) 
-        xmlParser.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false)
-        def root = xmlParser.parseText(getFileText(filePath))
+        def root = parseXml(getFileText(filePath))
         root.sessioninfo.each {
             root.remove(it)
         }
