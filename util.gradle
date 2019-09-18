@@ -7,15 +7,13 @@ private def getFileText(String filePath) {
 }
 
 private def getTestCoverageResult(String filePath) {
-    def root = parseXml(getFileText(filePath))
-    def result = 1.0
-    def counters = root.counter.each {
-        def missed = it.@missed.toInteger()
-        def covered = it.@covered.toInteger()
-        def sum = missed + covered
-        result = (result + covered / sum) / 2
+    return parseXml(getFileText(filePath)).counter.inject(1.0) { result, item ->
+        def covered = item.@covered.toInteger()
+        def sum = item.@missed.toInteger() + covered
+        if(sum > 0) {
+            result = (result + covered / sum) / 2
+        }
     }
-    return result
 }
 
 private def parseXml(String data) {
@@ -37,22 +35,11 @@ private def getTestCoverageResultBadgeColor(double result) {
     }
 }
 
-private def createBadgeUrl(String urlTitle, String urlValue, String color) {
-    return "https://img.shields.io/badge/$urlTitle-$urlValue-${color}.svg?style=flat"
-}
-
 ext {
     getFileText = this.&getFileText
     getTestCoverageResult = this.&getTestCoverageResult
-
-    getTestCoverageReportHash = { String filePath, String hashType ->
-        def root = parseXml(getFileText(filePath))
-        root.sessioninfo.each {
-            root.remove(it)
-        }
-        return root.text().digest(hashType)
-    }
-    
     getTestCoverageResultBadgeColor = this.&getTestCoverageResultBadgeColor
-    createBadgeUrl = this.&createBadgeUrl
+    createBadgeUrl = { String urlTitle, String urlValue, String color ->
+        "https://img.shields.io/badge/$urlTitle-$urlValue-${color}.svg?style=flat"
+    }
 }

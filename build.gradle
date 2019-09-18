@@ -45,7 +45,7 @@ jacoco {
 }
 
 def testCoverageReportPath = "$buildDir/reports/coverage"
-def testCoverageReportXmlFullPath = "$testCoverageReportPath/xml/testCoverageReport.xml"
+def testCoverageReportXmlFullPath = "$testCoverageReportPath/xml/report.xml"
 
 task collectTestCoverageReport(type: JacocoReport) {
     def projects = subprojects.findAll {
