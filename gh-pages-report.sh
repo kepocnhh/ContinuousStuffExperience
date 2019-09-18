@@ -1,4 +1,4 @@
-echo "clonong ${TRAVIS_REPO_SLUG} to ~/gh-pages..."
+echo "cloning ${TRAVIS_REPO_SLUG} to ~/gh-pages..."
 git clone --depth=1 --branch=gh-pages https://github.com/${TRAVIS_REPO_SLUG}.git ~/gh-pages
 
 git -C ~/gh-pages config user.name "${USER}"
@@ -6,7 +6,7 @@ git -C ~/gh-pages config user.email "${USER}"
 
 signature=$(<"${TRAVIS_BUILD_DIR}/build/reports/coverage/signature")
 
-if [ -d "~/gh-pages/reports/${signature}/coverage" ]
+if [ -d "$HOME/gh-pages/reports/${signature}/coverage" ]
 then
     echo "test coverage report by ${signature} already in gh-pages"
     exit
