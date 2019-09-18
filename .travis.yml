@@ -22,6 +22,7 @@ script:
   - gradle collectTestCoverageReports
   - gradle runTestCoverageVerification
   - gradle checkReadme
+  - bash gh-pages-report.sh
 
 after_script:
   - JACOCO_SOURCE_PATH="lib/src/main/kotlin lib2/src/main/kotlin" ./cc-test-reporter format-coverage -d -t jacoco ./build/reports/jacoco/jacocoTestReport/jacocoTestReport.xml

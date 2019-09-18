@@ -2,6 +2,7 @@
 !.gitignore
 !.travis.yml
 !build.gradle
+!gh-pages-report.sh
 !/lib
 !/lib2
 !/sample
