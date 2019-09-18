@@ -40,6 +40,18 @@ private def createBadgeUrl(String urlTitle, String urlValue, String color) {
 ext {
     getFileText = this.&getFileText
     getTestCoverageResult = this.&getTestCoverageResult
+
+    getTestCoverageReportHash = { String filePath, String hashType ->
+        def xmlParser = new XmlParser()
+        xmlParser.setFeature("http://apache.org/xml/features/disallow-doctype-decl", false) 
+        xmlParser.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false)
+        def root = xmlParser.parseText(getFileText(filePath))
+        root.sessioninfo.each {
+            root.remove(it)
+        }
+        return root.text().digest(hashType)
+    }
+    
     getTestCoverageResultBadgeColor = this.&getTestCoverageResultBadgeColor
     createBadgeUrl = this.&createBadgeUrl
 }

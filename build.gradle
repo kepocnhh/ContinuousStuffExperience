@@ -44,7 +44,7 @@ jacoco {
   toolVersion = jacocoVersion
 }
 
-def testCoverageReportsPath = "$buildDir/reports/coverage"
+def testCoverageReportPath = "$buildDir/reports/coverage"
 def testCoverageReportXmlFileName = "testCoverageReport.xml"
 
 task collectTestCoverageReports(type: JacocoReport) {
@@ -53,20 +53,27 @@ task collectTestCoverageReports(type: JacocoReport) {
     }
     reports {
         xml.enabled true
-        xml.destination file("$testCoverageReportsPath/$testCoverageReportXmlFileName")
+        xml.destination file("$testCoverageReportPath/$testCoverageReportXmlFileName")
         html.enabled true
-        html.destination file(testCoverageReportsPath)
+        html.destination file(testCoverageReportPath)
         csv.enabled false
     }
     getAdditionalSourceDirs().from(files(projects.sourceSets.main.allSource.srcDirs))
     getSourceDirectories().from(files(projects.sourceSets.main.allSource.srcDirs))
     getClassDirectories().from(files(projects.sourceSets.main.output))
     getExecutionData().from(files(projects.jacocoTestReport.executionData))
+    doLast {
+        def hash = getTestCoverageReportHash(
+        	"$testCoverageReportPath/$testCoverageReportXmlFileName",
+        	"SHA-512"
+    	)
+        file("$testCoverageReportPath/signature") << hash
+    }
 }
 
 task runTestCoverageVerification {
     doLast {
-        def result = getTestCoverageResult("$testCoverageReportsPath/$testCoverageReportXmlFileName")
+        def result = getTestCoverageResult("$testCoverageReportPath/$testCoverageReportXmlFileName")
         println "\ttest coverage result: " + (100*result).toLong().toString() + "%"
     }
 }
@@ -81,7 +88,7 @@ dependencies {
 
 task checkReadme() {
     doLast {
-        def testCoverageResult = getTestCoverageResult("$testCoverageReportsPath/$testCoverageReportXmlFileName")
+        def testCoverageResult = getTestCoverageResult("$testCoverageReportPath/$testCoverageReportXmlFileName")
         def testCoverageBadgeUrl = createBadgeUrl(
             "test_coverage",
             (100*testCoverageResult).toLong().toString() + "%25",
@@ -92,7 +99,12 @@ task checkReadme() {
         if(readmeText == null || readmeText.isEmpty()) {
             throw new IllegalStateException("File $readmeFileName must not be empty!")
         }
-        def testCoverageBadge = "![test coverage]($testCoverageBadgeUrl)"
+        def hash = getFileText("$testCoverageReportPath/signature")
+        if(hash == null || hash.isEmpty()) {
+            throw new IllegalStateException("Test coverage signature must not be empty!")
+        }
+        def testCoverageReportUrl = "https://kepocnhh.github.io/ContinuousStuffExperience/reports/$hash/coverage"
+        def testCoverageBadge = "[![test coverage]($testCoverageBadgeUrl)]($testCoverageReportUrl)"
         if(!readmeText.contains(testCoverageBadge)) {
             throw new IllegalStateException(
                 "File $readmeFileName must contains test coverage result badge:\n$testCoverageBadge"

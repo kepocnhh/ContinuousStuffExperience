@@ -3,14 +3,12 @@ git clone --depth=1 --branch=gh-pages https://github.com/${TRAVIS_REPO_SLUG}.git
 git -C ~/gh-pages config user.name "${USER}"
 git -C ~/gh-pages config user.email "${USER}"
 
-ls -a ~/gh-pages
+signature=$(<"${TRAVIS_BUILD_DIR}/build/reports/coverage/signature")
 
-sha512=$(sha512sum "${TRAVIS_BUILD_DIR}/build/reports/coverage/testCoverageReport.xml" | cut -d ' ' -f 1)
-
-mkdir -p ~/gh-pages/reports/${sha512}/coverage
-mv ${TRAVIS_BUILD_DIR}/build/reports/coverage/* ~/gh-pages/reports/${sha512}/coverage
+mkdir -p ~/gh-pages/reports/${signature}/coverage
+mv ${TRAVIS_BUILD_DIR}/build/reports/coverage/* ~/gh-pages/reports/${signature}/coverage
 
 git -C ~/gh-pages status
 git -C ~/gh-pages add --all .
-git -C ~/gh-pages commit -m "add ${sha512} test coverage report"
-git -C ~/gh-pages push -f -u "https://${git_hub_personal_access_token}@github.com/${TRAVIS_REPO_SLUG}" gh-pages
+git -C ~/gh-pages commit -m "add ${signature} test coverage report"
+git -C ~/gh-pages push -f -q -u "https://${git_hub_personal_access_token}@github.com/${TRAVIS_REPO_SLUG}" gh-pages
