@@ -16,33 +16,73 @@ repositories {
     mavenCentral()
 }
 
+apply from: "util.gradle"
 apply plugin: 'jacoco'
+
+evaluationDependsOnChildren()
+
+task collectTestReport(type: TestReport) {
+	destinationDir = file("$buildDir/reports/tests")
+	testResultDirs = subprojects*.test.binResultsDir
+}
+
+task runTests {
+	def tasks = subprojects*.test
+	def size = tasks.size
+	if(size == 0) {
+    	println "\tno test tasks"
+		return
+	}
+	for(def i=0; i<size-1; i++) {
+		tasks[i].finalizedBy tasks[i+1]
+	}
+    dependsOn tasks.first()
+}
+
 
 jacoco {
   toolVersion = jacocoVersion
 }
 
-task jacocoTestReport(type: JacocoReport) {
-    evaluationDependsOnChildren()
+def testCoverageReportPath = "$buildDir/reports/coverage"
+def testCoverageReportXmlFullPath = "$testCoverageReportPath/xml/report.xml"
+
+task collectTestCoverageReport(type: JacocoReport) {
     def projects = subprojects.findAll {
         it.pluginManager.hasPlugin("jacoco") && it.tasks.find { it.name == "test" } != null
     }
-    dependsOn projects.tasks.test
     reports {
         xml.enabled true
+        xml.destination file(testCoverageReportXmlFullPath)
         html.enabled true
+        html.destination file("$testCoverageReportPath/html")
         csv.enabled false
     }
     getAdditionalSourceDirs().from(files(projects.sourceSets.main.allSource.srcDirs))
     getSourceDirectories().from(files(projects.sourceSets.main.allSource.srcDirs))
     getClassDirectories().from(files(projects.sourceSets.main.output))
     getExecutionData().from(files(projects.jacocoTestReport.executionData))
+    doLast {
+        def files = []
+        file(testCoverageReportPath).eachFileRecurse {
+            if(!it.isDirectory())
+            if(!it.name.contains("jacoco-sessions"))
+            if(it.name.endsWith(".html")) {
+                files.add(it)
+            }
+        }
+        def result = files.sort { it.absolutePath }.inject("") { accumulator, file ->
+            accumulator + getFileText(file.absolutePath)
+        }
+        def signatureFile = file("$testCoverageReportPath/signature")
+        signatureFile.delete()
+        signatureFile << result.digest("SHA-512")
+    }
 }
 
-task jacocoTestCoverageVerification {
-    dependsOn jacocoTestReport
+task runTestCoverageVerification {
     doLast {
-        def result = getJacocoTestCoverageResult()
+        def result = getTestCoverageResult(testCoverageReportXmlFullPath)
         println "\ttest coverage result: " + (100*result).toLong().toString() + "%"
     }
 }
@@ -56,67 +96,28 @@ dependencies {
 }
 
 task checkReadme() {
-    dependsOn jacocoTestReport
     doLast {
-        def jacocoTestCoverageResult = getJacocoTestCoverageResult()
-        def jacocoTestCoverageBadgeUrl = createBadgeUrl(
+        def testCoverageResult = getTestCoverageResult(testCoverageReportXmlFullPath)
+        def testCoverageBadgeUrl = createBadgeUrl(
             "test_coverage",
-            (100*jacocoTestCoverageResult).toLong().toString() + "%25",
-            getJacocoTestCoverageResultBadgeColor(jacocoTestCoverageResult)
+            (100*testCoverageResult).toLong().toString() + "%25",
+            getTestCoverageResultBadgeColor(testCoverageResult)
         )
         def readmeFileName = "README.md"
         def readmeText = getFileText(readmeFileName)
         if(readmeText == null || readmeText.isEmpty()) {
             throw new IllegalStateException("File $readmeFileName must not be empty!")
         }
-        def jacocoTestCoverageBadge = "![test coverage]($jacocoTestCoverageBadgeUrl)"
-        if(!readmeText.contains(jacocoTestCoverageBadge)) {
+        def hash = getFileText("$testCoverageReportPath/signature")
+        if(hash == null || hash.isEmpty()) {
+            throw new IllegalStateException("Test coverage signature must not be empty!")
+        }
+        def testCoverageReportUrl = "https://kepocnhh.github.io/ContinuousStuffExperience/reports/coverage/$hash"
+        def testCoverageBadge = "[![test coverage]($testCoverageBadgeUrl)]($testCoverageReportUrl)"
+        if(!readmeText.contains(testCoverageBadge)) {
             throw new IllegalStateException(
-                "File $readmeFileName must contains test coverage result badge:\n$jacocoTestCoverageBadge"
+                "File $readmeFileName must contains test coverage result badge:\n$testCoverageBadge"
             )
         }
     }
-}
-
-private def getFileText(String fileName) {
-    def file = file(fileName)
-    if(file == null || !file.exists()) {
-        throw new IllegalStateException("File $fileName must exist!")
-    }
-    return file.getText("UTF-8")
-}
-
-private def getJacocoTestCoverageResult() {
-    def file = file("./build/reports/jacoco/jacocoTestReport/jacocoTestReport.xml")
-    if(file == null || !file.exists()) {
-        throw new IllegalStateException("File jacocoTestReport.xml must exist!")
-    }
-    def xmlParser = new XmlParser()
-    xmlParser.setFeature("http://apache.org/xml/features/disallow-doctype-decl", false) 
-    xmlParser.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false)
-    def root = xmlParser.parseText(file.getText("UTF-8"))
-    def result = 1.0
-    def counters = root.counter.each {
-        def missed = it.@missed.toInteger()
-        def covered = it.@covered.toInteger()
-        def sum = missed + covered
-        result = (result + covered / sum) / 2
-    }
-    return result
-}
-
-private def getJacocoTestCoverageResultBadgeColor(double result) {
-    if(result > 1 || result < 0) {
-        throw new IllegalStateException("Test coverage must be in [0..1]!")
-    } else if(result < 0.5) {
-        return "d50000"
-    } else if(result < 0.75) {
-        return "ffd600"
-    } else {
-        return "00c853"
-    }
-}
-
-private def createBadgeUrl(String urlTitle, String urlValue, String color) {
-    return "https://img.shields.io/badge/$urlTitle-$urlValue-${color}.svg?style=flat"
 }

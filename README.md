@@ -1,4 +1,4 @@
-![test coverage](https://img.shields.io/badge/test_coverage-100%25-00c853.svg?style=flat)
+[![test coverage](https://img.shields.io/badge/test_coverage-100%25-00c853.svg?style=flat)](https://kepocnhh.github.io/ContinuousStuffExperience/reports/coverage/f2a5cc3dae286f229d2fc38bf2f7e9a182f3644f34f5a106aa7a3698621f4d9d946e13ca4c6603192b778773dcc5f6cb38eafe8fd9a70be8e956f7c139468835)
 
 # ContinuousStuffExperience
 Testing continuous integration and continuous delivery and / or continuous deployment capabilities.

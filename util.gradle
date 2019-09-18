@@ -1,0 +1,45 @@
+private def getFileText(String filePath) {
+    def file = file(filePath)
+    if(file == null || !file.exists()) {
+        throw new IllegalStateException("File by path \"$filePath\" must exist!")
+    }
+    return file.getText("UTF-8")
+}
+
+private def getTestCoverageResult(String filePath) {
+    return parseXml(getFileText(filePath)).counter.inject(1.0) { result, item ->
+        def covered = item.@covered.toInteger()
+        def sum = item.@missed.toInteger() + covered
+        if(sum > 0) {
+            result = (result + covered / sum) / 2
+        }
+    }
+}
+
+private def parseXml(String data) {
+    def xmlParser = new XmlParser()
+    xmlParser.setFeature("http://apache.org/xml/features/disallow-doctype-decl", false) 
+    xmlParser.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false)
+    return xmlParser.parseText(data)
+}
+
+private def getTestCoverageResultBadgeColor(double result) {
+    if(result > 1 || result < 0) {
+        throw new IllegalStateException("Test coverage must be in [0..1] but $result!")
+    } else if(result < 0.5) {
+        return "d50000"
+    } else if(result < 0.75) {
+        return "ffd600"
+    } else {
+        return "00c853"
+    }
+}
+
+ext {
+    getFileText = this.&getFileText
+    getTestCoverageResult = this.&getTestCoverageResult
+    getTestCoverageResultBadgeColor = this.&getTestCoverageResultBadgeColor
+    createBadgeUrl = { String urlTitle, String urlValue, String color ->
+        "https://img.shields.io/badge/$urlTitle-$urlValue-${color}.svg?style=flat"
+    }
+}
