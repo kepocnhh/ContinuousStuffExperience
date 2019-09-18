@@ -63,14 +63,16 @@ task collectTestCoverageReport(type: JacocoReport) {
     getClassDirectories().from(files(projects.sourceSets.main.output))
     getExecutionData().from(files(projects.jacocoTestReport.executionData))
     doLast {
-        def result = ""
+        def files = []
         file(testCoverageReportPath).eachFileRecurse {
             if(!it.isDirectory())
             if(!it.name.contains("jacoco-sessions"))
             if(it.name.endsWith(".html")) {
-                println it
-                result += getFileText(it.absolutePath)
+                files.add(it)
             }
+        }
+        def result = files.sort { it.absolutePath }.inject("") { accumulator, file ->
+            accumulator + getFileText(file.absolutePath)
         }
         def signatureFile = file("$testCoverageReportPath/signature")
         signatureFile.delete()
