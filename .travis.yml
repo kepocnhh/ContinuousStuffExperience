@@ -1,11 +1,12 @@
 language: java
 
-env:
-  - COMPILE_RESULT=0
-  - TEST_RESULT=0
-
 jdk:
   - openjdk8
+
+env:
+  global:
+    - COMPILE_RESULT=0
+    - TEST_RESULT=0
 
 install:
   - true #will prevent Travis from executing `gradle assemble`
