@@ -1,5 +1,5 @@
 echo "cloning ${TRAVIS_REPO_SLUG} to ~/gh-pages..."
-git clone --depth=1 --branch=gh-pages https://github.com/${TRAVIS_REPO_SLUG}.git ~/gh-pages
+git clone --depth=1 --branch=gh-pages https://github.com/${TRAVIS_REPO_SLUG}.git ~/gh-pages || exit 1
 
 git -C ~/gh-pages config user.name "${USER}"
 git -C ~/gh-pages config user.email "${USER}"
@@ -24,7 +24,7 @@ fi
 testSignature=$(<"${TRAVIS_BUILD_DIR}/build/reports/tests/signature")
 testPath="$HOME/gh-pages/reports/tests/${testSignature}"
 
-if [ -d $testCoveragePath ]
+if [ -d $testPath ]
 then
     echo "test report by ${testSignature} already in gh-pages"
 else

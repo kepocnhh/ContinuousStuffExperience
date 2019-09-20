@@ -1,5 +1,9 @@
 language: java
 
+env:
+  - COMPILE_RESULT=0
+  - TEST_RESULT=0
+
 jdk:
   - openjdk8
 
@@ -7,10 +11,16 @@ install:
   - true #will prevent Travis from executing `gradle assemble`
 
 script:
-  - gradle compile
-  - gradle runTests
+  - gradle compile || COMPILE_RESULT=1; travis_terminate 1;
+  - gradle runTests || TEST_RESULT=1
   - gradle collectTestReport
   - gradle collectTestCoverageReport
   - gradle runTestCoverageVerification
   - gradle checkReadme
   - bash gh-pages-report.sh
+
+after_script:
+  - |
+    compileResultText=if[$COMPILE_RESULT==0];then "compiles";else "not compiled";fi
+    testResultText=if[$TEST_RESULT==0];then "passed";else "failed";fi
+    echo "Summary: \n\t- ${compileResultText}\n\t- testing: ${testResultText}"
