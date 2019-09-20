@@ -7,7 +7,7 @@ install:
   - true #will prevent Travis from executing `gradle assemble`
 
 script:
-  - gradle clean
+  - gradle compile
   - gradle runTests
   - gradle collectTestReport
   - gradle collectTestCoverageReport

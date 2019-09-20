@@ -21,9 +21,35 @@ apply plugin: 'jacoco'
 
 evaluationDependsOnChildren()
 
+task clean(type: Delete) {
+    delete rootProject.buildDir
+}
+
+task compile {
+    dependsOn clean
+    dependsOn subprojects.tasks.collectMany { it }.findAll { it.name.startsWith("compile") }
+}
+
+def testReportPath = "$buildDir/reports/tests"
+
 task collectTestReport(type: TestReport) {
-	destinationDir = file("$buildDir/reports/tests")
+	destinationDir = file("$testReportPath/html")
 	testResultDirs = subprojects*.test.binResultsDir
+    doLast {
+        def files = []
+        file(testReportPath).eachFileRecurse {
+            if(!it.isDirectory())
+            if(it.name.endsWith(".html")) {
+                files.add(it)
+            }
+        }
+        def result = files.sort { it.absolutePath }.inject("") { accumulator, file ->
+            accumulator + getFileText(file.absolutePath)
+        }
+        def signatureFile = file("$testReportPath/signature")
+        signatureFile.delete()
+        signatureFile << result.digest("SHA-512")
+    }
 }
 
 task runTests {
@@ -85,10 +111,6 @@ task runTestCoverageVerification {
         def result = getTestCoverageResult(testCoverageReportXmlFullPath)
         println "\ttest coverage result: " + (100*result).toLong().toString() + "%"
     }
-}
-
-task clean(type: Delete) {
-    delete rootProject.buildDir
 }
 
 dependencies {
