@@ -16,17 +16,19 @@ install:
   - true #will prevent Travis from executing `gradle assemble`
 
 script:
-  - gradle compile && (
-      gradle runTests || TEST_STATUS=1;
-      gradle collectTestReport collectTestCoverageReport || REPORTS_COLLECTED_STATUS=1;
-      gradle runTestCoverageVerification || TEST_COVERAGE_VERIFICATION_STATUS=1;
-      gradle checkReadme || CHECK_README_STATUS=1;
-      bash gh-pages-report.sh || GH_PAGES_REPORT_STATUS=1;
-    ) || COMPILE_STATUS=1
+  - gradle compile || COMPILE_STATUS==$?; exit $COMPILE_STATUS
+  - echo "next line after `gradle compile` with result: $COMPILE_STATUS"
+  # - gradle compile && (
+  #     gradle runTests || TEST_STATUS=1;
+  #     gradle collectTestReport collectTestCoverageReport || REPORTS_COLLECTED_STATUS=1;
+  #     gradle runTestCoverageVerification || TEST_COVERAGE_VERIFICATION_STATUS=1;
+  #     gradle checkReadme || CHECK_README_STATUS=1;
+  #     bash gh-pages-report.sh || GH_PAGES_REPORT_STATUS=1;
+  #   ) || errorCode=$?; COMPILE_STATUS=1
 
 after_script:
   - |
-    if[$COMPILE_STATUS==0]
+    if [ $COMPILE_STATUS==0 ]
     then
       testResultText=if[$TEST_STATUS==0];then "passed";else "failed";fi
       echo "Summary: \n\t- testing: ${testResultText}"
