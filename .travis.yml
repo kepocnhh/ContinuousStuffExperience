@@ -12,7 +12,7 @@ install:
   - true #will prevent Travis from executing `gradle assemble`
 
 script:
-  - gradle compile || COMPILE_RESULT=1; travis_terminate 1;
+  - gradle compile || COMPILE_RESULT=1; exit 1;
   - gradle runTests || TEST_RESULT=1
   - gradle collectTestReport
   - gradle collectTestCoverageReport
@@ -22,6 +22,10 @@ script:
 
 after_script:
   - |
-    compileResultText=if[$COMPILE_RESULT==0];then "compiles";else "not compiled";fi
-    testResultText=if[$TEST_RESULT==0];then "passed";else "failed";fi
-    echo "Summary: \n\t- ${compileResultText}\n\t- testing: ${testResultText}"
+    if[$COMPILE_RESULT==0]
+    then
+      testResultText=if[$TEST_RESULT==0];then "passed";else "failed";fi
+      echo "Summary: \n\t- testing: ${testResultText}"
+    else
+      echo "Summary: \n\t- not compiled!"
+    fi
