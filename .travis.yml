@@ -16,7 +16,7 @@ install:
   - true #will prevent Travis from executing `gradle assemble`
 
 script:
-  - gradle compile || COMPILE_STATUS=$?; exit $COMPILE_STATUS
+  - gradle compile || COMPILE_STATUS=$?; $(exit $COMPILE_STATUS)
   - echo "next line after `gradle compile` with result: $COMPILE_STATUS"
   # - gradle compile && (
   #     gradle runTests || TEST_STATUS=1;
