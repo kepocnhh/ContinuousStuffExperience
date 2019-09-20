@@ -5,7 +5,6 @@ jdk:
 
 env:
   global:
-    - COMPILE_STATUS=0
     - TEST_STATUS=0
     - REPORTS_COLLECTED_STATUS=0
     - TEST_COVERAGE_VERIFICATION_STATUS=0
@@ -16,11 +15,7 @@ install:
   - true #will prevent Travis from executing `gradle assemble`
 
 before_script:
-  - gradle compile || COMPILE_STATUS=1
-  - if [ $COMPILE_STATUS -ne 0 ]; then
-      echo "Summary - not compiled!";
-      exit $COMPILE_STATUS;
-    fi
+  - gradle compile || echo "Summary - not compiled!";
 
 script:
   - gradle runTests || TEST_STATUS=$?; $(exit $TEST_STATUS)
