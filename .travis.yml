@@ -17,6 +17,11 @@ install:
 
 before_script:
   - gradle compile || COMPILE_STATUS=$?; $(exit $COMPILE_STATUS)
+  - |
+    if [ $COMPILE_STATUS -ne 0 ]; then
+      echo "Summary: \n\t- not compiled!"
+      exit $COMPILE_STATUS
+    fi
 
 script:
   - gradle runTests || TEST_STATUS=$?; $(exit $TEST_STATUS)
@@ -26,10 +31,7 @@ script:
 
 after_script:
   - |
-    if [ $COMPILE_STATUS==0 ]
-    then
-      testResultText=if[$TEST_STATUS==0];then "passed";else "failed";fi
-      echo "Summary: \n\t- testing: ${testResultText}"
-    else
-      echo "Summary: \n\t- not compiled!"
-    fi
+    testResultText=if[$TEST_STATUS==0];then "passed";else "failed";fi
+    echo "Summary:
+      - testing: ${testResultText}
+    "
