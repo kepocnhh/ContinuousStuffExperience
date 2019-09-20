@@ -5,26 +5,30 @@ jdk:
 
 env:
   global:
-    - COMPILE_RESULT=0
-    - TEST_RESULT=0
+    - COMPILE_STATUS=0
+    - TEST_STATUS=0
+    - REPORTS_COLLECTED_STATUS=0
+    - TEST_COVERAGE_VERIFICATION_STATUS=0
+    - CHECK_README_STATUS=0
+    - GH_PAGES_REPORT_STATUS=0
 
 install:
   - true #will prevent Travis from executing `gradle assemble`
 
 script:
-  - gradle compile || COMPILE_RESULT=1; exit 1;
-  - gradle runTests || TEST_RESULT=1
-  - gradle collectTestReport
-  - gradle collectTestCoverageReport
-  - gradle runTestCoverageVerification
-  - gradle checkReadme
-  - bash gh-pages-report.sh
+  - gradle compile && (
+      gradle runTests || TEST_STATUS=1;
+      gradle collectTestReport collectTestCoverageReport || REPORTS_COLLECTED_STATUS=1;
+      gradle runTestCoverageVerification || TEST_COVERAGE_VERIFICATION_STATUS=1;
+      gradle checkReadme || CHECK_README_STATUS=1;
+      bash gh-pages-report.sh || GH_PAGES_REPORT_STATUS=1;
+    ) || COMPILE_STATUS=1
 
 after_script:
   - |
-    if[$COMPILE_RESULT==0]
+    if[$COMPILE_STATUS==0]
     then
-      testResultText=if[$TEST_RESULT==0];then "passed";else "failed";fi
+      testResultText=if[$TEST_STATUS==0];then "passed";else "failed";fi
       echo "Summary: \n\t- testing: ${testResultText}"
     else
       echo "Summary: \n\t- not compiled!"
