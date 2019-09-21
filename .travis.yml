@@ -15,7 +15,15 @@ install:
   - true #will prevent Travis from executing `gradle assemble`
 
 before_script:
-  - gradle compile || echo "Summary - not compiled!";
+  - |
+    echo "commit: $TRAVIS_COMMIT"
+    echo "branch: $TRAVIS_BRANCH"
+  - |
+    gradle compile || (
+      STATUS=$?
+      echo "Summary: not compiled!"
+      exit $STATUS
+    )
 
 script:
   - gradle runTests || TEST_STATUS=$?; $(exit $TEST_STATUS)
@@ -25,7 +33,7 @@ script:
 
 after_script:
   - |
-    testResultText=if[$TEST_STATUS==0];then "passed";else "failed";fi
+    testResultText="passed"; if [ $TEST_STATUS -ne 0 ];then testResultText="failed";fi;
     echo "Summary
       - testing: ${testResultText}
     "
