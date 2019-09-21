@@ -15,6 +15,19 @@ private def getTestCoverageResult(String filePath) {
         }
     }
 }
+private def getTestingResult(String filePath) {
+    def data = getFileText(filePath)
+    def index = data.indexOf("\"successRate\"")
+    if(index < 0) throw new IllegalStateException("Tag \"successRate\" must exist!")
+    index = data.indexOf("\"percent\"", index)
+    if(index < 0) throw new IllegalStateException("Tag \"percent\" must exist!")
+    def indexLeft = data.indexOf(">", index)
+    if(indexLeft < 0) throw new IllegalStateException("\">\" after \"percent\" must exist!")
+    def indexRight = data.indexOf("%<", indexLeft)
+    if(indexRight < 0) throw new IllegalStateException("\"%<\" after \">\" must exist!")
+    def result = data.substring(indexLeft + 1, indexRight)
+    return result.equals("100")
+}
 
 private def parseXml(String data) {
     def xmlParser = new XmlParser()
@@ -34,11 +47,20 @@ private def getTestCoverageResultBadgeColor(double result) {
         return "00c853"
     }
 }
+private def getTestingResultBadgeColor(boolean isPassed) {
+    if(isPassed) {
+        return "00c853"
+    } else {
+        return "d50000"
+    }
+}
 
 ext {
     getFileText = this.&getFileText
     getTestCoverageResult = this.&getTestCoverageResult
+    getTestingResult = this.&getTestingResult
     getTestCoverageResultBadgeColor = this.&getTestCoverageResultBadgeColor
+    getTestingResultBadgeColor = this.&getTestingResultBadgeColor
     createBadgeUrl = { String urlTitle, String urlValue, String color ->
         "https://img.shields.io/badge/$urlTitle-$urlValue-${color}.svg?style=flat"
     }

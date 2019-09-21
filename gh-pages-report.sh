@@ -21,8 +21,8 @@ else
 	git -C ~/gh-pages push -f -q -u "https://${git_hub_personal_access_token}@github.com/${TRAVIS_REPO_SLUG}" gh-pages
 fi
 
-testSignature=$(<"${TRAVIS_BUILD_DIR}/build/reports/tests/signature")
-testPath="$HOME/gh-pages/reports/tests/${testSignature}"
+testSignature=$(<"${TRAVIS_BUILD_DIR}/build/reports/testing/signature")
+testPath="$HOME/gh-pages/reports/testing/${testSignature}"
 
 if [ -d $testPath ]
 then
@@ -31,7 +31,7 @@ else
 	echo "make dir $testPath..."
 	mkdir -p $testPath
 	echo "move test report"
-	mv ${TRAVIS_BUILD_DIR}/build/reports/tests/html/* $testPath
+	mv ${TRAVIS_BUILD_DIR}/build/reports/testing/html/* $testPath
 
 	git -C ~/gh-pages add --all .
 	git -C ~/gh-pages commit -m "add ${testSignature} test report"

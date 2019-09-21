@@ -30,14 +30,15 @@ task compile {
     dependsOn subprojects.tasks.collectMany { it }.findAll { it.name.startsWith("compile") }
 }
 
-def testReportPath = "$buildDir/reports/tests"
+def reportsPath = "$buildDir/reports"
+def testingReportPath = "$reportsPath/testing"
 
-task collectTestReport(type: TestReport) {
-	destinationDir = file("$testReportPath/html")
+task collectTestingReport(type: TestReport) {
+	destinationDir = file("$testingReportPath/html")
 	testResultDirs = subprojects*.test.binResultsDir
     doLast {
         def files = []
-        file(testReportPath).eachFileRecurse {
+        file(testingReportPath).eachFileRecurse {
             if(!it.isDirectory())
             if(it.name.endsWith(".html")) {
                 files.add(it)
@@ -46,7 +47,7 @@ task collectTestReport(type: TestReport) {
         def result = files.sort { it.absolutePath }.inject("") { accumulator, file ->
             accumulator + getFileText(file.absolutePath)
         }
-        def signatureFile = file("$testReportPath/signature")
+        def signatureFile = file("$testingReportPath/signature")
         signatureFile.delete()
         signatureFile << result.digest("SHA-512")
     }
@@ -70,7 +71,7 @@ jacoco {
   toolVersion = jacocoVersion
 }
 
-def testCoverageReportPath = "$buildDir/reports/coverage"
+def testCoverageReportPath = "$reportsPath/coverage"
 def testCoverageReportXmlFullPath = "$testCoverageReportPath/xml/report.xml"
 
 task collectTestCoverageReport(type: JacocoReport) {
@@ -117,28 +118,62 @@ dependencies {
     jacocoAnt "org.jacoco:org.jacoco.ant:$jacocoVersion"
 }
 
+private def getTestCoverageBadge(String signaturePath, String reportXmlPath) {
+    def result = getTestCoverageResult(reportXmlPath)
+    def badgeUrl = createBadgeUrl(
+        "test_coverage",
+        (100*result).toLong().toString() + "%25",
+        getTestCoverageResultBadgeColor(result)
+    )
+    def hash = getFileText(signaturePath)
+    if(hash == null || hash.isEmpty()) {
+        throw new IllegalStateException("Test coverage signature must not be empty!")
+    }
+    def reportUrl = "https://kepocnhh.github.io/ContinuousStuffExperience/reports/coverage/$hash"
+    return "[![test coverage]($badgeUrl)]($reportUrl)"
+}
+private def getTestingBadge(String signaturePath, String reportHtmlPath) {
+    def isPassed = getTestingResult(reportHtmlPath)
+    def resultText = "passed"
+    if(!isPassed) {
+        resultText = "failed"
+    }
+    def badgeUrl = createBadgeUrl(
+        "testing",
+        resultText,
+        getTestingResultBadgeColor(isPassed)
+    )
+    def hash = getFileText(signaturePath)
+    if(hash == null || hash.isEmpty()) {
+        throw new IllegalStateException("Testing signature must not be empty!")
+    }
+    def reportUrl = "https://kepocnhh.github.io/ContinuousStuffExperience/reports/testing/$hash"
+    return "[![testing]($badgeUrl)]($reportUrl)"
+}
+
 task checkReadme() {
     doLast {
-        def testCoverageResult = getTestCoverageResult(testCoverageReportXmlFullPath)
-        def testCoverageBadgeUrl = createBadgeUrl(
-            "test_coverage",
-            (100*testCoverageResult).toLong().toString() + "%25",
-            getTestCoverageResultBadgeColor(testCoverageResult)
-        )
         def readmeFileName = "README.md"
         def readmeText = getFileText(readmeFileName)
         if(readmeText == null || readmeText.isEmpty()) {
             throw new IllegalStateException("File $readmeFileName must not be empty!")
         }
-        def hash = getFileText("$testCoverageReportPath/signature")
-        if(hash == null || hash.isEmpty()) {
-            throw new IllegalStateException("Test coverage signature must not be empty!")
-        }
-        def testCoverageReportUrl = "https://kepocnhh.github.io/ContinuousStuffExperience/reports/coverage/$hash"
-        def testCoverageBadge = "[![test coverage]($testCoverageBadgeUrl)]($testCoverageReportUrl)"
+        def testCoverageBadge = getTestCoverageBadge(
+            "$testCoverageReportPath/signature",
+            testCoverageReportXmlFullPath
+        )
         if(!readmeText.contains(testCoverageBadge)) {
             throw new IllegalStateException(
                 "File $readmeFileName must contains test coverage result badge:\n$testCoverageBadge"
+            )
+        }
+        def testingBadge = getTestingBadge(
+            "$testingReportPath/signature",
+            "$testingReportPath/html/index.html"
+        )
+        if(!readmeText.contains(testingBadge)) {
+            throw new IllegalStateException(
+                "File $readmeFileName must contains testing result badge:\n$testingBadge"
             )
         }
     }

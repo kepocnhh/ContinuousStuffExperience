@@ -6,6 +6,6 @@ import org.junit.jupiter.api.Test
 internal class TmpTest2 {
 	@Test
 	fun blabla() {
-		assertTrue(test2().isNotEmpty())
+		assertTrue(!test2().isNotEmpty())
 	}
 }
