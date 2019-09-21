@@ -6,7 +6,7 @@ jdk:
 env:
   global:
     - TEST_STATUS=0
-    - REPORTS_COLLECTED_STATUS=0
+    - REPORTS_COLLECTION_STATUS=0
     - TEST_COVERAGE_VERIFICATION_STATUS=0
     - CHECK_README_STATUS=0
     - GH_PAGES_REPORT_STATUS=0
@@ -21,19 +21,23 @@ before_script:
   - |
     gradle compile || (
       STATUS=$?
-      echo "Summary: not compiled!"
+      echo -e "Summary: \e[91mnot compiled\e[0m!"
       exit $STATUS
     )
 
 script:
   - gradle runTests || TEST_STATUS=$?; $(exit $TEST_STATUS)
-  - gradle collectTestReport collectTestCoverageReport || REPORTS_COLLECTED_STATUS=$?; $(exit $REPORTS_COLLECTED_STATUS)
+  - gradle collectTestReport collectTestCoverageReport || REPORTS_COLLECTION_STATUS=$?; $(exit $REPORTS_COLLECTION_STATUS)
   - gradle checkReadme || CHECK_README_STATUS=$?; $(exit $CHECK_README_STATUS)
   - bash gh-pages-report.sh || GH_PAGES_REPORT_STATUS=$?; $(exit $GH_PAGES_REPORT_STATUS)
 
 after_script:
   - |
-    testResultText="passed"; if [ $TEST_STATUS -ne 0 ];then testResultText="failed";fi;
-    echo "Summary
-      - testing: ${testResultText}
+    testStatusText="\e[92mpassed\e[0m"
+    if [ $TEST_STATUS -ne 0 ];then testResultText="\e[91mfailed\e[0m";fi
+    reportsCollectionStatusText="\e[92mcollected\e[0m"
+    if [ $REPORTS_COLLECTION_STATUS -ne 0 ];then reportsCollectionStatusText="\e[91mnot collected\e[0m";fi
+    echo -e "Summary
+      - testing: ${testStatusText}
+      - reports: ${reportsCollectionStatusText}
     "
