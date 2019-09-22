@@ -37,19 +37,9 @@ task collectTestingReport(type: TestReport) {
 	destinationDir = file("$testingReportPath/html")
 	testResultDirs = subprojects*.test.binResultsDir
     doLast {
-        def files = []
-        file(testingReportPath).eachFileRecurse {
-            if(!it.isDirectory())
-            if(it.name.endsWith(".html")) {
-                files.add(it)
-            }
-        }
-        def result = files.sort { it.absolutePath }.inject("") { accumulator, file ->
-            accumulator + getFileText(file.absolutePath)
-        }
         def signatureFile = file("$testingReportPath/signature")
         signatureFile.delete()
-        signatureFile << result.digest("SHA-512")
+        signatureFile << getTestingSignature(testingReportPath).digest("SHA-512")
     }
 }
 
