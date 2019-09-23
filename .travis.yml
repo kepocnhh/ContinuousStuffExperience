@@ -3,14 +3,41 @@ language: java
 jdk:
   - openjdk8
 
+env:
+  global:
+    - TEST_STATUS=0
+    - REPORTS_COLLECTION_STATUS=0
+    - TEST_COVERAGE_VERIFICATION_STATUS=0
+    - CHECK_README_STATUS=0
+    - GH_PAGES_REPORT_STATUS=0
+
 install:
   - true #will prevent Travis from executing `gradle assemble`
 
+before_script:
+  - |
+    echo "commit: $TRAVIS_COMMIT"
+    echo "branch: $TRAVIS_BRANCH"
+  - |
+    gradle compile || (
+      STATUS=$?
+      echo "Summary: not compiled!"
+      exit $STATUS
+    )
+
 script:
-  - gradle clean
-  - gradle runTests
-  - gradle collectTestReport
-  - gradle collectTestCoverageReport
-  - gradle runTestCoverageVerification
-  - gradle checkReadme
-  - bash gh-pages-report.sh
+  - gradle runTests || TEST_STATUS=$?; $(exit $TEST_STATUS)
+  - gradle collectTestingReport collectTestCoverageReport || REPORTS_COLLECTION_STATUS=$?; $(exit $REPORTS_COLLECTION_STATUS)
+  - gradle checkReadme || CHECK_README_STATUS=$?; $(exit $CHECK_README_STATUS)
+  - bash gh-pages-report.sh || GH_PAGES_REPORT_STATUS=$?; $(exit $GH_PAGES_REPORT_STATUS)
+
+after_script:
+  - |
+    testStatusText="passed"
+    if [ $TEST_STATUS -ne 0 ];then testResultText="failed";fi
+    reportsCollectionStatusText="collected"
+    if [ $REPORTS_COLLECTION_STATUS -ne 0 ];then reportsCollectionStatusText="not collected";fi
+    echo -e "Summary
+      - testing: ${testStatusText}
+      - reports: ${reportsCollectionStatusText}
+    "
