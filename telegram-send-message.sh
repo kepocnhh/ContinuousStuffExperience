@@ -1,11 +1,5 @@
 echo "telegram send message..."
 
-echo "1: ${#1}"
-echo "2: ${#2}"
-echo "3: ${#3}"
-echo "4: ${#4}"
-echo "5: ${#5}"
-
 if [ $# -ne 4 ]; then
     echo "Script needs for 4 arguments but actual $#"
     exit 1
