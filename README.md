@@ -1,4 +1,4 @@
-[![testing](https://img.shields.io/badge/testing-failed-d50000.svg?style=flat)](https://kepocnhh.github.io/ContinuousStuffExperience/reports/testing/6bff57da17f85e2f33695cbe9958268e3b757cb179b143426bbfa09127fb46949e412309232bd63b285488a714cc5f0474ec5697bb3027c23ec1638adff6a90)
+[![testing](https://img.shields.io/badge/testing-failed-d50000.svg?style=flat)](https://kepocnhh.github.io/ContinuousStuffExperience/reports/testing/cf83e1357eefb8bdf1542850d66d8007d620e4050b5715dc83f4a921d36ce9ce47d0d13c5d85f2b0ff8318d2877eec2f63b931bd47417a81a538327af927da3e)
 [![test coverage](https://img.shields.io/badge/test_coverage-100%25-00c853.svg?style=flat)](https://kepocnhh.github.io/ContinuousStuffExperience/reports/coverage/f2a5cc3dae286f229d2fc38bf2f7e9a182f3644f34f5a106aa7a3698621f4d9d946e13ca4c6603192b778773dcc5f6cb38eafe8fd9a70be8e956f7c139468835)
 
 # ContinuousStuffExperience

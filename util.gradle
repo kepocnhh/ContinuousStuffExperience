@@ -1,5 +1,7 @@
 private def getFileText(String filePath) {
-    def file = file(filePath)
+    return getFileText(file(filePath))
+}
+private def getFileText(File file) {
     if(file == null || !file.exists()) {
         throw new IllegalStateException("File by path \"$filePath\" must exist!")
     }
@@ -29,7 +31,39 @@ private def getTestingResult(String filePath) {
     return result.equals("100")
 }
 
-private def getTestingSignature(String path) {
+private def getXmls(FileCollection testResultDirs) {
+    def xmls = []
+    def endsWithBinary = "/binary"
+    testResultDirs.each {
+        if(it.absolutePath.endsWith(endsWithBinary)) {
+            def dir = file(it.absolutePath[0..-endsWithBinary.length()])
+            if(dir.exists()) {
+                dir.eachFile { f ->
+                    if(f.name.endsWith(".xml")) {
+                        xmls.add(f)
+                    }
+                }
+            }
+        }
+    }
+    return xmls
+}
+private def getTestingSignature(FileCollection testResultDirs) {
+    return getXmls(testResultDirs).inject("") { accumulator, file ->
+        def root = parseXml(getFileText(file))
+        root.attributes().remove("timestamp")
+        root.attributes().remove("hostname")
+        root.attributes().remove("time")
+        root.testcase.each { testcase ->
+            testcase.attributes().remove("time")
+            testcase.failure.each { failure ->
+                failure.value = []
+            }
+        }
+        accumulator + root.text()
+    }
+}
+private def getTestingSignatureOld(String path) {
     def signatureTempPath = "$path/signatureTempPath"
     file(signatureTempPath).deleteDir()
     file(signatureTempPath).mkdirs()

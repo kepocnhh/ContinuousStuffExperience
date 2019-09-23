@@ -39,7 +39,7 @@ task collectTestingReport(type: TestReport) {
     doLast {
         def signatureFile = file("$testingReportPath/signature")
         signatureFile.delete()
-        signatureFile << getTestingSignature(testingReportPath).digest("SHA-512")
+        signatureFile << getTestingSignature(testResultDirs).digest("SHA-512")
     }
 }
 
