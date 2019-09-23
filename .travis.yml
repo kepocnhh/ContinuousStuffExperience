@@ -46,4 +46,5 @@ after_script:
       - reports: ${reportsCollectionStatusText}
     "
     MESSAGE="${COMMIT_MESSAGE}%0Acompiled%E2%9C%94%EF%B8%8F"
+    echo "tg message: $MESSAGE"
     bash telegram-send-message.sh $telegram_bot_id $telegram_bot_token $telegram_chat_id $MESSAGE
