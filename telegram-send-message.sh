@@ -26,3 +26,5 @@ then
 	echo "response code $RESPONSE_CODE but expected 200"
 	exit 3
 fi
+
+echo "message: $MESSAGE sent by telegram bot"
