@@ -60,7 +60,11 @@ private def getTestingSignature(FileCollection testResultDirs) {
                 failure.value = []
             }
         }
-        accumulator + root.text()
+		StringWriter stringWriter = new StringWriter()
+		XmlNodePrinter nodePrinter = new XmlNodePrinter(new PrintWriter(stringWriter))
+		nodePrinter.setPreserveWhitespace(true)
+		nodePrinter.print(root)
+        accumulator + stringWriter.toString()
     }
 }
 private def getTestingSignatureOld(String path) {
