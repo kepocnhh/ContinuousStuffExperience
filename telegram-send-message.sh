@@ -14,6 +14,9 @@ url="https://api.telegram.org/bot$TELEGRAM_BOT_ID:$TELEGRAM_BOT_TOKEN/sendMessag
 
 MESSAGE=${MESSAGE//"#"/"%23"}
 
+echo "tg after"
+echo $MESSAGE
+
 RESPONSE_CODE=$(
 	curl --write-out '%{http_code}\n' -X GET -G \
 		--silent --output /dev/null \
