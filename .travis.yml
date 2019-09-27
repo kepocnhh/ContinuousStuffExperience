@@ -56,9 +56,13 @@ script:
 
 after_script:
   - |
-    testingStatusText="passed"
-    if [ $TESTING_STATUS -ne 0 ];then testingStatusText="failed";fi
-    TESTING_MESSAGE="- testing: ${testingStatusText}"
+    TESTING_MESSAGE="- testing: "
+    if [ $TESTING_STATUS -ne 0 ]
+    then
+      TESTING_MESSAGE+="failed"
+    else
+      TESTING_MESSAGE+="passed"
+    fi
     if test -z "$TESTING_REPORT_URL" 
     then
       TESTING_MESSAGE+=" | no report provided"
