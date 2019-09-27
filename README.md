@@ -8,6 +8,7 @@ Testing continuous integration and continuous delivery and / or continuous deplo
 
 - [x] testing | [JUnit 5](https://junit.org/junit5/)
 - [x] test coverage/reporting/verification | [JaCoCo](https://www.jacoco.org/jacoco/)
+- [x] notifications | [Telegram Bot API](https://core.telegram.org/bots/api)
 - [ ] check code style
 - [ ] check warnings
 - [ ] code analysis

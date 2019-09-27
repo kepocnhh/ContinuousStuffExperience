@@ -65,12 +65,18 @@ after_script:
     else
       TESTING_MESSAGE+=" | [report]($TESTING_REPORT_URL)"
     fi
-    TEST_COVERAGE_MESSAGE="- test coverage: "
+    TEST_COVERAGE_MESSAGE="- test coverage: verification"
+    if [ $TEST_COVERAGE_VERIFICATION_STATUS -ne 0 ]
+    then
+      TEST_COVERAGE_MESSAGE+=" failed"
+    else
+      TEST_COVERAGE_MESSAGE+=" passed"
+    fi
     if test -z "$TEST_COVERAGE_REPORT_URL" 
     then
-      TEST_COVERAGE_MESSAGE+=" no report provided"
+      TEST_COVERAGE_MESSAGE+=" | no report provided"
     else
-      TEST_COVERAGE_MESSAGE+=" [report]($TEST_COVERAGE_REPORT_URL)"
+      TEST_COVERAGE_MESSAGE+=" | [report]($TEST_COVERAGE_REPORT_URL)"
     fi
     MESSAGE="$TELEGRAM_MESSAGE_PREFIX%0A%0A$TESTING_MESSAGE%0A$TEST_COVERAGE_MESSAGE"
     bash telegram-send-message.sh $telegram_bot_id $telegram_bot_token $telegram_chat_id "$MESSAGE"
