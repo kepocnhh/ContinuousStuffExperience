@@ -39,16 +39,12 @@ script:
   - gradle collectTestCoverageReport
   - gradle runTestCoverageVerification || TEST_COVERAGE_VERIFICATION_STATUS=$?; $(exit $TEST_COVERAGE_VERIFICATION_STATUS)
   - gradle checkReadme || CHECK_README_STATUS=$?; $(exit $CHECK_README_STATUS)
-  - bash gh-pages-report.sh || GH_PAGES_REPORT_STATUS=$?; $(exit $GH_PAGES_REPORT_STATUS)
+  - source gh-pages-report.sh || GH_PAGES_REPORT_STATUS=$?; $(exit $GH_PAGES_REPORT_STATUS)
 
 after_script:
   - |
     testingStatusText="passed"
     if [ $TESTING_STATUS -ne 0 ];then testingStatusText="failed";fi
-    echo -e "Summary
-      - testing: ${testingStatusText}
-      - reports: ${reportsCollectionStatusText}
-    "
     TESTING_MESSAGE="- testing: ${testingStatusText}"
     if test -z "$TESTING_REPORT_URL" 
     then
