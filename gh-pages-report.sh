@@ -1,12 +1,12 @@
 echo "cloning ${TRAVIS_REPO_SLUG} to ~/gh-pages..."
-git clone --depth=1 --branch=gh-pages https://github.com/${TRAVIS_REPO_SLUG}.git ~/gh-pages || exit 1
+git clone --depth=1 --branch=gh-pages ${REPO_URL}.git ~/gh-pages || exit 1
 
 git -C ~/gh-pages config user.name "${USER}"
 git -C ~/gh-pages config user.email "${USER}"
 
 testCoverageSignature=$(<"${TRAVIS_BUILD_DIR}/build/reports/coverage/signature")
 testCoveragePath="$HOME/gh-pages/reports/coverage/${testCoverageSignature}"
-TEST_COVERAGE_REPORT_URL="https://${REPO_OWNER}.github.io/$REPO_NAME/reports/coverage/${testCoverageSignature}"
+TEST_COVERAGE_REPORT_URL="$GIT_HUB_PAGES_URL/reports/coverage/${testCoverageSignature}"
 
 if [ -d $testCoveragePath ]
 then
@@ -24,7 +24,7 @@ fi
 
 testingSignature=$(<"${TRAVIS_BUILD_DIR}/build/reports/testing/signature")
 testingPath="$HOME/gh-pages/reports/testing/${testingSignature}"
-TESTING_REPORT_URL="https://${REPO_OWNER}.github.io/$REPO_NAME/reports/testing/${testingSignature}"
+TESTING_REPORT_URL="$GIT_HUB_PAGES_URL/reports/testing/${testingSignature}"
 
 if [ -d $testingPath ]
 then
