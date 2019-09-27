@@ -21,19 +21,20 @@ else
 	git -C ~/gh-pages push -f -q -u "https://${git_hub_personal_access_token}@github.com/${TRAVIS_REPO_SLUG}" gh-pages
 fi
 
-testSignature=$(<"${TRAVIS_BUILD_DIR}/build/reports/testing/signature")
-testPath="$HOME/gh-pages/reports/testing/${testSignature}"
+testingSignature=$(<"${TRAVIS_BUILD_DIR}/build/reports/testing/signature")
+testingPath="$HOME/gh-pages/reports/testing/${testingSignature}"
+TESTING_REPORT_URL="https://github.com/${TRAVIS_REPO_SLUG}/reports/testing/${testingSignature}"
 
-if [ -d $testPath ]
+if [ -d $testingPath ]
 then
-    echo "test report by ${testSignature} already in gh-pages"
+    echo "test report by ${testingSignature} already in gh-pages"
 else
-	echo "make dir $testPath..."
-	mkdir -p $testPath
+	echo "make dir $testingPath..."
+	mkdir -p $testingPath
 	echo "move test report"
-	mv ${TRAVIS_BUILD_DIR}/build/reports/testing/html/* $testPath
+	mv ${TRAVIS_BUILD_DIR}/build/reports/testing/html/* $testingPath
 
 	git -C ~/gh-pages add --all .
-	git -C ~/gh-pages commit -m "add ${testSignature} test report"
+	git -C ~/gh-pages commit -m "add ${testingSignature} test report"
 	git -C ~/gh-pages push -f -q -u "https://${git_hub_personal_access_token}@github.com/${TRAVIS_REPO_SLUG}" gh-pages
 fi

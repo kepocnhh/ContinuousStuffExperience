@@ -11,7 +11,7 @@ env:
     - CHECK_README_STATUS=0
     - GH_PAGES_REPORT_STATUS=0
     - |
-      TRAVIS_MESSAGE="Travis [build](https://travis-ci.com/$TRAVIS_REPO_SLUG/builds/$TRAVIS_BUILD_ID) #$TRAVIS_BUILD_NUMBER"
+      TRAVIS_MESSAGE="Travis [build](https://travis-ci.com/$TRAVIS_REPO_SLUG/builds/$TRAVIS_BUILD_ID) %23$TRAVIS_BUILD_NUMBER"
       REPOSITORY_MESSAGE="Repository: [$TRAVIS_REPO_SLUG](https://github.com/$TRAVIS_REPO_SLUG)"
       COMMIT_MESSAGE="commit: [${TRAVIS_COMMIT::7}](https://github.com/$TRAVIS_REPO_SLUG/commit/$TRAVIS_COMMIT)"
       TELEGRAM_MESSAGE_PREFIX="$TRAVIS_MESSAGE%0A%0A$REPOSITORY_MESSAGE%0A%0A$COMMIT_MESSAGE"
@@ -28,13 +28,14 @@ before_script:
       STATUS=$?
       echo "Summary: not compiled!"
       MESSAGE="$TELEGRAM_MESSAGE_PREFIX%0A%0Anot compiled %E2%9D%97%EF%B8%8F"
-      bash telegram-send-message.sh $telegram_bot_id $telegram_bot_token $telegram_chat_id $MESSAGE
+      bash telegram-send-message.sh $telegram_bot_id $telegram_bot_token $telegram_chat_id "$MESSAGE"
       exit $STATUS
     )
 
 script:
   - gradle runTests || TEST_STATUS=$?; $(exit $TEST_STATUS)
   - gradle collectTestingReport collectTestCoverageReport || REPORTS_COLLECTION_STATUS=$?; $(exit $REPORTS_COLLECTION_STATUS)
+  - gradle runTestCoverageVerification || TEST_COVERAGE_VERIFICATION_STATUS=$?; $(exit $TEST_COVERAGE_VERIFICATION_STATUS)
   - gradle checkReadme || CHECK_README_STATUS=$?; $(exit $CHECK_README_STATUS)
   - bash gh-pages-report.sh || GH_PAGES_REPORT_STATUS=$?; $(exit $GH_PAGES_REPORT_STATUS)
 
