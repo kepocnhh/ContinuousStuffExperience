@@ -6,6 +6,7 @@ git -C ~/gh-pages config user.email "${USER}"
 
 testCoverageSignature=$(<"${TRAVIS_BUILD_DIR}/build/reports/coverage/signature")
 testCoveragePath="$HOME/gh-pages/reports/coverage/${testCoverageSignature}"
+TEST_COVERAGE_REPORT_URL="https://github.com/${TRAVIS_REPO_SLUG}/reports/coverage/${testCoverageSignature}"
 
 if [ -d $testCoveragePath ]
 then
