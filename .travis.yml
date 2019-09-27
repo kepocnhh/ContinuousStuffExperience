@@ -5,6 +5,8 @@ jdk:
 
 env:
   global:
+    - REPO_OWNER=${TRAVIS_REPO_SLUG%/*}
+    - REPO_NAME=${TRAVIS_REPO_SLUG#*/}
     - TESTING_STATUS=0
     - TEST_COVERAGE_VERIFICATION_STATUS=0
     - CHECK_README_STATUS=0
@@ -13,7 +15,7 @@ env:
     - TESTING_REPORT_URL=""
     - |
       TRAVIS_MESSAGE="Travis [build](https://travis-ci.com/$TRAVIS_REPO_SLUG/builds/$TRAVIS_BUILD_ID) %23$TRAVIS_BUILD_NUMBER"
-      REPOSITORY_MESSAGE="Repository: [$TRAVIS_REPO_SLUG](https://github.com/$TRAVIS_REPO_SLUG)"
+      REPOSITORY_MESSAGE="Repository: [$REPO_NAME](https://github.com/$TRAVIS_REPO_SLUG) of [$REPO_OWNER](https://github.com/$REPO_OWNER)"
       COMMIT_MESSAGE="commit: [${TRAVIS_COMMIT::7}](https://github.com/$TRAVIS_REPO_SLUG/commit/$TRAVIS_COMMIT) \"$TRAVIS_COMMIT_MESSAGE\""
       TELEGRAM_MESSAGE_PREFIX="$TRAVIS_MESSAGE%0A%0A$REPOSITORY_MESSAGE%0A%0A$COMMIT_MESSAGE"
 
