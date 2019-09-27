@@ -21,12 +21,6 @@ env:
       TRAVIS_MESSAGE="Travis build [%23$TRAVIS_BUILD_NUMBER]($TRAVIS_URL/builds/$TRAVIS_BUILD_ID)"
       REPOSITORY_MESSAGE="Repository: [$REPO_NAME]($REPO_URL) of [$REPO_OWNER]($REPO_OWNER_URL)"
       COMMIT_MESSAGE="commit: [${TRAVIS_COMMIT::7}]($REPO_URL/commit/$TRAVIS_COMMIT) \"$TRAVIS_COMMIT_MESSAGE\""
-      if [[ $TRAVIS_PULL_REQUEST =~ ^[0-9]+$ ]]
-      then
-        COMMIT_MESSAGE+="%0Apull request [%23$TRAVIS_PULL_REQUEST]($REPO_URL/pull/$TRAVIS_PULL_REQUEST)"
-      else
-        echo "it is not a pull request"
-      fi
       TELEGRAM_MESSAGE_PREFIX="$TRAVIS_MESSAGE%0A%0A$REPOSITORY_MESSAGE%0A%0A$COMMIT_MESSAGE"
 
 install:
@@ -36,6 +30,14 @@ before_script:
   - |
     echo "commit: $TRAVIS_COMMIT"
     echo "branch: $TRAVIS_BRANCH"
+  - |
+    echo "TRAVIS_PULL_REQUEST: $TRAVIS_PULL_REQUEST"
+    if [[ $TRAVIS_PULL_REQUEST =~ ^[0-9]+$ ]]
+    then
+      TELEGRAM_MESSAGE_PREFIX+="%0Apull request [%23$TRAVIS_PULL_REQUEST]($REPO_URL/pull/$TRAVIS_PULL_REQUEST)"
+    else
+      echo "$TRAVIS_PULL_REQUEST - it is not a pull request value"
+    fi
   - |
     gradle compile || (
       STATUS=$?
@@ -60,9 +62,9 @@ after_script:
     TESTING_MESSAGE="- testing: ${testingStatusText}"
     if test -z "$TESTING_REPORT_URL" 
     then
-      TESTING_MESSAGE+=" / no report provided"
+      TESTING_MESSAGE+=" | no report provided"
     else
-      TESTING_MESSAGE+=" / [report]($TESTING_REPORT_URL)"
+      TESTING_MESSAGE+=" | [report]($TESTING_REPORT_URL)"
     fi
     TEST_COVERAGE_MESSAGE="- test coverage: "
     if test -z "$TEST_COVERAGE_REPORT_URL" 
