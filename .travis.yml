@@ -31,12 +31,11 @@ before_script:
     echo "commit: $TRAVIS_COMMIT"
     echo "branch: $TRAVIS_BRANCH"
   - |
-    echo "TRAVIS_PULL_REQUEST: $TRAVIS_PULL_REQUEST"
     if [[ $TRAVIS_PULL_REQUEST =~ ^[0-9]+$ ]]
     then
       TELEGRAM_MESSAGE_PREFIX+="%0Apull request [%23$TRAVIS_PULL_REQUEST]($REPO_URL/pull/$TRAVIS_PULL_REQUEST)"
     else
-      echo "$TRAVIS_PULL_REQUEST - it is not a pull request value"
+      echo "it is not a pull request value"
     fi
   - |
     gradle compile || (
