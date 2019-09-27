@@ -5,11 +5,23 @@ jdk:
 
 env:
   global:
-    - TEST_STATUS=0
-    - REPORTS_COLLECTION_STATUS=0
+    - REPO_OWNER=${TRAVIS_REPO_SLUG%/*}
+    - REPO_NAME=${TRAVIS_REPO_SLUG#*/}
+    - REPO_OWNER_URL="https://github.com/$REPO_OWNER"
+    - REPO_URL="https://github.com/$TRAVIS_REPO_SLUG"
+    - GIT_HUB_PAGES_URL="https://${REPO_OWNER}.github.io/$REPO_NAME"
+    - TRAVIS_URL="https://travis-ci.com/$TRAVIS_REPO_SLUG"
+    - TESTING_STATUS=0
     - TEST_COVERAGE_VERIFICATION_STATUS=0
     - CHECK_README_STATUS=0
     - GH_PAGES_REPORT_STATUS=0
+    - TEST_COVERAGE_REPORT_URL=""
+    - TESTING_REPORT_URL=""
+    - |
+      TRAVIS_MESSAGE="Travis build [%23$TRAVIS_BUILD_NUMBER]($TRAVIS_URL/builds/$TRAVIS_BUILD_ID)"
+      REPOSITORY_MESSAGE="Repository: [$REPO_NAME]($REPO_URL) of [$REPO_OWNER]($REPO_OWNER_URL)"
+      COMMIT_MESSAGE="commit: [${TRAVIS_COMMIT::7}]($REPO_URL/commit/$TRAVIS_COMMIT) \"$TRAVIS_COMMIT_MESSAGE\""
+      TELEGRAM_MESSAGE_PREFIX="$TRAVIS_MESSAGE%0A%0A$REPOSITORY_MESSAGE%0A%0A$COMMIT_MESSAGE"
 
 install:
   - true #will prevent Travis from executing `gradle assemble`
@@ -19,25 +31,52 @@ before_script:
     echo "commit: $TRAVIS_COMMIT"
     echo "branch: $TRAVIS_BRANCH"
   - |
+    if [[ $TRAVIS_PULL_REQUEST =~ ^[0-9]+$ ]]
+    then
+      TELEGRAM_MESSAGE_PREFIX+="%0Apull request [%23$TRAVIS_PULL_REQUEST]($REPO_URL/pull/$TRAVIS_PULL_REQUEST)"
+    else
+      echo "it is not a pull request value"
+    fi
+  - |
     gradle compile || (
       STATUS=$?
       echo "Summary: not compiled!"
+      MESSAGE="$TELEGRAM_MESSAGE_PREFIX%0A%0Anot compiled %E2%9D%97%EF%B8%8F"
+      bash telegram-send-message.sh $telegram_bot_id $telegram_bot_token $telegram_chat_id "$MESSAGE"
       exit $STATUS
     )
 
 script:
-  - gradle runTests || TEST_STATUS=$?; $(exit $TEST_STATUS)
-  - gradle collectTestingReport collectTestCoverageReport || REPORTS_COLLECTION_STATUS=$?; $(exit $REPORTS_COLLECTION_STATUS)
+  - gradle runTests || TESTING_STATUS=$?; $(exit $TESTING_STATUS)
+  - gradle collectTestingReport
+  - gradle collectTestCoverageReport
+  - gradle runTestCoverageVerification || TEST_COVERAGE_VERIFICATION_STATUS=$?; $(exit $TEST_COVERAGE_VERIFICATION_STATUS)
   - gradle checkReadme || CHECK_README_STATUS=$?; $(exit $CHECK_README_STATUS)
-  - bash gh-pages-report.sh || GH_PAGES_REPORT_STATUS=$?; $(exit $GH_PAGES_REPORT_STATUS)
+  - source gh-pages-report.sh || GH_PAGES_REPORT_STATUS=$?; $(exit $GH_PAGES_REPORT_STATUS)
 
 after_script:
   - |
-    testStatusText="passed"
-    if [ $TEST_STATUS -ne 0 ];then testResultText="failed";fi
-    reportsCollectionStatusText="collected"
-    if [ $REPORTS_COLLECTION_STATUS -ne 0 ];then reportsCollectionStatusText="not collected";fi
-    echo -e "Summary
-      - testing: ${testStatusText}
-      - reports: ${reportsCollectionStatusText}
-    "
+    testingStatusText="passed"
+    if [ $TESTING_STATUS -ne 0 ];then testingStatusText="failed";fi
+    TESTING_MESSAGE="- testing: ${testingStatusText}"
+    if test -z "$TESTING_REPORT_URL" 
+    then
+      TESTING_MESSAGE+=" | no report provided"
+    else
+      TESTING_MESSAGE+=" | [report]($TESTING_REPORT_URL)"
+    fi
+    TEST_COVERAGE_MESSAGE="- test coverage: verification"
+    if [ $TEST_COVERAGE_VERIFICATION_STATUS -ne 0 ]
+    then
+      TEST_COVERAGE_MESSAGE+=" failed"
+    else
+      TEST_COVERAGE_MESSAGE+=" passed"
+    fi
+    if test -z "$TEST_COVERAGE_REPORT_URL" 
+    then
+      TEST_COVERAGE_MESSAGE+=" | no report provided"
+    else
+      TEST_COVERAGE_MESSAGE+=" | [report]($TEST_COVERAGE_REPORT_URL)"
+    fi
+    MESSAGE="$TELEGRAM_MESSAGE_PREFIX%0A%0A$TESTING_MESSAGE%0A$TEST_COVERAGE_MESSAGE"
+    bash telegram-send-message.sh $telegram_bot_id $telegram_bot_token $telegram_chat_id "$MESSAGE"

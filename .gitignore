@@ -10,4 +10,5 @@
 !LICENSE
 !README.md
 !settings.gradle
+!telegram-send-message.sh
 !util.gradle
