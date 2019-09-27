@@ -18,10 +18,10 @@ echo "tg after"
 echo $MESSAGE
 
 RESPONSE_CODE=$(
-	curl -w '%{http_code}\n' -X GET -G \
+	curl -w '%{http_code}\n' -X GET -G -I \
 		$url \
 		-d chat_id=$TELEGRAM_CHAT_ID \
-		-d text="#$MESSAGE" \
+		-d text="$MESSAGE" \
 		-d parse_mode=markdown
 )
 
