@@ -82,7 +82,7 @@ after_script:
     else
       TEST_COVERAGE_MESSAGE+=" | [report]($TEST_COVERAGE_REPORT_URL)"
     fi
-    MESSAGE="$TELEGRAM_MESSAGE_PREFIX%0A%0A$TESTING_MESSAGE%0A$TEST_COVERAGE_MESSAGE"
+    MESSAGE="$TELEGRAM_MESSAGE_PREFIX"
     echo "tg before"
     echo $MESSAGE
     bash telegram-send-message.sh $telegram_bot_id $telegram_bot_token $telegram_chat_id "$MESSAGE"
