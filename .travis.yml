@@ -18,9 +18,6 @@ env:
     - TEST_COVERAGE_REPORT_URL=""
     - TESTING_REPORT_URL=""
     - |
-      TRAVIS_MESSAGE="Travis build [#$TRAVIS_BUILD_NUMBER]($TRAVIS_URL/builds/$TRAVIS_BUILD_ID)"
-      REPOSITORY_MESSAGE="Repository: [$REPO_NAME]($REPO_URL) of [$REPO_OWNER]($REPO_OWNER_URL)"
-      COMMIT_MESSAGE="commit: [${TRAVIS_COMMIT::7}]($REPO_URL/commit/$TRAVIS_COMMIT) \"$TRAVIS_COMMIT_MESSAGE\""
       TELEGRAM_MESSAGE_PREFIX="$TRAVIS_MESSAGE%0A%0A$REPOSITORY_MESSAGE%0A%0A$COMMIT_MESSAGE"
 
 install:
@@ -82,7 +79,7 @@ after_script:
     else
       TEST_COVERAGE_MESSAGE+=" | [report]($TEST_COVERAGE_REPORT_URL)"
     fi
-    MESSAGE="$TESTING_MESSAGE%0A$TEST_COVERAGE_MESSAGE"
+    MESSAGE="$TELEGRAM_MESSAGE_PREFIX%0A%0A$TESTING_MESSAGE%0A$TEST_COVERAGE_MESSAGE"
     echo "tg before"
     echo $MESSAGE
     bash telegram-send-message.sh $telegram_bot_id $telegram_bot_token $telegram_chat_id "$MESSAGE"
