@@ -16,12 +16,10 @@ MESSAGE=${MESSAGE//"#"/"%23"}
 MESSAGE=${MESSAGE//$'\n'/"%0A"}
 MESSAGE=${MESSAGE//$'\r'/""}
 
-echo "tg after"
-echo $MESSAGE
-
 RESPONSE_CODE=$(
-	curl -w '%{http_code}\n' -X GET -G -I \
-		-v $url \
+	curl -w '%{http_code}\n' -X GET -G \
+		--silent --output /dev/null \
+		$url \
 		-d chat_id=$TELEGRAM_CHAT_ID \
 		-d text="$MESSAGE" \
 		-d parse_mode=markdown

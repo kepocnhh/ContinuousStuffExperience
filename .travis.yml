@@ -30,6 +30,7 @@ install:
 before_script:
   - |
     echo "commit: $TRAVIS_COMMIT"
+    echo "commit message: $TRAVIS_COMMIT_MESSAGE"
     echo "branch: $TRAVIS_BRANCH"
   - |
     if [[ $TRAVIS_PULL_REQUEST =~ ^[0-9]+$ ]]
@@ -84,6 +85,4 @@ after_script:
       TEST_COVERAGE_MESSAGE+=" | [report]($TEST_COVERAGE_REPORT_URL)"
     fi
     MESSAGE="$TELEGRAM_MESSAGE_PREFIX$n$n$TESTING_MESSAGE$n$TEST_COVERAGE_MESSAGE"
-    echo "tg before"
-    echo $MESSAGE
     bash telegram-send-message.sh $telegram_bot_id $telegram_bot_token $telegram_chat_id "$MESSAGE"
