@@ -13,12 +13,12 @@ MESSAGE=$4
 url="https://api.telegram.org/bot$TELEGRAM_BOT_ID:$TELEGRAM_BOT_TOKEN/sendMessage"
 
 MESSAGE=${MESSAGE//"#"/"%23"}
-
-echo "tg after"
-echo $MESSAGE
+MESSAGE=${MESSAGE//$'\n'/"%0A"}
+MESSAGE=${MESSAGE//$'\r'/""}
 
 RESPONSE_CODE=$(
-	curl -w '%{http_code}\n' -X GET -G -I \
+	curl -w '%{http_code}\n' -X GET -G \
+		--silent --output /dev/null \
 		$url \
 		-d chat_id=$TELEGRAM_CHAT_ID \
 		-d text="$MESSAGE" \
