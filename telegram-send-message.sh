@@ -13,6 +13,8 @@ MESSAGE=$4
 url="https://api.telegram.org/bot$TELEGRAM_BOT_ID:$TELEGRAM_BOT_TOKEN/sendMessage"
 
 MESSAGE=${MESSAGE//"#"/"%23"}
+MESSAGE=${MESSAGE//$'\n'/"%0A"}
+MESSAGE=${MESSAGE//$'\r'/""}
 
 echo "tg after"
 echo $MESSAGE
