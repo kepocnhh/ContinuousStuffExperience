@@ -5,7 +5,7 @@ jdk:
 
 env:
   global:
-    - n=$'\n'
+    - newline=$'\n'
     - REPO_OWNER=${TRAVIS_REPO_SLUG%/*}
     - REPO_NAME=${TRAVIS_REPO_SLUG#*/}
     - REPO_OWNER_URL="https://github.com/$REPO_OWNER"
@@ -22,7 +22,7 @@ env:
       TRAVIS_MESSAGE="Travis build [#$TRAVIS_BUILD_NUMBER]($TRAVIS_URL/builds/$TRAVIS_BUILD_ID)"
       REPOSITORY_MESSAGE="Repository: [$REPO_NAME]($REPO_URL) of [$REPO_OWNER]($REPO_OWNER_URL)"
       COMMIT_MESSAGE="commit: [${TRAVIS_COMMIT::7}]($REPO_URL/commit/$TRAVIS_COMMIT) \"$TRAVIS_COMMIT_MESSAGE\""
-      TELEGRAM_MESSAGE_PREFIX="$TRAVIS_MESSAGE$n$n$REPOSITORY_MESSAGE$n$n$COMMIT_MESSAGE"
+      TELEGRAM_MESSAGE_PREFIX="$TRAVIS_MESSAGE${newline}${newline}$REPOSITORY_MESSAGE${newline}${newline}$COMMIT_MESSAGE"
 
 install:
   - true #will prevent Travis from executing `gradle assemble`
@@ -35,7 +35,7 @@ before_script:
   - |
     if [[ $TRAVIS_PULL_REQUEST =~ ^[0-9]+$ ]]
     then
-      TELEGRAM_MESSAGE_PREFIX+="$npull request [#$TRAVIS_PULL_REQUEST]($REPO_URL/pull/$TRAVIS_PULL_REQUEST)"
+      TELEGRAM_MESSAGE_PREFIX+="${newline}pull request [#$TRAVIS_PULL_REQUEST]($REPO_URL/pull/$TRAVIS_PULL_REQUEST)"
     else
       echo "it is not a pull request value"
     fi
@@ -43,7 +43,7 @@ before_script:
     gradle compile || (
       STATUS=$?
       echo "Summary: not compiled!"
-      MESSAGE="$TELEGRAM_MESSAGE_PREFIX$n$nnot compiled %E2%9D%97%EF%B8%8F"
+      MESSAGE="$TELEGRAM_MESSAGE_PREFIX${newline}${newline}not compiled %E2%9D%97%EF%B8%8F"
       bash telegram-send-message.sh $telegram_bot_id $telegram_bot_token $telegram_chat_id "$MESSAGE"
       exit $STATUS
     )
@@ -84,5 +84,5 @@ after_script:
     else
       TEST_COVERAGE_MESSAGE+=" | [report]($TEST_COVERAGE_REPORT_URL)"
     fi
-    MESSAGE="$TELEGRAM_MESSAGE_PREFIX$n$n$TESTING_MESSAGE$n$TEST_COVERAGE_MESSAGE"
+    MESSAGE="$TELEGRAM_MESSAGE_PREFIX${newline}${newline}$TESTING_MESSAGE${newline}$TEST_COVERAGE_MESSAGE"
     bash telegram-send-message.sh $telegram_bot_id $telegram_bot_token $telegram_chat_id "$MESSAGE"
