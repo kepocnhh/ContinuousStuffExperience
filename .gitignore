@@ -6,7 +6,6 @@
 !/lib
 !/lib2
 !/sample
-!kotlin.gradle
 !LICENSE
 !README.md
 !settings.gradle

@@ -5,9 +5,11 @@ import org.junit.jupiter.api.Test
 
 internal class Lib2ClassTest {
 	@Test
-	fun m1Test() {
-		val result = Lib2Class().m1()
-		assertEquals(result, "string from lib2: Lib2Class: m1")
+	fun sumOfTest() {
+		val int1 = 2
+		val int2 = 3
+		val result = Lib2Class().sumOf(int1, int2)
+		assertEquals(result, int1 + int2)
 	}
 
 	@Test

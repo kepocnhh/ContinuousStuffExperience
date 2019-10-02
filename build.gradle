@@ -1,8 +1,9 @@
 buildscript {
     ext {
         jacocoVersion = "0.8.4"
+        detektVersion = "1.0.1"
+        kotlinVersion = '1.3.50'
     }
-    apply from: 'kotlin.gradle'
 
     repositories {
         jcenter()
@@ -12,14 +13,41 @@ buildscript {
     }
 }
 
+plugins {
+  id "jacoco"
+  id "io.gitlab.arturbosch.detekt" version "1.0.1"
+}
+
 repositories {
     mavenCentral()
 }
 
 apply from: "util.gradle"
-apply plugin: 'jacoco'
 
 evaluationDependsOnChildren()
+
+jacoco {
+    toolVersion = jacocoVersion
+}
+
+def reportsPath = "$buildDir/reports"
+def analysisPath = "$reportsPath/analysis"
+
+detekt {
+    toolVersion = detektVersion
+    input = files(subprojects.findAll {
+        it.pluginManager.hasPlugin("kotlin")
+    }.sourceSets.main.kotlin.srcDirs)
+    config = files("./detekt-config.yml")
+    reports {
+        html {
+            enabled = true
+            destination = file("$analysisPath/html/report.html")
+        }
+        xml.enabled = false
+        txt.enabled = false
+    }
+}
 
 task clean(type: Delete) {
     delete rootProject.buildDir
@@ -30,7 +58,6 @@ task compile {
     dependsOn subprojects.tasks.collectMany { it }.findAll { it.name.startsWith("compile") }
 }
 
-def reportsPath = "$buildDir/reports"
 def testingReportPath = "$reportsPath/testing"
 
 task collectTestingReport(type: TestReport) {
@@ -56,11 +83,6 @@ task runTests {
     dependsOn tasks.first()
 }
 
-
-jacoco {
-  toolVersion = jacocoVersion
-}
-
 def testCoverageReportPath = "$reportsPath/coverage"
 def testCoverageReportXmlFullPath = "$testCoverageReportPath/xml/report.xml"
 
@@ -75,7 +97,7 @@ task collectTestCoverageReport(type: JacocoReport) {
         html.destination file("$testCoverageReportPath/html")
         csv.enabled false
     }
-    getAdditionalSourceDirs().from(files(projects.sourceSets.main.allSource.srcDirs))
+    // getAdditionalSourceDirs().from(files(projects.sourceSets.main.allSource.srcDirs))
     getSourceDirectories().from(files(projects.sourceSets.main.allSource.srcDirs))
     getClassDirectories().from(files(projects.sourceSets.main.output))
     getExecutionData().from(files(projects.jacocoTestReport.executionData))
@@ -94,18 +116,15 @@ task collectTestCoverageReport(type: JacocoReport) {
         def signatureFile = file("$testCoverageReportPath/signature")
         signatureFile.delete()
         signatureFile << result.digest("SHA-512")
+        def testCoverageResult = getTestCoverageResult(testCoverageReportXmlFullPath)
+        println "\ttest coverage result: " + (100*testCoverageResult).toLong().toString() + "%"
     }
 }
 
 task runTestCoverageVerification {
-    doLast {
-        def result = getTestCoverageResult(testCoverageReportXmlFullPath)
-        println "\ttest coverage result: " + (100*result).toLong().toString() + "%"
+    dependsOn subprojects.tasks.collectMany { it }.findAll {
+        it.name.startsWith("jacocoTestCoverageVerification")
     }
-}
-
-dependencies {
-    jacocoAnt "org.jacoco:org.jacoco.ant:$jacocoVersion"
 }
 
 private def getTestCoverageBadge(String signaturePath, String reportXmlPath) {
