@@ -100,5 +100,5 @@ after_script:
     else
       DOCUMENTATION_MESSAGE+=" | [link]($DOCUMENTATION_URL)"
     fi
-    MESSAGE="$TELEGRAM_MESSAGE_PREFIX${newline}${newline}$TESTING_MESSAGE${newline}$TEST_COVERAGE_MESSAGE$DOCUMENTATION_URL"
+    MESSAGE="$TELEGRAM_MESSAGE_PREFIX${newline}${newline}$TESTING_MESSAGE${newline}$TEST_COVERAGE_MESSAGE$DOCUMENTATION_URL${newline}$DOCUMENTATION_MESSAGE"
     bash telegram-send-message.sh $telegram_bot_id $telegram_bot_token $telegram_chat_id "$MESSAGE"

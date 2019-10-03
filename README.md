@@ -1,6 +1,6 @@
-[![testing](https://img.shields.io/badge/testing-passed-00c853.svg?style=flat)](https://kepocnhh.github.io/ContinuousStuffExperience/reports/testing/cf83e1357eefb8bdf1542850d66d8007d620e4050b5715dc83f4a921d36ce9ce47d0d13c5d85f2b0ff8318d2877eec2f63b931bd47417a81a538327af927da3e)
+[![testing](https://img.shields.io/badge/testing-passed-00c853.svg?style=flat)](https://kepocnhh.github.io/ContinuousStuffExperience/reports/testing/c7d19fb7aa706de8f3e7aab4899080788cbfcb6e4eabbef7014945c30506fa172457a99d9d184c955556dda164ddb423a6e5d9d29cc36e409c07bfd4b10c2aaf)
 [![test coverage](https://img.shields.io/badge/test_coverage-100%25-00c853.svg?style=flat)](https://kepocnhh.github.io/ContinuousStuffExperience/reports/coverage/66f8b8429caf4666b04b38a63a7d405b4a082c14fd76bc181bd54c33184e643c8b30e2fc2b43cd656086f804135916d3229a5d7f45ef505ee4c4261ecfc865b8)
-[![documentation](https://img.shields.io/badge/documentation-212121.svg?style=flat)](https://kepocnhh.github.io/ContinuousStuffExperience/documentation/a4cfcf9b1526bf935199992a1719e161f4389c71b706276edbefb55d4d07a0cffdcd281537afcf010e054d9f1b691bc56c67d644b6066ae186b0a9f38080fe02)
+[![documentation](https://img.shields.io/badge/documentation-212121.svg?style=flat)](https://kepocnhh.github.io/ContinuousStuffExperience/documentation/0647b6c2e234310ab64bf84aa8d8cafefabf8922e0b70a293fdc70e446d8b583b46a05299ae11de2f3846c32e84e85a021b7a3b265713f4a13c1d6821bac85e0)
 
 # ContinuousStuffExperience
 Testing continuous integration and continuous delivery and / or continuous deployment capabilities.
