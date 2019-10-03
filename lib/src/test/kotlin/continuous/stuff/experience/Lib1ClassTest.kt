@@ -7,7 +7,7 @@ internal class Lib1ClassTest {
 	@Test
 	fun m1Test() {
 		val result = Lib1Class().m1()
-		assertEquals(result, "string from lib: Lib1Class: m1")
+		assertEquals(result, "string from lib: Lib1Class: m11")
 	}
 
 	/**

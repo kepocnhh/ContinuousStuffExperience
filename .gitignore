@@ -2,6 +2,8 @@
 !.gitignore
 !.travis.yml
 !build.gradle
+!build.gradle.kts
+!detekt-config-documentation.yml
 !gh-pages-report.sh
 !/lib
 !/lib2
@@ -10,4 +12,4 @@
 !README.md
 !settings.gradle
 !telegram-send-message.sh
-!util.gradle
+!util.gradle.kts

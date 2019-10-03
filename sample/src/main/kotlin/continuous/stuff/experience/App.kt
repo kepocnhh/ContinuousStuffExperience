@@ -6,7 +6,7 @@ package continuous.stuff.experience
  * @see OtherLib1Class
  * @see Lib2Class
  * @version 0.00.01
- * @since lib 0.00.01
+ * @since ContinuousStuffExperience:sample 0.00.01
  */
 fun main() {
 	println("Hello continuous.stuff.experience")
