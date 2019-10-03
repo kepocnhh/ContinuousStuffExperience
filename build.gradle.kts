@@ -5,6 +5,7 @@ buildscript {
     val kotlinVersion = "1.3.50"
     mapOf(
         "jacocoVersion" to "0.8.4",
+        "jupiterVersion" to "5.0.1",
         "detektVersion" to "1.0.1",
         "kotlinVersion" to kotlinVersion
     ).forEach { (key, value) ->
@@ -71,7 +72,6 @@ tasks.create<org.jetbrains.dokka.gradle.DokkaTask>("collectDocumentation") {
         subprojects.filter {
             it.pluginManager.hasPlugin("kotlin")
         }.flatMap {
-//            it.the<SourceSetContainer>()["main/kotlin"].allSource.srcDirs//todo
             it.the<SourceSetContainer>()["main"].allSource.srcDirs
         }
     )
@@ -106,7 +106,7 @@ detekt {
 }
 
 tasks.create<io.gitlab.arturbosch.detekt.Detekt>("runDocumentationVerification") {
-    source = fileTree(
+    input = files(
         subprojects.filter {
             it.pluginManager.hasPlugin("kotlin")
         }.flatMap {
@@ -177,22 +177,10 @@ tasks.create("runTests") {
         dependsOn(tasks.first())
     }
 }
-//task runTests {
-//	def tasks = subprojects*.test
-//	def size = tasks.size
-//	if(size == 0) {
-//    	println "\tno test tasks"
-//		return
-//	}
-//	for(def i=0; i<size-1; i++) {
-//		tasks[i].finalizedBy tasks[i+1]
-//	}
-//    dependsOn tasks.first()
-//}
 
 val testCoverageReportPath = "$reportsPath/coverage"
 val testCoverageReportXmlFullPath = "$testCoverageReportPath/xml/report.xml"
-private val getTestCoverageResult: (String) -> Double by ext
+val getTestCoverageResult: (String) -> Double by ext
 
 tasks.create<JacocoReport>("collectTestCoverageReport") {
     val projects = subprojects.filter { project ->
@@ -244,40 +232,6 @@ tasks.create<JacocoReport>("collectTestCoverageReport") {
         println("\ttest coverage result: " + (100*testCoverageResult).toLong().toString() + "%")
     }
 }
-//task collectTestCoverageReport(type: JacocoReport) {
-//    def projects = subprojects.findAll {
-//        it.pluginManager.hasPlugin("jacoco") && it.tasks.find { it.name == "test" } != null
-//    }
-//    reports {
-//        xml.enabled true
-//        xml.destination file(testCoverageReportXmlFullPath)
-//        html.enabled true
-//        html.destination file("$testCoverageReportPath/html")
-//        csv.enabled false
-//    }
-//    // getAdditionalSourceDirs().from(files(projects.sourceSets.main.allSource.srcDirs))
-//    getSourceDirectories().from(files(projects.sourceSets.main.allSource.srcDirs))
-//    getClassDirectories().from(files(projects.sourceSets.main.output))
-//    getExecutionData().from(files(projects.jacocoTestReport.executionData))
-//    doLast {
-//        def files = []
-//        file(testCoverageReportPath).eachFileRecurse {
-//            if(!it.isDirectory())
-//            if(!it.name.contains("jacoco-sessions"))
-//            if(it.name.endsWith(".html")) {
-//                files.add(it)
-//            }
-//        }
-//        def result = files.sort { it.absolutePath }.inject("") { accumulator, file ->
-//            accumulator + getFileText(file.absolutePath)
-//        }
-//        def signatureFile = file("$testCoverageReportPath/signature")
-//        signatureFile.delete()
-//        signatureFile << result.digest("SHA-512")
-//        def testCoverageResult = getTestCoverageResult(testCoverageReportXmlFullPath)
-//        println "\ttest coverage result: " + (100*testCoverageResult).toLong().toString() + "%"
-//    }
-//}
 
 tasks.create("runTestCoverageVerification") {
     dependsOn(
@@ -288,11 +242,6 @@ tasks.create("runTestCoverageVerification") {
         }
     )
 }
-//task runTestCoverageVerification {
-//    dependsOn subprojects.tasks.collectMany { it }.findAll {
-//        it.name.startsWith("jacocoTestCoverageVerification")
-//    }
-//}
 
 private val repositoryUrl = "https://kepocnhh.github.io/ContinuousStuffExperience"
 private val createBadgeUrl: (String, String, String) -> String by ext
@@ -348,7 +297,7 @@ fun getDocumentationBadge(signaturePath: String): String {
         "documentation",
         "212121"
     )
-    return "[![testing]($badgeUrl)]($url)"
+    return "[![documentation]($badgeUrl)]($url)"
 }
 
 tasks.create("checkReadme") {
@@ -386,38 +335,3 @@ tasks.create("checkReadme") {
         }
     }
 }
-//task checkReadme() {
-//    doLast {
-//        def readmeFileName = "README.md"
-//        def readmeText = getFileText(readmeFileName)
-//        if(readmeText == null || readmeText.isEmpty()) {
-//            throw new IllegalStateException("File $readmeFileName must not be empty!")
-//        }
-//        def testCoverageBadge = getTestCoverageBadge(
-//            "$testCoverageReportPath/signature",
-//            testCoverageReportXmlFullPath
-//        )
-//        if(!readmeText.contains(testCoverageBadge)) {
-//            throw new IllegalStateException(
-//                "File $readmeFileName must contains test coverage result badge:\n$testCoverageBadge"
-//            )
-//        }
-//        def testingBadge = getTestingBadge(
-//            "$testingReportPath/signature",
-//            "$testingReportPath/html/index.html"
-//        )
-//        if(!readmeText.contains(testingBadge)) {
-//            throw new IllegalStateException(
-//                "File $readmeFileName must contains testing result badge:\n$testingBadge"
-//            )
-//        }
-//        def documentationBadge = getDocumentationBadge(
-//            "$documentationPath/signature"
-//        )
-//        if(!readmeText.contains(documentationBadge)) {
-//            throw new IllegalStateException(
-//                    "File $readmeFileName must contains documentation badge:\n$documentationBadge"
-//            )
-//        }
-//    }
-//}

@@ -14,10 +14,12 @@ env:
     - TRAVIS_URL="https://travis-ci.com/$TRAVIS_REPO_SLUG"
     - TESTING_STATUS=0
     - TEST_COVERAGE_VERIFICATION_STATUS=0
+    - DOCUMENTATION_VERIFICATION_STATUS=0
     - CHECK_README_STATUS=0
     - GH_PAGES_REPORT_STATUS=0
     - TEST_COVERAGE_REPORT_URL=""
     - TESTING_REPORT_URL=""
+    - DOCUMENTATION_URL=""
     - |
       TRAVIS_MESSAGE="Travis build [#$TRAVIS_BUILD_NUMBER]($TRAVIS_URL/builds/$TRAVIS_BUILD_ID)"
       REPOSITORY_MESSAGE="Repository: [$REPO_NAME]($REPO_URL) of [$REPO_OWNER]($REPO_OWNER_URL)"
@@ -53,6 +55,7 @@ script:
   - gradle collectTestingReport
   - gradle collectTestCoverageReport
   - gradle runTestCoverageVerification || TEST_COVERAGE_VERIFICATION_STATUS=$?; $(exit $TEST_COVERAGE_VERIFICATION_STATUS)
+  - gradle runDocumentationVerification || DOCUMENTATION_VERIFICATION_STATUS=$?; $(exit DOCUMENTATION_VERIFICATION_STATUS)
   - gradle checkReadme || CHECK_README_STATUS=$?; $(exit $CHECK_README_STATUS)
   - source gh-pages-report.sh || GH_PAGES_REPORT_STATUS=$?; $(exit $GH_PAGES_REPORT_STATUS)
 
@@ -78,11 +81,24 @@ after_script:
     else
       TEST_COVERAGE_MESSAGE+=" passed"
     fi
-    if test -z "$TEST_COVERAGE_REPORT_URL" 
+    if test -z "$TEST_COVERAGE_REPORT_URL"
     then
       TEST_COVERAGE_MESSAGE+=" | no report provided"
     else
       TEST_COVERAGE_MESSAGE+=" | [report]($TEST_COVERAGE_REPORT_URL)"
     fi
-    MESSAGE="$TELEGRAM_MESSAGE_PREFIX${newline}${newline}$TESTING_MESSAGE${newline}$TEST_COVERAGE_MESSAGE"
+    DOCUMENTATION_MESSAGE="- documentation: "
+    if [ DOCUMENTATION_VERIFICATION_STATUS -ne 0 ]
+    then
+      DOCUMENTATION_MESSAGE+=" is not complete"
+    else
+      DOCUMENTATION_MESSAGE+=" is complete"
+    fi
+    if test -z "DOCUMENTATION_URL"
+    then
+      DOCUMENTATION_MESSAGE+=" | no provided"
+    else
+      DOCUMENTATION_MESSAGE+=" | [link]($DOCUMENTATION_URL)"
+    fi
+    MESSAGE="$TELEGRAM_MESSAGE_PREFIX${newline}${newline}$TESTING_MESSAGE${newline}$TEST_COVERAGE_MESSAGE$DOCUMENTATION_URL"
     bash telegram-send-message.sh $telegram_bot_id $telegram_bot_token $telegram_chat_id "$MESSAGE"
