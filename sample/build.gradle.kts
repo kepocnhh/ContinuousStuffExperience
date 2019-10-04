@@ -7,7 +7,7 @@ repositories {
     jcenter()
 }
 
-val kotlinVersion = rootProject.ext["kotlinVersion"] as String
+val kotlinVersion: String by rootProject.ext
 
 application {
     mainClassName = "continuous.stuff.experience.AppKt"

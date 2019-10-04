@@ -7,9 +7,9 @@ repositories {
     jcenter()
 }
 
-val kotlinVersion = rootProject.ext["kotlinVersion"] as String
-val jacocoVersion = rootProject.ext["jacocoVersion"] as String
-val jupiterVersion = rootProject.ext["jupiterVersion"] as String
+val kotlinVersion: String by rootProject.ext
+val jacocoVersion: String by rootProject.ext
+val jupiterVersion: String by rootProject.ext
 
 jacoco {
     toolVersion = jacocoVersion

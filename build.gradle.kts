@@ -1,15 +1,10 @@
-import java.security.MessageDigest
-import java.util.*
-
 buildscript {
     val kotlinVersion = "1.3.50"
-    mapOf(
-        "jacocoVersion" to "0.8.4",
-        "jupiterVersion" to "5.0.1",
-        "detektVersion" to "1.0.1",
-        "kotlinVersion" to kotlinVersion
-    ).forEach { (key, value) ->
-        extra.set(key, value)
+    extra.apply {
+        set("jacocoVersion", "0.8.4")
+        set("jupiterVersion", "5.0.1")
+        set("detektVersion", "1.0.1")
+        set("kotlinVersion", kotlinVersion)
     }
 
     repositories {
@@ -31,39 +26,16 @@ repositories {
 }
 
 apply(from = "util.gradle.kts")
+apply(from = "project/gradle/script/digest.util.gradle.kts")
+apply(from = "project/gradle/script/file.util.gradle.kts")
+apply(from = "project/gradle/script/xml.util.gradle.kts")
+
+val digest: String.(String) -> String by ext
+val eachFileRecurse: File.((File) -> Unit) -> Unit by ext
 
 evaluationDependsOnChildren()
 
 val documentationPath = "$buildDir/documentation"
-
-fun File.eachFileRecurse(action: (File) -> Unit) {
-    if(isDirectory) {
-        listFiles()?.forEach {
-            it.eachFileRecurse(action)
-        }
-    } else {
-        action(this)
-    }
-}
-enum class DigestType(val messageDigestValue: String) {
-    SHA_512("SHA-512")
-}
-val messageDigestSha512 = MessageDigest.getInstance(DigestType.SHA_512.messageDigestValue)!!
-val HEX_CHARS = "0123456789ABCDEF"
-fun ByteArray.toHexString(): String {
-    val builder = StringBuilder(size * 2)
-    forEach {
-        val i = it.toInt()
-        builder.append(HEX_CHARS[i shr 4 and 0x0f]).append(HEX_CHARS[i and 0x0f])
-    }
-    return builder.toString().toLowerCase(Locale.US)
-}
-fun String.digest(type: DigestType): String {
-    val bytes = when(type) {
-        DigestType.SHA_512 -> messageDigestSha512.digest(toByteArray())
-    }
-    return bytes.toHexString()
-}
 
 tasks.create<org.jetbrains.dokka.gradle.DokkaTask>("collectDocumentation") {
     outputFormat = "html"
@@ -89,7 +61,7 @@ tasks.create<org.jetbrains.dokka.gradle.DokkaTask>("collectDocumentation") {
         }
         val signatureFile = File("$documentationPath/signature")
         signatureFile.delete()
-        signatureFile.writeText(result.digest(DigestType.SHA_512))
+        signatureFile.writeText(result.digest("SHA-512"))
     }
 }
 
@@ -156,7 +128,7 @@ tasks.create<TestReport>("collectTestingReport") {
     doLast {
         val signatureFile = File("$testingReportPath/signature")
         signatureFile.delete()
-        signatureFile.writeText(getTestingSignature(testResultDirs).digest(DigestType.SHA_512))
+        signatureFile.writeText(getTestingSignature(testResultDirs).digest("SHA-512"))
     }
 }
 
@@ -227,7 +199,7 @@ tasks.create<JacocoReport>("collectTestCoverageReport") {
         }
         val signatureFile = file("$testCoverageReportPath/signature")
         signatureFile.delete()
-        signatureFile.writeText(result.digest(DigestType.SHA_512))
+        signatureFile.writeText(result.digest("SHA-512"))
         val testCoverageResult = getTestCoverageResult(testCoverageReportXmlFullPath)
         println("\ttest coverage result: " + (100*testCoverageResult).toLong().toString() + "%")
     }
