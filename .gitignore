@@ -1,12 +1,11 @@
 /*
 !.gitignore
 !.travis.yml
-!build.gradle.kts
-!detekt-config-documentation.yml
 !/lib
 !/lib2
-!/sample
 !/project
+!/sample
+!build.gradle.kts
 !LICENSE
 !README.md
 !settings.gradle.kts

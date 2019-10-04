@@ -113,7 +113,7 @@ tasks.create<io.gitlab.arturbosch.detekt.Detekt>("runDocumentationVerification")
             it.the<SourceSetContainer>()["main"].allSource.srcDirs
         }
     )
-    config = files("./detekt-config-documentation.yml")
+    config = files("project/detekt/config/documentation.yml")
     reports {
         html.enabled = false
         xml {
