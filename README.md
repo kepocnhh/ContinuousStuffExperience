@@ -7,10 +7,10 @@ Testing continuous integration and continuous delivery and / or continuous deplo
 
 ### Roadmap:
 
-- [x] testing | [JUnit 5](https://junit.org/junit5/)
-- [x] test coverage/reporting/verification | [JaCoCo](https://www.jacoco.org/jacoco/)
-- [x] notifications | [Telegram Bot API](https://core.telegram.org/bots/api)
-- [ ] code documentation reporting/verification
+- [x] testing reporting/verification | [JUnit 5](https://junit.org/junit5/)
+- [x] test coverage reporting/verification | [JaCoCo](https://www.jacoco.org/jacoco/)
+- [x] notifications | [Telegram Bot API](https://core.telegram.org/bots/api/)
+- [x] code documentation generate ([dokka](https://github.com/Kotlin/dokka/)) / verification ([detekt](https://github.com/arturbosch/detekt/))
 - [ ] check code style
 - [ ] check warnings
 - [ ] code analysis
