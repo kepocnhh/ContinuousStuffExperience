@@ -4,10 +4,11 @@ jdk:
   - openjdk8
 
 install:
-  - source project/travis/bash/set_environment_variables.sh
+  - export BASH_PATH="${TRAVIS_BUILD_DIR}/project/travis/bash"
+  - source ${BASH_PATH}/set_environment_variables.sh
 
 before_script:
-  - source project/travis/bash/before_script.sh
+  - source ${BASH_PATH}/before_script.sh
 
 script:
   - gradle runTests || TESTING_STATUS=$?; $(exit $TESTING_STATUS)
@@ -17,7 +18,7 @@ script:
   - gradle runTestCoverageVerification || TEST_COVERAGE_VERIFICATION_STATUS=$?; $(exit $TEST_COVERAGE_VERIFICATION_STATUS)
   - gradle runDocumentationVerification || DOCUMENTATION_VERIFICATION_STATUS=1; $(exit $DOCUMENTATION_VERIFICATION_STATUS)
   - gradle checkReadme || CHECK_README_STATUS=$?; $(exit $CHECK_README_STATUS)
-  - source project/travis/bash/gh_pages_report.sh || GH_PAGES_REPORT_STATUS=$?; $(exit $GH_PAGES_REPORT_STATUS)
+  - source ${BASH_PATH}/gh_pages_report.sh || GH_PAGES_REPORT_STATUS=$?; $(exit $GH_PAGES_REPORT_STATUS)
 
 after_script:
-  - bash project/travis/bash/after_script.sh
+  - bash ${BASH_PATH}/after_script.sh

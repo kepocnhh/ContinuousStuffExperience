@@ -4,6 +4,11 @@ echo "commit: $TRAVIS_COMMIT"
 echo "commit message: $TRAVIS_COMMIT_MESSAGE"
 echo "branch: $TRAVIS_BRANCH"
 
+if test -z "$BASH_PATH"; then
+  echo "Variable \"BASH_PATH\" is not set"
+  exit 1
+fi
+
 SCRIPT_STATUS=0
 if test -z "$TELEGRAM_MESSAGE_PREFIX"; then
   echo "Variable \"TELEGRAM_MESSAGE_PREFIX\" is not set"
@@ -19,7 +24,7 @@ if test -z "$TRAVIS_PULL_REQUEST"; then
 fi
 
 if test $SCRIPT_STATUS -ne 0; then
-  bash telegram-send-message.sh "script failed %E2%9D%97%EF%B8%8F"
+  bash ${BASH_PATH}/telegram-send-message.sh "script failed %E2%9D%97%EF%B8%8F"
   exit $SCRIPT_STATUS
 fi
 
@@ -38,6 +43,6 @@ gradle compile || COMPILE_STATUS=$?
 if [[ COMPILE_STATUS -ne 0 ]]
 then
   MESSAGE="$TELEGRAM_MESSAGE_PREFIX${newline}${newline}not compiled %E2%9D%97%EF%B8%8F"
-  bash telegram-send-message.sh "$MESSAGE"
+  bash ${BASH_PATH}/telegram-send-message.sh "$MESSAGE"
   exit $COMPILE_STATUS
 fi
