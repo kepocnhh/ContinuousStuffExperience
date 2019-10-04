@@ -3,14 +3,11 @@ language: java
 jdk:
   - openjdk8
 
-env:
-  global:
-    - source project/travis/bash/set_environment_variables.sh
-
 install:
   - true #will prevent Travis from executing `gradle assemble`
 
 before_script:
+  - source project/travis/bash/set_environment_variables.sh
   - source project/travis/bash/before_script.sh
 
 script:
@@ -21,7 +18,7 @@ script:
   - gradle runTestCoverageVerification || TEST_COVERAGE_VERIFICATION_STATUS=$?; $(exit $TEST_COVERAGE_VERIFICATION_STATUS)
   - gradle runDocumentationVerification || DOCUMENTATION_VERIFICATION_STATUS=1; $(exit $DOCUMENTATION_VERIFICATION_STATUS)
   - gradle checkReadme || CHECK_README_STATUS=$?; $(exit $CHECK_README_STATUS)
-  - source project/travis/bash/gh-pages-report.sh || GH_PAGES_REPORT_STATUS=$?; $(exit $GH_PAGES_REPORT_STATUS)
+  - source project/travis/bash/gh_pages_report.sh || GH_PAGES_REPORT_STATUS=$?; $(exit $GH_PAGES_REPORT_STATUS)
 
 after_script:
   - bash project/travis/bash/after_script.sh
