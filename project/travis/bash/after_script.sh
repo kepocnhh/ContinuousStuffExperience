@@ -29,7 +29,7 @@ else
 fi
 
 DOCUMENTATION_MESSAGE="- documentation"
-if [ DOCUMENTATION_VERIFICATION_STATUS -ne 0 ]
+if [ $DOCUMENTATION_VERIFICATION_STATUS -ne 0 ]
 then
   DOCUMENTATION_MESSAGE+=" is not complete"
 else
@@ -43,4 +43,4 @@ else
 fi
 
 MESSAGE="$TELEGRAM_MESSAGE_PREFIX${newline}${newline}$TESTING_MESSAGE${newline}$TEST_COVERAGE_MESSAGE${newline}$DOCUMENTATION_MESSAGE"
-bash telegram-send-message.sh $telegram_bot_id $telegram_bot_token $telegram_chat_id "$MESSAGE"
+bash telegram_send_message.sh $telegram_bot_id $telegram_bot_token $telegram_chat_id "$MESSAGE"
