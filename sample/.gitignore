@@ -1,4 +1,4 @@
 /*
 !.gitignore
-!build.gradle
+!build.gradle.kts
 !/src

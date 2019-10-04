@@ -9,4 +9,21 @@ internal class Lib1ClassTest {
 		val result = Lib1Class().m1()
 		assertEquals(result, "string from lib: Lib1Class: m1")
 	}
+
+	/**
+	 * {Lib1Class.paramType} always return {Type.TYPE_1} so we check this
+	 * @see Lib1Class.paramType
+	 * @see Lib1Class.Type.TYPE_1
+	 */
+	@Test
+	fun paramTypeTest() {
+		assertEquals(Lib1Class().paramType, Lib1Class.Type.TYPE_1)
+	}
+
+    @Test
+    fun dataClassTest() {
+		val paramString = "test string"
+		val dataClass = Lib1DataClass(paramString = paramString)
+		assertEquals(paramString, dataClass.paramString)
+    }
 }

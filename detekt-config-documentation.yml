@@ -1,0 +1,12 @@
+build:
+  maxIssues: 0
+
+comments:
+  active: true
+  UndocumentedPublicClass:
+    active: true
+  UndocumentedPublicFunction:
+    active: true
+
+processors:
+  active: false
