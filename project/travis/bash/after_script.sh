@@ -14,6 +14,8 @@ else
   TESTING_MESSAGE+=" | [report]($TESTING_REPORT_URL)"
 fi
 
+echo $TESTING_MESSAGE
+
 TEST_COVERAGE_MESSAGE="- test coverage: verification"
 if [ $TEST_COVERAGE_VERIFICATION_STATUS -ne 0 ]
 then
@@ -27,6 +29,8 @@ then
 else
   TEST_COVERAGE_MESSAGE+=" | [report]($TEST_COVERAGE_REPORT_URL)"
 fi
+
+echo $TEST_COVERAGE_MESSAGE
 
 DOCUMENTATION_MESSAGE="- documentation"
 if [ $DOCUMENTATION_VERIFICATION_STATUS -ne 0 ]
@@ -42,5 +46,13 @@ else
   DOCUMENTATION_MESSAGE+=" | [link]($DOCUMENTATION_URL)"
 fi
 
-MESSAGE="$TELEGRAM_MESSAGE_PREFIX${newline}${newline}$TESTING_MESSAGE${newline}$TEST_COVERAGE_MESSAGE${newline}$DOCUMENTATION_MESSAGE"
-bash telegram_send_message.sh $telegram_bot_id $telegram_bot_token $telegram_chat_id "$MESSAGE"
+echo $DOCUMENTATION_MESSAGE
+
+MESSAGE="$TELEGRAM_MESSAGE_PREFIX"
+MESSAGE+="${newline}${newline}"
+MESSAGE+="$TESTING_MESSAGE"
+MESSAGE+="${newline}"
+MESSAGE+="$TEST_COVERAGE_MESSAGE"
+MESSAGE+="${newline}"
+MESSAGE+="$DOCUMENTATION_MESSAGE"
+bash telegram_send_message.sh "$MESSAGE"

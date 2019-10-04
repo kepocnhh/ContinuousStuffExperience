@@ -4,10 +4,9 @@ jdk:
   - openjdk8
 
 install:
-  - true #will prevent Travis from executing `gradle assemble`
+  - source project/travis/bash/set_environment_variables.sh
 
 before_script:
-  - source project/travis/bash/set_environment_variables.sh
   - source project/travis/bash/before_script.sh
 
 script:
