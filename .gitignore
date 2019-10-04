@@ -3,12 +3,11 @@
 !.travis.yml
 !build.gradle.kts
 !detekt-config-documentation.yml
-!gh-pages-report.sh
 !/lib
 !/lib2
 !/sample
+!/project
 !LICENSE
 !README.md
 !settings.gradle.kts
-!telegram-send-message.sh
 !util.gradle.kts
