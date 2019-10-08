@@ -16,5 +16,5 @@ application {
 dependencies {
     implementation(project(":lib"))
     implementation(project(":lib2"))
-    compile("org.jetbrains.kotlin:kotlin-stdlib:$kotlinVersion")
+    implementation(kotlin(module = "stdlib", version = kotlinVersion))
 }

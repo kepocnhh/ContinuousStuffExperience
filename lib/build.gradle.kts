@@ -36,7 +36,7 @@ tasks.withType(JacocoCoverageVerification::class) {
 }
 
 dependencies {
-    implementation("org.jetbrains.kotlin:kotlin-stdlib:$kotlinVersion")
+    implementation(kotlin(module = "stdlib", version = kotlinVersion))
 
     testImplementation("org.junit.jupiter:junit-jupiter-engine:$jupiterVersion")
 }

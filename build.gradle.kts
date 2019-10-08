@@ -25,10 +25,50 @@ repositories {
     jcenter()
 }
 
-apply(from = "util.gradle.kts")
-apply(from = "project/gradle/script/digest.util.gradle.kts")
-apply(from = "project/gradle/script/file.util.gradle.kts")
-apply(from = "project/gradle/script/xml.util.gradle.kts")
+fun PluginAware.applyFrom(firstScript: Any, vararg otherScripts: Any) {
+    apply(from = firstScript)
+    otherScripts.forEach {
+        apply(from = it)
+    }
+}
+fun Iterable<Project>.hasPlugin(id: String) = filter {
+    it.pluginManager.hasPlugin(id)
+}
+fun Project.sourceSet(name: String) = the<SourceSetContainer>()[name]
+fun Iterable<Project>.sourceSets(name: String) = map {
+    it.sourceSet(name)
+}
+fun Iterable<SourceSet>.allSource() = flatMap {
+    it.allSource
+}
+fun Iterable<SourceSet>.srcDirs() = flatMap {
+    it.allSource.srcDirs
+}
+fun Iterable<SourceSet>.output() = flatMap {
+    it.output
+}
+fun Iterable<Project>.allSource(name: String) = flatMap {
+    it.sourceSet(name).allSource
+}
+fun Iterable<Project>.srcDirs(name: String) = flatMap {
+    it.sourceSet(name).allSource.srcDirs
+}
+fun Iterable<Project>.tasks() = flatMap {
+    it.tasks
+}
+inline fun <reified S: Task> Iterable<Project>.tasksWithType() = flatMap {
+    it.tasks.withType(S::class.java)
+}
+fun Iterable<Project>.tasksBy(predicate: (Task) -> Boolean) = flatMap {
+    it.tasks.filter(predicate)
+}
+
+applyFrom(
+    "util.gradle.kts",
+    "project/gradle/script/digest.util.gradle.kts",
+    "project/gradle/script/file.util.gradle.kts",
+    "project/gradle/script/xml.util.gradle.kts"
+)
 
 val digest: String.(String) -> String by ext
 val eachFileRecurse: File.((File) -> Unit) -> Unit by ext
@@ -41,11 +81,7 @@ tasks.create<org.jetbrains.dokka.gradle.DokkaTask>("collectDocumentation") {
     outputFormat = "html"
     outputDirectory = "$documentationPath/html"
     sourceDirs = files(
-        subprojects.filter {
-            it.pluginManager.hasPlugin("kotlin")
-        }.flatMap {
-            it.the<SourceSetContainer>()["main"].allSource.srcDirs
-        }
+        subprojects.hasPlugin("kotlin").srcDirs("main")
     )
     doLast {
         val files = mutableListOf<File>()
@@ -79,11 +115,7 @@ detekt {
 
 tasks.create<io.gitlab.arturbosch.detekt.Detekt>("runDocumentationVerification") {
     input = files(
-        subprojects.filter {
-            it.pluginManager.hasPlugin("kotlin")
-        }.flatMap {
-            it.the<SourceSetContainer>()["main"].allSource.srcDirs
-        }
+        subprojects.hasPlugin("kotlin").srcDirs("main")
     )
     config = files("project/detekt/config/documentation.yml")
     reports {
@@ -103,9 +135,7 @@ tasks.create<Delete>("clean") {
 tasks.create("compile") {
     dependsOn("clean")
     dependsOn(
-        subprojects.flatMap {
-            it.tasks
-        }.filter {
+        subprojects.tasksBy {
             it.name.startsWith("compile")
         }
     )
@@ -117,9 +147,7 @@ val getTestingSignature: (FileCollection) -> String by ext
 tasks.create<TestReport>("collectTestingReport") {
     destinationDir = file("$testingReportPath/html")
     setTestResultDirs(
-        subprojects.flatMap {
-            it.tasks
-        }.filter {
+        subprojects.tasksBy {
             it.name == "test"
         }.filterIsInstance<Test>().map {
             it.binResultsDir
@@ -133,9 +161,7 @@ tasks.create<TestReport>("collectTestingReport") {
 }
 
 tasks.create("runTests") {
-    val tasks = subprojects.flatMap {
-        it.tasks
-    }.filter {
+    val tasks = subprojects.tasksBy {
         it.name == "test"
     }.filterIsInstance<Test>()
     val size = tasks.size
@@ -143,7 +169,6 @@ tasks.create("runTests") {
         println("\tno test tasks")
     } else {
         for(i in 0 until size-1) {
-//    for(val i=0; i<size-1; i++) {
             tasks[i].finalizedBy(tasks[i+1])
         }
         dependsOn(tasks.first())
@@ -168,18 +193,10 @@ tasks.create<JacocoReport>("collectTestCoverageReport") {
         csv.isEnabled = false
     }
     // getAdditionalSourceDirs().from(files(projects.sourceSets.main.allSource.srcDirs))
-    val sourceSets = projects.map {
-        it.the<SourceSetContainer>()["main"]
-    }
-    val srcDirs = sourceSets.flatMap {
-        it.allSource.srcDirs
-    }
-    val output = sourceSets.flatMap {
-        it.output
-    }
-    val executionDataList = projects.flatMap {
-        it.tasks
-    }.filterIsInstance<JacocoReport>().map {
+    val sourceSets = projects.sourceSets("main")
+    val srcDirs = sourceSets.srcDirs()
+    val output = sourceSets.output()
+    val executionDataList = projects.tasksWithType<JacocoReport>().map {
         it.executionData
     }
     sourceDirectories.from(files(srcDirs))
@@ -207,9 +224,7 @@ tasks.create<JacocoReport>("collectTestCoverageReport") {
 
 tasks.create("runTestCoverageVerification") {
     dependsOn(
-        subprojects.flatMap {
-            it.tasks
-        }.filter {
+        subprojects.tasksBy {
             it.name.startsWith("jacocoTestCoverageVerification")
         }
     )
