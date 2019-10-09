@@ -1,128 +1,72 @@
-buildscript {
-    val kotlinVersion = "1.3.50"
-    extra.apply {
-        set("jacocoVersion", "0.8.4")
-        set("jupiterVersion", "5.0.1")
-        set("detektVersion", "1.0.1")
-        set("kotlinVersion", kotlinVersion)
-    }
+import badge.createBadgeUrl
+import coverage.executionDataList
+import coverage.getTestCoverageResult
+import coverage.getTestCoverageResultBadgeColor
+import testing.binResultsDirList
+import testing.getTestingResult
+import testing.getTestingResultBadgeColor
+import testing.getTestingSignature
+import util.*
 
+buildscript {
     repositories {
         jcenter()
     }
+
     dependencies {
-        classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion")
+        classpath(
+            group = "org.jetbrains.kotlin",
+            name = "kotlin-gradle-plugin",
+            version = Version.kotlin
+        )
     }
 }
 
 plugins {
     id("jacoco")
-    id("io.gitlab.arturbosch.detekt") version "1.0.1"
-    id("org.jetbrains.dokka") version "0.9.18"
+    id("io.gitlab.arturbosch.detekt") version Version.detekt
+    id("org.jetbrains.dokka") version Version.dokka
 }
 
 repositories {
     jcenter()
 }
 
-fun PluginAware.applyFrom(firstScript: Any, vararg otherScripts: Any) {
-    apply(from = firstScript)
-    otherScripts.forEach {
-        apply(from = it)
-    }
-}
-fun Iterable<Project>.hasPlugin(id: String) = filter {
-    it.pluginManager.hasPlugin(id)
-}
-fun Project.sourceSet(name: String) = the<SourceSetContainer>()[name]
-fun Iterable<Project>.sourceSets(name: String) = map {
-    it.sourceSet(name)
-}
-fun Iterable<SourceSet>.allSource() = flatMap {
-    it.allSource
-}
-fun Iterable<SourceSet>.srcDirs() = flatMap {
-    it.allSource.srcDirs
-}
-fun Iterable<SourceSet>.output() = flatMap {
-    it.output
-}
-fun Iterable<Project>.allSource(name: String) = flatMap {
-    it.sourceSet(name).allSource
-}
-fun Iterable<Project>.srcDirs(name: String) = flatMap {
-    it.sourceSet(name).allSource.srcDirs
-}
-fun Iterable<Project>.tasks() = flatMap {
-    it.tasks
-}
-inline fun <reified S: Task> Iterable<Project>.tasksWithType() = flatMap {
-    it.tasks.withType(S::class.java)
-}
-fun Iterable<Project>.tasksBy(predicate: (Task) -> Boolean) = flatMap {
-    it.tasks.filter(predicate)
-}
-
-applyFrom(
-    "util.gradle.kts",
-    "project/gradle/script/digest.util.gradle.kts",
-    "project/gradle/script/file.util.gradle.kts",
-    "project/gradle/script/xml.util.gradle.kts"
-)
-
-val digest: String.(String) -> String by ext
-val eachFileRecurse: File.((File) -> Unit) -> Unit by ext
-
 evaluationDependsOnChildren()
-
-val documentationPath = "$buildDir/documentation"
 
 tasks.create<org.jetbrains.dokka.gradle.DokkaTask>("collectDocumentation") {
     outputFormat = "html"
     outputDirectory = "$documentationPath/html"
-    sourceDirs = files(
-        subprojects.hasPlugin("kotlin").srcDirs("main")
-    )
+    sourceDirs = subprojects.withPlugin("kotlin").srcDirs("main")
     doLast {
-        val files = mutableListOf<File>()
-        file(documentationPath).eachFileRecurse {
-            if(!it.isDirectory
+        val files = File(documentationPath).listFilesRecurse {
+            !it.isDirectory
                 && !it.name.contains("index-outline")
-                && it.name.endsWith(".html")) {
-                files.add(it)
-            }
+                && it.name.endsWith(".html")
         }
-        val result = files.sortedBy { it.absolutePath }.fold("") { accumulator, file ->
+        val result = files.sortedByAbsolutePath().fold("") { accumulator, file ->
             accumulator + file.readText()
         }
-        val signatureFile = File("$documentationPath/signature")
-        signatureFile.delete()
-        signatureFile.writeText(result.digest("SHA-512"))
+        File("$documentationPath/signature").rewrite(result.digestSha512())
     }
 }
 
 jacoco {
-    toolVersion = extra["jacocoVersion"] as String
+    toolVersion = Version.jacoco
 }
 
-private val reportsPath = "$buildDir/reports"
-private val analysisPath = "$reportsPath/analysis"
-val analysisDocumentationPath = "$analysisPath/documentation"
-
 detekt {
-    toolVersion = extra["detektVersion"] as String
+    toolVersion = Version.detekt
 }
 
 tasks.create<io.gitlab.arturbosch.detekt.Detekt>("runDocumentationVerification") {
-    input = files(
-        subprojects.hasPlugin("kotlin").srcDirs("main")
-    )
+    setSource(subprojects.withPlugin("kotlin").srcDirs("main"))
     config = files("project/detekt/config/documentation.yml")
     reports {
         html.enabled = false
         xml {
             enabled = true
-            destination = file("$analysisDocumentationPath/xml/report.xml")
+            destination = File("$analysisDocumentationPath/xml/report.xml")
         }
         txt.enabled = false
     }
@@ -142,28 +86,21 @@ tasks.create("compile") {
 }
 
 val testingReportPath = "$reportsPath/testing"
-val getTestingSignature: (FileCollection) -> String by ext
 
 tasks.create<TestReport>("collectTestingReport") {
-    destinationDir = file("$testingReportPath/html")
+    destinationDir = File("$testingReportPath/html")
     setTestResultDirs(
-        subprojects.tasksBy {
-            it.name == "test"
-        }.filterIsInstance<Test>().map {
-            it.binResultsDir
-        }
+        subprojects.tasksWithType<Test>().filterByName("test").binResultsDirList()
     )
     doLast {
-        val signatureFile = File("$testingReportPath/signature")
-        signatureFile.delete()
-        signatureFile.writeText(getTestingSignature(testResultDirs).digest("SHA-512"))
+        File("$testingReportPath/signature").rewrite(
+            getTestingSignature(testResultDirs).digestSha512()
+        )
     }
 }
 
 tasks.create("runTests") {
-    val tasks = subprojects.tasksBy {
-        it.name == "test"
-    }.filterIsInstance<Test>()
+    val tasks = subprojects.tasksWithType<Test>().filterByName("test")
     val size = tasks.size
     if(size == 0) {
         println("\tno test tasks")
@@ -175,49 +112,37 @@ tasks.create("runTests") {
     }
 }
 
-val testCoverageReportPath = "$reportsPath/coverage"
 val testCoverageReportXmlFullPath = "$testCoverageReportPath/xml/report.xml"
-val getTestCoverageResult: (String) -> Double by ext
 
 tasks.create<JacocoReport>("collectTestCoverageReport") {
-    val projects = subprojects.filter { project ->
-        project.pluginManager.hasPlugin("jacoco") && project.tasks.find {
-            it.name == "test"
-        } != null
+    val testCoverageReportFile = File(testCoverageReportXmlFullPath)
+    val projects = subprojects.filter {
+        it.hasPlugin("jacoco") && it.tasks.containsByName("test")
     }
     reports {
         xml.isEnabled = true
-        xml.destination = file(testCoverageReportXmlFullPath)
+        xml.destination = testCoverageReportFile
         html.isEnabled = true
-        html.destination = file("$testCoverageReportPath/html")
+        html.destination = File("$testCoverageReportPath/html")
         csv.isEnabled = false
     }
     // getAdditionalSourceDirs().from(files(projects.sourceSets.main.allSource.srcDirs))
     val sourceSets = projects.sourceSets("main")
-    val srcDirs = sourceSets.srcDirs()
-    val output = sourceSets.output()
-    val executionDataList = projects.tasksWithType<JacocoReport>().map {
-        it.executionData
-    }
-    sourceDirectories.from(files(srcDirs))
-    classDirectories.from(files(output))
+    val executionDataList = projects.tasksWithType<JacocoReport>().executionDataList()
+    sourceDirectories.from(files(sourceSets.srcDirs()))
+    classDirectories.from(files(sourceSets.output()))
     executionData.from(files(executionDataList))
     doLast {
-        val files = mutableListOf<File>()
-        file(testCoverageReportPath).eachFileRecurse {
-            if(!it.isDirectory
+        val files = File(testCoverageReportPath).listFilesRecurse {
+            !it.isDirectory
                 && !it.name.contains("jacoco-sessions")
-                && it.name.endsWith(".html")) {
-                files.add(it)
-            }
+                && it.name.endsWith(".html")
         }
-        val result = files.sortedBy { it.absolutePath }.fold("") { accumulator, file ->
+        val result = files.sortedByAbsolutePath().fold("") { accumulator, file ->
             accumulator + file.readText()
         }
-        val signatureFile = file("$testCoverageReportPath/signature")
-        signatureFile.delete()
-        signatureFile.writeText(result.digest("SHA-512"))
-        val testCoverageResult = getTestCoverageResult(testCoverageReportXmlFullPath)
+        File("$testCoverageReportPath/signature").rewrite(result.digestSha512())
+        val testCoverageResult = getTestCoverageResult(testCoverageReportFile)
         println("\ttest coverage result: " + (100*testCoverageResult).toLong().toString() + "%")
     }
 }
@@ -231,56 +156,39 @@ tasks.create("runTestCoverageVerification") {
 }
 
 private val repositoryUrl = "https://kepocnhh.github.io/ContinuousStuffExperience"
-private val createBadgeUrl: (String, String, String) -> String by ext
-private val getTestCoverageResultBadgeColor: (Double) -> String by ext
 
 fun getTestCoverageBadge(signaturePath: String, reportXmlPath: String): String {
-    val result = getTestCoverageResult(reportXmlPath)
+    val result = getTestCoverageResult(File(reportXmlPath))
     val badgeUrl = createBadgeUrl(
         "test_coverage",
         (100*result).toLong().toString() + "%25",
         getTestCoverageResultBadgeColor(result)
     )
-    val hash = file(signaturePath).readText()
-    if(hash.isEmpty()) {
-        throw IllegalStateException("Test coverage signature must not be empty!")
-    }
+    val hash = File(signaturePath).readText()
+    check(hash.isNotEmpty()) { "Test coverage signature must not be empty!" }
     val reportUrl = "$repositoryUrl/reports/coverage/$hash"
     return "[![test coverage]($badgeUrl)]($reportUrl)"
 }
 
-private val getTestingResult: (String) -> Boolean by ext
-private val getTestingResultBadgeColor: (Boolean) -> String by ext
-
 fun getTestingBadge(signaturePath: String, reportHtmlPath: String): String {
     val isPassed = getTestingResult(reportHtmlPath)
-    val resultText = if(isPassed) {
-        "passed"
-    } else {
-        "failed"
-    }
+    val resultText = if(isPassed) "passed" else "failed"
     val badgeUrl = createBadgeUrl(
         "testing",
         resultText,
         getTestingResultBadgeColor(isPassed)
     )
-    val hash = file(signaturePath).readText()
-    if(hash.isEmpty()) {
-        throw IllegalStateException("Testing signature must not be empty!")
-    }
+    val hash = File(signaturePath).readText()
+    check(hash.isNotEmpty()) { "Testing signature must not be empty!" }
     val reportUrl = "$repositoryUrl/reports/testing/$hash"
     return "[![testing]($badgeUrl)]($reportUrl)"
 }
 
-private val createBadgeUrlTitleOnly: (String, String) -> String by ext
-
 fun getDocumentationBadge(signaturePath: String): String {
-    val hash = file(signaturePath).readText()
-    if(hash.isEmpty()) {
-        throw IllegalStateException("Documentation signature must not be empty!")
-    }
+    val hash = File(signaturePath).readText()
+    check(hash.isNotEmpty()) { "Documentation signature must not be empty!" }
     val url = "$repositoryUrl/documentation/$hash"
-    val badgeUrl = createBadgeUrlTitleOnly(
+    val badgeUrl = createBadgeUrl(
         "documentation",
         "212121"
     )
@@ -289,36 +197,28 @@ fun getDocumentationBadge(signaturePath: String): String {
 
 tasks.create("checkReadme") {
     doLast {
-        val readmeFileName = "README.md"
-        val readmeText = file(readmeFileName).readText()
-        if(readmeText.isEmpty()) {
-            throw IllegalStateException("File $readmeFileName must not be empty!")
-        }
+        val fileName = "README.md"
+        val readmeText = File(fileName).readText()
+        check(readmeText.isNotEmpty()) { "File $fileName must not be empty!" }
         val testCoverageBadge = getTestCoverageBadge(
             "$testCoverageReportPath/signature",
             testCoverageReportXmlFullPath
         )
-        if(!readmeText.contains(testCoverageBadge)) {
-            throw IllegalStateException(
-                "File $readmeFileName must contains test coverage result badge:\n$testCoverageBadge"
-            )
+        check(readmeText.contains(testCoverageBadge)) {
+            "File $fileName must contains test coverage result badge:\n$testCoverageBadge"
         }
         val testingBadge = getTestingBadge(
             "$testingReportPath/signature",
             "$testingReportPath/html/index.html"
         )
-        if(!readmeText.contains(testingBadge)) {
-            throw IllegalStateException(
-                "File $readmeFileName must contains testing result badge:\n$testingBadge"
-            )
+        check(readmeText.contains(testingBadge)) {
+            "File $fileName must contains testing result badge:\n$testingBadge"
         }
         val documentationBadge = getDocumentationBadge(
             "$documentationPath/signature"
         )
-        if(!readmeText.contains(documentationBadge)) {
-            throw IllegalStateException(
-                "File $readmeFileName must contains documentation badge:\n$documentationBadge"
-            )
+        check(readmeText.contains(documentationBadge)) {
+            "File $fileName must contains documentation badge:\n$documentationBadge"
         }
     }
 }

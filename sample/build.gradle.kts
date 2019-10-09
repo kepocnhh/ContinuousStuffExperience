@@ -7,8 +7,6 @@ repositories {
     jcenter()
 }
 
-val kotlinVersion: String by rootProject.ext
-
 application {
     mainClassName = "continuous.stuff.experience.AppKt"
 }
@@ -16,5 +14,5 @@ application {
 dependencies {
     implementation(project(":lib"))
     implementation(project(":lib2"))
-    implementation(kotlin(module = "stdlib", version = kotlinVersion))
+    implementation(kotlin(module = "stdlib", version = Version.kotlin))
 }

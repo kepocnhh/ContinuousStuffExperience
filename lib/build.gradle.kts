@@ -7,12 +7,8 @@ repositories {
     jcenter()
 }
 
-val kotlinVersion: String by rootProject.ext
-val jacocoVersion: String by rootProject.ext
-val jupiterVersion: String by rootProject.ext
-
 jacoco {
-    toolVersion = jacocoVersion
+    toolVersion = Version.jacoco
 }
 
 tasks.withType(JacocoReport::class) {
@@ -36,9 +32,13 @@ tasks.withType(JacocoCoverageVerification::class) {
 }
 
 dependencies {
-    implementation(kotlin(module = "stdlib", version = kotlinVersion))
+    implementation(kotlin(module = "stdlib", version = Version.kotlin))
 
-    testImplementation("org.junit.jupiter:junit-jupiter-engine:$jupiterVersion")
+    testImplementation(
+        group = "org.junit.jupiter",
+        name = "junit-jupiter-engine",
+        version = Version.jupiter
+    )
 }
 
 tasks.withType(Test::class) {
