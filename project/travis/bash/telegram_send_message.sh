@@ -1,14 +1,14 @@
 echo "telegram send message..."
 
-if [ $# -ne 4 ]; then
-    echo "Script needs for 4 arguments but actual $#"
+if test $# -ne 1; then
+    echo "Script needs for 1 arguments but actual $#"
     exit 1
 fi
 
-TELEGRAM_BOT_ID=$1
-TELEGRAM_BOT_TOKEN=$2
-TELEGRAM_CHAT_ID=$3
-MESSAGE=$4
+TELEGRAM_BOT_ID=${telegram_bot_id:?"Variable \"telegram_bot_id\" is not set"}
+TELEGRAM_BOT_TOKEN=${telegram_bot_token:?"Variable \"telegram_bot_token\" is not set"}
+TELEGRAM_CHAT_ID=${telegram_chat_id:?"Variable \"telegram_chat_id\" is not set"}
+MESSAGE=$1
 
 url="https://api.telegram.org/bot$TELEGRAM_BOT_ID:$TELEGRAM_BOT_TOKEN/sendMessage"
 

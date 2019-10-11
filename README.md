@@ -14,6 +14,7 @@ Testing continuous integration and continuous delivery and / or continuous deplo
 - [ ] check code style
 - [ ] check warnings
 - [ ] code analysis
+- [ ] check license
 - [ ] blocking pull/merge requests
 - [ ] automatic merge
 - [ ] assembly

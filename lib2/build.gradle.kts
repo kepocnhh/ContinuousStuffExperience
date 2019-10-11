@@ -1,18 +1,14 @@
 plugins {
     kotlin("jvm")
-    id("jacoco")
+    jacoco
 }
 
 repositories {
     jcenter()
 }
 
-val kotlinVersion = rootProject.ext["kotlinVersion"] as String
-val jacocoVersion = rootProject.ext["jacocoVersion"] as String
-val jupiterVersion = rootProject.ext["jupiterVersion"] as String
-
 jacoco {
-    toolVersion = jacocoVersion
+    toolVersion = Version.jacoco
 }
 
 tasks.withType(JacocoReport::class) {
@@ -24,21 +20,23 @@ tasks.withType(JacocoReport::class) {
 }
 
 tasks.withType(JacocoCoverageVerification::class) {
-  violationRules {
-    rule {
-      limit {
-        counter = "LINE"
-        value = "COVEREDRATIO"
-        minimum = BigDecimal(1.0)
-      }
+    violationRules {
+        rule {
+            limit {
+                minimum = BigDecimal(1.0)
+            }
+        }
     }
-  }
 }
 
 dependencies {
-    implementation("org.jetbrains.kotlin:kotlin-stdlib:$kotlinVersion")
+    implementation(kotlin(module = "stdlib", version = Version.kotlin))
 
-    testImplementation("org.junit.jupiter:junit-jupiter-engine:$jupiterVersion")
+    testImplementation(
+        group = "org.junit.jupiter",
+        name = "junit-jupiter-engine",
+        version = Version.jupiter
+    )
 }
 
 tasks.withType(Test::class) {
