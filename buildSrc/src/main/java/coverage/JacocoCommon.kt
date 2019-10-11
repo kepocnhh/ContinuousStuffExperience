@@ -11,13 +11,11 @@ fun Iterable<JacocoReport>.executionDataList() = map {
 
 fun getTestCoverageResult(file: File): Double {
     val counters = parseXml(file.readText()).getListNode("counter")
-    return counters.fold(1.0) { accumulator, item ->
-        val covered: String by item.attributes()
-        val coveredInt = covered.toInt()
-        val missed: String by item.attributes()
-        val sum = missed.toInt() + coveredInt
-        if(sum > 0) {
-            (accumulator + coveredInt / sum) / 2
-        } else accumulator
+    val result = counters.sumByDouble {
+        val covered: String by it.attributes()
+        val coveredDouble = covered.toDouble()
+        val missed: String by it.attributes()
+        coveredDouble / (missed.toDouble() + coveredDouble)
     }
+    return result / counters.size
 }

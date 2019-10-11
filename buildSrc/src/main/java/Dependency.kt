@@ -8,12 +8,15 @@ object Version {
     const val dokka = "0.9.18"
 }
 
+const val repositoryUrl = "https://kepocnhh.github.io/ContinuousStuffExperience"
+
 val Project.documentationPath get() = "${rootProject.buildDir}/documentation"
 
 val Project.reportsPath get() = "${rootProject.buildDir}/reports"
 
 val Project.analysisPath get() = "$reportsPath/analysis"
-
 val Project.analysisDocumentationPath get() = "$analysisPath/documentation"
 
 val Project.testCoverageReportPath get() = "$reportsPath/coverage"
+
+val Project.testingReportPath get() = "$reportsPath/testing"

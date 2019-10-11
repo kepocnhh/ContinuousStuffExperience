@@ -7,11 +7,12 @@ import org.gradle.kotlin.dsl.the
 
 fun Project.hasPlugin(id: String) = pluginManager.hasPlugin(id)
 
+fun Project.sourceSet(name: String) = the<SourceSetContainer>()[name]!!
+
 fun Iterable<Project>.withPlugin(id: String) = filter {
     it.pluginManager.hasPlugin(id)
 }
 
-fun Project.sourceSet(name: String) = the<SourceSetContainer>()[name]!!
 
 fun Iterable<Project>.sourceSets(name: String) = map {
     it.sourceSet(name)

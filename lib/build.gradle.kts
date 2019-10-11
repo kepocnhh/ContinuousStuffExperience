@@ -1,6 +1,6 @@
 plugins {
     kotlin("jvm")
-    id("jacoco")
+    jacoco
 }
 
 repositories {
@@ -20,15 +20,13 @@ tasks.withType(JacocoReport::class) {
 }
 
 tasks.withType(JacocoCoverageVerification::class) {
-  violationRules {
-    rule {
-      limit {
-        counter = "LINE"
-        value = "COVEREDRATIO"
-        minimum = BigDecimal(1.0)
-      }
+    violationRules {
+        rule {
+            limit {
+                minimum = BigDecimal(1.0)
+            }
+        }
     }
-  }
 }
 
 dependencies {
