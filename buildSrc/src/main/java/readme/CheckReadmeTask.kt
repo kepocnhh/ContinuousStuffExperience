@@ -3,7 +3,9 @@ package readme
 import badge.createBadgeUrl
 import coverage.*
 import documentation.documentationSignaturePath
+import org.gradle.api.DefaultTask
 import org.gradle.api.Project
+import org.gradle.kotlin.dsl.task
 import repositoryUrl
 import testing.*
 import java.io.File
@@ -51,7 +53,7 @@ fun Project.createCheckReadmeTask(
     readmeFullPath: String = "./README.md"
 ) {
     val errorMessagePrefix = "File readme by path: \"$readmeFullPath\""
-    tasks.create(name) {
+    task<DefaultTask>(name) {
         doLast {
             val text = File(readmeFullPath).readText()
             check(text.isNotEmpty()) { "$errorMessagePrefix must not be empty!" }

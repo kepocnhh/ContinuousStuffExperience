@@ -4,7 +4,7 @@ jdk:
   - openjdk8
 
 install:
-  - export BASH_PATH="${TRAVIS_BUILD_DIR}/project/travis/bash"
+  - export BASH_PATH="${TRAVIS_BUILD_DIR}/buildSrc/src/main/resources/travis/bash"
   - source ${BASH_PATH}/set_environment_variables.sh
 
 before_script:

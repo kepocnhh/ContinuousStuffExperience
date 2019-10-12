@@ -1,10 +1,10 @@
 package coverage
 
 import org.gradle.api.Project
+import org.gradle.kotlin.dsl.task
 import org.gradle.testing.jacoco.tasks.JacocoReport
 import testCoverageReportPath
 import java.io.File
-import org.gradle.kotlin.dsl.create
 import output
 import srcDirs
 import util.*
@@ -28,7 +28,7 @@ fun Project.rewriteTestCoverageReportSignature() {
 fun Project.createCollectTestCoverageReportTask(
     name: String = "collectTestCoverageReport"
 ) {
-    tasks.create<JacocoReport>(name) {
+    task<JacocoReport>(name) {
         val testCoverageReportFile = File(testCoverageReportXmlPath)
         val projects = subprojects.filter {
             it.hasPlugin("jacoco") && it.tasks.containsByName("test")

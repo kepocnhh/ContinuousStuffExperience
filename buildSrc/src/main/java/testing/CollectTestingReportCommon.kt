@@ -3,13 +3,13 @@ package testing
 import org.gradle.api.Project
 import org.gradle.api.tasks.testing.Test
 import org.gradle.api.tasks.testing.TestReport
+import org.gradle.kotlin.dsl.task
 import testingReportPath
 import util.digestSha512
 import util.filterByName
 import util.rewrite
 import util.tasksWithType
 import java.io.File
-import org.gradle.kotlin.dsl.create
 
 val Project.testingReportSignaturePath get() = "$testingReportPath/signature"
 val Project.testingReportHtmlPath get() = "$testingReportPath/html"
@@ -24,7 +24,7 @@ fun Project.rewriteTestingReportSignature(testResultDirs: Iterable<File>) {
 fun Project.createCollectTestingReportTask(
     name: String = "collectTestingReport"
 ) {
-    tasks.create<TestReport>(name) {
+    task<TestReport>(name) {
         destinationDir = File(testingReportHtmlPath)
         setTestResultDirs(
             subprojects.tasksWithType<Test>().filterByName("test").binResultsDirList()
