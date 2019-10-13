@@ -17,6 +17,7 @@ script:
   - gradle collectDocumentation
   - gradle runTestCoverageVerification || TEST_COVERAGE_VERIFICATION_STATUS=$?; $(exit $TEST_COVERAGE_VERIFICATION_STATUS)
   - gradle runDocumentationVerification || DOCUMENTATION_VERIFICATION_STATUS=1; $(exit $DOCUMENTATION_VERIFICATION_STATUS)
+  - gradle runStyleVerification || STYLE_VERIFICATION_STATUS=$?; $(exit $STYLE_VERIFICATION_STATUS)
   - gradle checkReadme || CHECK_README_STATUS=$?; $(exit $CHECK_README_STATUS)
   - source ${BASH_PATH}/gh_pages_report.sh || GH_PAGES_REPORT_STATUS=$?; $(exit $GH_PAGES_REPORT_STATUS)
 

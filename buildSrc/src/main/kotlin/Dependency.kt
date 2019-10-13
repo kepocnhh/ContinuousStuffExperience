@@ -1,5 +1,3 @@
-const val repositoryUrl = "https://kepocnhh.github.io/ContinuousStuffExperience"
-
 data class Dependency(
     val group: String,
     val name: String,

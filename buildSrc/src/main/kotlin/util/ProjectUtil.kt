@@ -13,7 +13,6 @@ fun Iterable<Project>.withPlugin(id: String) = filter {
     it.pluginManager.hasPlugin(id)
 }
 
-
 fun Iterable<Project>.sourceSets(name: String) = map {
     it.sourceSet(name)
 }

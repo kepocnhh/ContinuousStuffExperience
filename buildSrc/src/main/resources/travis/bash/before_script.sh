@@ -24,7 +24,7 @@ if test -z "$TRAVIS_PULL_REQUEST"; then
 fi
 
 if test $SCRIPT_STATUS -ne 0; then
-  bash ${BASH_PATH}/telegram-send-message.sh "script failed %E2%9D%97%EF%B8%8F"
+  bash ${BASH_PATH}/telegram-send-message.sh "script failed $emoji_heavy_exclamation_mark"
   exit $SCRIPT_STATUS
 fi
 
@@ -42,7 +42,7 @@ gradle compile || COMPILE_STATUS=$?
 
 if [[ COMPILE_STATUS -ne 0 ]]
 then
-  MESSAGE="$TELEGRAM_MESSAGE_PREFIX${newline}${newline}not compiled %E2%9D%97%EF%B8%8F"
+  MESSAGE="$TELEGRAM_MESSAGE_PREFIX${newline}${newline}not compiled $emoji_heavy_exclamation_mark"
   bash ${BASH_PATH}/telegram-send-message.sh "$MESSAGE"
   exit $COMPILE_STATUS
 fi

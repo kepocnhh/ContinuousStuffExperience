@@ -6,7 +6,6 @@ import documentation.documentationSignaturePath
 import org.gradle.api.DefaultTask
 import org.gradle.api.Project
 import org.gradle.kotlin.dsl.task
-import repositoryUrl
 import testing.*
 import java.io.File
 
@@ -19,7 +18,7 @@ private fun getTestCoverageBadge(signaturePath: String, reportXmlPath: String): 
     )
     val hash = File(signaturePath).readText()
     check(hash.isNotEmpty()) { "Test coverage signature must not be empty!" }
-    val reportUrl = "$repositoryUrl/reports/coverage/$hash"
+    val reportUrl = "${Repository.url}/reports/coverage/$hash"
     return "[![test coverage]($badgeUrl)]($reportUrl)"
 }
 
@@ -33,14 +32,14 @@ private fun getTestingBadge(signaturePath: String, reportHtmlPath: String): Stri
     )
     val hash = File(signaturePath).readText()
     check(hash.isNotEmpty()) { "Testing signature must not be empty!" }
-    val reportUrl = "$repositoryUrl/reports/testing/$hash"
+    val reportUrl = "${Repository.url}/reports/testing/$hash"
     return "[![testing]($badgeUrl)]($reportUrl)"
 }
 
 fun getDocumentationBadge(signaturePath: String): String {
     val hash = File(signaturePath).readText()
     check(hash.isNotEmpty()) { "Documentation signature must not be empty!" }
-    val url = "$repositoryUrl/documentation/$hash"
+    val url = "${Repository.url}/documentation/$hash"
     val badgeUrl = createBadgeUrl(
         "documentation",
         "212121"
