@@ -4,7 +4,6 @@
 !/buildSrc
 !/lib
 !/lib2
-!/project
 !/sample
 !build.gradle.kts
 !LICENSE

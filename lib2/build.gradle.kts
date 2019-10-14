@@ -1,6 +1,6 @@
 plugins {
     kotlin("jvm")
-    jacoco
+    id(Plugin.testCoverage.name)
 }
 
 repositories {
@@ -8,7 +8,7 @@ repositories {
 }
 
 jacoco {
-    toolVersion = Version.jacoco
+    toolVersion = Version.testCoverage
 }
 
 tasks.withType(JacocoReport::class) {
@@ -30,13 +30,9 @@ tasks.withType(JacocoCoverageVerification::class) {
 }
 
 dependencies {
-    implementation(kotlin(module = "stdlib", version = Version.kotlin))
+    implementation(Dependency.kotlinStdlib.notation())
 
-    testImplementation(
-        group = "org.junit.jupiter",
-        name = "junit-jupiter-engine",
-        version = Version.jupiter
-    )
+    testImplementation(Dependency.testing.notation())
 }
 
 tasks.withType(Test::class) {

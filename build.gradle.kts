@@ -1,10 +1,10 @@
-import readme.createCheckReadmeTask
+import analysis.analysisStyleHtmlPath
 import coverage.*
-import documentation.analysisDocumentationReportXmlPath
 import documentation.documentationHtmlPath
 import documentation.rewriteDocumentationSignature
 import io.gitlab.arturbosch.detekt.Detekt
 import org.jetbrains.dokka.gradle.DokkaTask
+import readme.createCheckReadmeTask
 import testing.createCollectTestingReportTask
 import testing.createRunTestsTask
 import util.*
@@ -15,27 +15,41 @@ buildscript {
     }
 
     dependencies {
-        classpath(
-            group = "org.jetbrains.kotlin",
-            name = "kotlin-gradle-plugin",
-            version = Version.kotlin
-        )
+        classpath(Dependency.kotlinGradlePlugin.notation())
     }
 }
 
 plugins {
-    jacoco
-    id("io.gitlab.arturbosch.detekt") version Version.detekt
-    id("org.jetbrains.dokka") version Version.dokka
+    id(Plugin.testCoverage.name)
+    id(Plugin.analysis.name) version Plugin.analysis.version
+    id(Plugin.documentation.name) version Plugin.documentation.version
 }
 
 repositories {
     jcenter()
 }
 
+val kotlinLint: Configuration by configurations.creating
+
+dependencies {
+    kotlinLint(Dependency.kotlinLint.notation())
+    kotlinLint(Dependency.kotlinLintHtmlReporter.notation())
+}
+
+task<JavaExec>("runStyleVerification") {
+    classpath = kotlinLint
+    main = "com.pinterest.ktlint.Main"
+    args(
+        "**/src/**/*.kt",
+        "--reporter=html," +
+            "artifact=${Dependency.kotlinLintHtmlReporter.notation()}," +
+            "output=$analysisStyleHtmlPath"
+    )
+}
+
 evaluationDependsOnChildren()
 
-tasks.create<DokkaTask>("collectDocumentation") {
+task<DokkaTask>("collectDocumentation") {
     outputFormat = "html"
     outputDirectory = documentationHtmlPath
     sourceDirs = subprojects.withPlugin("kotlin").srcDirs("main")
@@ -45,31 +59,28 @@ tasks.create<DokkaTask>("collectDocumentation") {
 }
 
 jacoco {
-    toolVersion = Version.jacoco
+    toolVersion = Version.testCoverage
 }
 
 detekt {
-    toolVersion = Version.detekt
+    toolVersion = Version.analysis
 }
 
-tasks.create<Detekt>("runDocumentationVerification") {
+task<Detekt>("runDocumentationVerification") {
     setSource(subprojects.withPlugin("kotlin").srcDirs("main"))
-    config = files("project/detekt/config/documentation.yml")
+    config = files("buildSrc/src/main/resources/detekt/config/documentation.yml")
     reports {
         html.enabled = false
-        xml {
-            enabled = true
-            destination = File(analysisDocumentationReportXmlPath)
-        }
+        xml.enabled = false
         txt.enabled = false
     }
 }
 
-tasks.create<Delete>("clean") {
+task<Delete>("clean") {
     delete = setOf(rootProject.buildDir)
 }
 
-tasks.create("compile") {
+task<DefaultTask>("compile") {
     dependsOn("clean")
     dependsOn(
         subprojects.tasksBy {
@@ -84,7 +95,7 @@ createRunTestsTask()
 
 createCollectTestCoverageReportTask()
 
-tasks.create("runTestCoverageVerification") {
+task<DefaultTask>("runTestCoverageVerification") {
     dependsOn(subprojects.tasksWithType<JacocoCoverageVerification>())
 }
 

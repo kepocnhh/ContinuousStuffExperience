@@ -4,26 +4,26 @@ import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 
 internal class Lib1ClassTest {
-	@Test
-	fun m1Test() {
-		val result = Lib1Class().m1()
-		assertEquals(result, "string from lib: Lib1Class: m1")
-	}
+    @Test
+    fun m1Test() {
+        val result = Lib1Class().m1()
+        assertEquals(result, "string from lib: Lib1Class: m1")
+    }
 
-	/**
-	 * {Lib1Class.paramType} always return {Type.TYPE_1} so we check this
-	 * @see Lib1Class.paramType
-	 * @see Lib1Class.Type.TYPE_1
-	 */
-	@Test
-	fun paramTypeTest() {
-		assertEquals(Lib1Class().paramType, Lib1Class.Type.TYPE_1)
-	}
+    /**
+     * {Lib1Class.paramType} always return {Type.TYPE_1} so we check this
+     * @see Lib1Class.paramType
+     * @see Lib1Class.Type.TYPE_1
+     */
+    @Test
+    fun paramTypeTest() {
+        assertEquals(Lib1Class().paramType, Lib1Class.Type.TYPE_1)
+    }
 
     @Test
     fun dataClassTest() {
-		val paramString = "test string"
-		val dataClass = Lib1DataClass(paramString = paramString)
-		assertEquals(paramString, dataClass.paramString)
+        val paramString = "test string"
+        val dataClass = Lib1DataClass(paramString = paramString)
+        assertEquals(paramString, dataClass.paramString)
     }
 }

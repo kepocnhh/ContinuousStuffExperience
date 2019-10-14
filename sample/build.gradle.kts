@@ -14,5 +14,5 @@ application {
 dependencies {
     implementation(project(":lib"))
     implementation(project(":lib2"))
-    implementation(kotlin(module = "stdlib", version = Version.kotlin))
+    implementation(Dependency.kotlinStdlib.notation())
 }
