@@ -4,6 +4,7 @@ import documentation.documentationHtmlPath
 import documentation.rewriteDocumentationSignature
 import io.gitlab.arturbosch.detekt.Detekt
 import org.jetbrains.dokka.gradle.DokkaTask
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import readme.createCheckReadmeTask
 import testing.createCollectTestingReportTask
 import testing.createRunTestsTask
@@ -78,6 +79,10 @@ task<Detekt>("runDocumentationVerification") {
 
 task<Delete>("clean") {
     delete = setOf(rootProject.buildDir)
+}
+
+allTasksWithType<KotlinCompile>().forEach {
+    it.kotlinOptions.allWarningsAsErrors = true
 }
 
 task<DefaultTask>("compile") {

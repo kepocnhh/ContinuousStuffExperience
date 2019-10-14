@@ -21,5 +21,8 @@ script:
   - gradle checkReadme || CHECK_README_STATUS=$?; $(exit $CHECK_README_STATUS)
   - source ${BASH_PATH}/gh_pages_report.sh || GH_PAGES_REPORT_STATUS=$?; $(exit $GH_PAGES_REPORT_STATUS)
 
+after_failure:
+  - BUILD_SUCCESS=1
+
 after_script:
   - bash ${BASH_PATH}/after_script.sh

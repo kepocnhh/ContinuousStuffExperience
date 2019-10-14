@@ -67,4 +67,12 @@ MESSAGE+="${newline}"
 MESSAGE+="$DOCUMENTATION_MESSAGE"
 MESSAGE+="${newline}"
 MESSAGE+="$STYLE_MESSAGE"
+
+if [ $BUILD_SUCCESS -ne 0 ]
+then
+  MESSAGE+="${newline}"
+  MESSAGE+="${newline}"
+  MESSAGE+="build fail $emoji_heavy_exclamation_mark"
+fi
+
 bash ${BASH_PATH}/telegram_send_message.sh "$MESSAGE"

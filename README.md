@@ -14,6 +14,7 @@ Testing continuous integration and continuous delivery and / or continuous deplo
 - [x] code documentation generate ([dokka](https://github.com/Kotlin/dokka/)) / verification ([detekt](https://github.com/arturbosch/detekt/))
 - [x] code style verification | [ktlint](https://ktlint.github.io/)
 - [ ] check warnings
+- [ ] check `todo`/`fixme`
 - [ ] code analysis
 - [ ] check license
 - [ ] check/increment version
