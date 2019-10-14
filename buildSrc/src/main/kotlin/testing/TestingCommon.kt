@@ -20,7 +20,3 @@ fun getTestingResult(filePath: String): Boolean {
     val result = data.substring(indexLeft + 1, indexRight)
     return result == "100"
 }
-
-fun getTestingResultBadgeColor(isPassed: Boolean): String {
-    return if(isPassed) "00c853" else "d50000"
-}

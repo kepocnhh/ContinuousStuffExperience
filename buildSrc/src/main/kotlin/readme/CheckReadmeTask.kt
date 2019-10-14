@@ -1,5 +1,8 @@
 package readme
 
+import badge.COLOR_BLUE
+import badge.COLOR_GREEN
+import badge.COLOR_RED
 import badge.createBadgeUrl
 import coverage.*
 import documentation.documentationSignaturePath
@@ -12,9 +15,9 @@ import java.io.File
 private fun getTestCoverageBadge(signaturePath: String, reportXmlPath: String): String {
     val result = getTestCoverageResult(File(reportXmlPath))
     val badgeUrl = createBadgeUrl(
-        "test_coverage",
-        (100*result).toLong().toString() + "%25",
-        getTestCoverageResultBadgeColor(result)
+        label = "test%20coverage",
+        message = (100*result).toLong().toString() + "%25",
+        colorMessage = getTestCoverageResultBadgeColor(result)
     )
     val hash = File(signaturePath).readText()
     check(hash.isNotEmpty()) { "Test coverage signature must not be empty!" }
@@ -26,9 +29,9 @@ private fun getTestingBadge(signaturePath: String, reportHtmlPath: String): Stri
     val isPassed = getTestingResult(reportHtmlPath)
     val resultText = if(isPassed) "passed" else "failed"
     val badgeUrl = createBadgeUrl(
-        "testing",
-        resultText,
-        getTestingResultBadgeColor(isPassed)
+        label = "testing",
+        message = resultText,
+        colorMessage = if(isPassed) COLOR_GREEN else COLOR_RED
     )
     val hash = File(signaturePath).readText()
     check(hash.isNotEmpty()) { "Testing signature must not be empty!" }
@@ -41,8 +44,8 @@ fun getDocumentationBadge(signaturePath: String): String {
     check(hash.isNotEmpty()) { "Documentation signature must not be empty!" }
     val url = "${Repository.url}/documentation/$hash"
     val badgeUrl = createBadgeUrl(
-        "documentation",
-        "212121"
+        message = "documentation",
+        color = COLOR_BLUE
     )
     return "[![documentation]($badgeUrl)]($url)"
 }
@@ -75,6 +78,14 @@ fun Project.createCheckReadmeTask(
             )
             check(text.contains(documentationBadge)) {
                 "$errorMessagePrefix must contains documentation badge:\n$documentationBadge"
+            }
+            val codeStyleBadge = "[![code style]("+createBadgeUrl(
+                label = "code%20style",
+                message = "Kotlin%20Coding%20Conventions",
+                colorMessage = COLOR_BLUE
+            )+")](https://kotlinlang.org/docs/reference/coding-conventions.html)"
+            check(text.contains(codeStyleBadge)) {
+                "$errorMessagePrefix must contains documentation badge:\n$codeStyleBadge"
             }
         }
     }
