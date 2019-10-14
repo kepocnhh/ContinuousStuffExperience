@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Lib1Class.kt</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">ContinuousStuffExperience</a> &gt; <a href="index.source.html" class="el_package">continuous.stuff.experience</a> &gt; <span class="el_source">Lib1Class.kt</span></div><h1>Lib1Class.kt</h1><pre class="source lang-java linenums">package continuous.stuff.experience
+
+import java.util.*
+
+/**
+ * This class is for researching. This text is an example of documentation.
+ * @version 0.00.01
+ * @since ContinuousStuffExperience:lib 0.00.01
+ */
+<span class="fc" id="L10">class Lib1Class {</span>
+
+    /**
+     * This field is for researching. This text is an example of documentation.
+     * Always return `Type.TYPE_1`.
+     * @see Type.TYPE_1
+     * @version 0.00.01
+     * @since ContinuousStuffExperience:lib 0.00.01
+     */
+<span class="fc" id="L19">    val paramType = Type.TYPE_1</span>
+<span class="nc" id="L20">    val paramZero = 0</span>
+<span class="pc" id="L21">    val paramTrue = if(false) false else true</span>
+
+    @Suppress(&quot;deprecation&quot;)
+<span class="pc" id="L24">    val paramDate = Date(2019, 5, 5)</span>
+
+    /**
+     * This internal class is for researching. This text is an example of documentation.
+     * @version 0.00.01
+     * @since ContinuousStuffExperience:lib 0.00.01
+     */
+    enum class Type {
+        /**
+         * This field of internal class is for researching. This text is an example of documentation.
+         * Single constant.
+         * @see Type
+         * @version 0.00.01
+         * @since ContinuousStuffExperience:lib 0.00.01
+         */
+        TYPE_1,
+    }
+
+    /**
+     * This method is for researching. This text is an example of documentation.
+     * @return constant string with the name of the module, class and itself
+     * @version 0.00.01
+     * @since ContinuousStuffExperience:lib 0.00.01
+     */
+    fun m1(): String {
+<span class="fc" id="L49">        return &quot;string from lib: Lib1Class: m1&quot;</span>
+    }
+}
+
+/**
+ * This data class is for researching. This text is an example of documentation.
+ * @version 0.00.01
+ * @since ContinuousStuffExperience:lib 0.00.01
+ */
+<span class="fc" id="L58">data class Lib1DataClass(</span>
+    /**
+     * This data class field is for researching. This text is an example of documentation.
+     * @version 0.00.01
+     * @since ContinuousStuffExperience:lib 0.00.01
+     */
+<span class="fc" id="L64">    val paramString: String</span>
+)
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.4.201905082037</span></div></body></html>
