@@ -1,5 +1,6 @@
 package testing
 
+import java.io.File
 import org.gradle.api.Project
 import org.gradle.api.tasks.testing.Test
 import org.gradle.api.tasks.testing.TestReport
@@ -9,7 +10,6 @@ import util.digestSha512
 import util.filterByName
 import util.rewrite
 import util.tasksWithType
-import java.io.File
 
 val Project.testingReportSignaturePath get() = "$testingReportPath/signature"
 val Project.testingReportHtmlPath get() = "$testingReportPath/html"

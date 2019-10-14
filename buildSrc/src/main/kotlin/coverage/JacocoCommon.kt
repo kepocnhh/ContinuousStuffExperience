@@ -1,9 +1,9 @@
 package coverage
 
+import java.io.File
 import org.gradle.testing.jacoco.tasks.JacocoReport
 import util.getListNode
 import util.parseXml
-import java.io.File
 
 fun Iterable<JacocoReport>.executionDataList() = map {
     it.executionData

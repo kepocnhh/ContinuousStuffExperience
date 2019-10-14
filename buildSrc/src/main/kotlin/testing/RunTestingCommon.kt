@@ -13,10 +13,10 @@ fun Project.createRunTestsTask(
     task<DefaultTask>(name) {
         val tasks = subprojects.tasksWithType<Test>().filterByName("test")
         val size = tasks.size
-        if(size == 0) println("\tno test tasks")
+        if (size == 0) println("\tno test tasks")
         else {
-            for(i in 0 until size-1) {
-                tasks[i].finalizedBy(tasks[i+1])
+            for (i in 0 until size - 1) {
+                tasks[i].finalizedBy(tasks[i + 1])
             }
             dependsOn(tasks.first())
         }

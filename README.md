@@ -12,7 +12,7 @@ Testing continuous integration and continuous delivery and / or continuous deplo
 - [x] test coverage reporting/verification | [JaCoCo](https://www.jacoco.org/jacoco/)
 - [x] notifications | [Telegram Bot API](https://core.telegram.org/bots/api/)
 - [x] code documentation generate ([dokka](https://github.com/Kotlin/dokka/)) / verification ([detekt](https://github.com/arturbosch/detekt/))
-- [ ] code style verification | [ktlint](https://ktlint.github.io/)
+- [x] code style verification | [ktlint](https://ktlint.github.io/)
 - [ ] check warnings
 - [ ] code analysis
 - [ ] check license

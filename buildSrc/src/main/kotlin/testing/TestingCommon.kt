@@ -1,7 +1,7 @@
 package testing
 
-import org.gradle.api.tasks.testing.Test
 import java.io.File
+import org.gradle.api.tasks.testing.Test
 
 fun Iterable<Test>.binResultsDirList() = map {
     it.binResultsDir

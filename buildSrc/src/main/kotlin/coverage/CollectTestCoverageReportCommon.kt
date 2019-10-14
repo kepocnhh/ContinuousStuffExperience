@@ -1,13 +1,20 @@
 package coverage
 
+import java.io.File
 import org.gradle.api.Project
 import org.gradle.kotlin.dsl.task
 import org.gradle.testing.jacoco.tasks.JacocoReport
-import testCoverageReportPath
-import java.io.File
 import output
 import srcDirs
-import util.*
+import testCoverageReportPath
+import util.containsByName
+import util.digestSha512
+import util.hasPlugin
+import util.listFilesRecurse
+import util.rewrite
+import util.sortedByAbsolutePath
+import util.sourceSets
+import util.tasksWithType
 
 val Project.testCoverageReportSignaturePath get() = "$testCoverageReportPath/signature"
 val Project.testCoverageReportHtmlPath get() = "$testCoverageReportPath/html"
@@ -15,9 +22,7 @@ val Project.testCoverageReportXmlPath get() = "$testCoverageReportPath/xml/repor
 
 fun Project.rewriteTestCoverageReportSignature() {
     val files = File(testCoverageReportPath).listFilesRecurse {
-        !it.isDirectory
-            && !it.name.contains("jacoco-sessions")
-            && it.name.endsWith(".html")
+        !it.isDirectory && !it.name.contains("jacoco-sessions") && it.name.endsWith(".html")
     }
     val result = files.sortedByAbsolutePath().fold("") { accumulator, file ->
         accumulator + file.readText()
@@ -48,7 +53,7 @@ fun Project.createCollectTestCoverageReportTask(
         doLast {
             rewriteTestCoverageReportSignature()
             val testCoverageResult = getTestCoverageResult(testCoverageReportFile)
-            println("\ttest coverage result: " + (100*testCoverageResult).toLong().toString() + "%")
+            println("\ttest coverage result: " + (100 * testCoverageResult).toLong().toString() + "%")
         }
     }
 }

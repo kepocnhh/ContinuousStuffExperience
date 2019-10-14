@@ -1,7 +1,7 @@
 package util
 
 import java.security.MessageDigest
-import java.util.*
+import java.util.Locale
 
 private const val HEX_CHARS = "0123456789ABCDEF"
 
@@ -21,7 +21,7 @@ private fun ByteArray.toHexString(): String {
 }
 
 fun String.digest(type: DigestType): String {
-    val bytes = when(type) {
+    val bytes = when (type) {
         DigestType.SHA_512 -> messageDigestSha512.digest(toByteArray())
     }
     return bytes.toHexString()

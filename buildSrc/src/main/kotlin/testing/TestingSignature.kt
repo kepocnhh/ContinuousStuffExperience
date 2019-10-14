@@ -1,26 +1,26 @@
 package testing
 
 import groovy.util.XmlNodePrinter
-import util.forEachFile
-import util.forEachNode
-import util.parseXml
 import java.io.File
 import java.io.PrintWriter
 import java.io.StringWriter
+import util.forEachFile
+import util.forEachNode
+import util.parseXml
 
 private fun getXmlsTestResultDirs(files: Iterable<File>): List<File> {
     val result = mutableListOf<File>()
     val endsWithBinary = "/binary"
     files.forEach {
-        if(it.absolutePath.endsWith(endsWithBinary)) {
+        if (it.absolutePath.endsWith(endsWithBinary)) {
             val absolutePath = it.absolutePath
             val path = absolutePath.substring(
                 startIndex = 0,
                 endIndex = absolutePath.length - endsWithBinary.length
             )
             File(path).apply {
-                if(exists()) forEachFile { file ->
-                    if(file.name.endsWith(".xml")) result.add(file)
+                if (exists()) forEachFile { file ->
+                    if (file.name.endsWith(".xml")) result.add(file)
                 }
             }
         }

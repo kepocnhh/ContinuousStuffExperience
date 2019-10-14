@@ -6,7 +6,7 @@ import java.nio.charset.Charset
 fun File.listFilesRecurse(predicate: (File) -> Boolean): List<File> {
     val result = mutableListOf<File>()
     forEachFileRecurse {
-        if(predicate(it)) result.add(it)
+        if (predicate(it)) result.add(it)
     }
     return result
 }
@@ -20,13 +20,13 @@ fun File.listFilesRecurse(): List<File> {
 }
 
 fun File.forEachFileRecurse(action: (File) -> Unit) {
-    if(isDirectory) listFiles()?.forEach {
+    if (isDirectory) listFiles()?.forEach {
         it.forEachFileRecurse(action)
     } else action(this)
 }
 
 fun File.forEachFile(action: (File) -> Unit) {
-    if(isDirectory) listFiles()?.forEach(action)
+    if (isDirectory) listFiles()?.forEach(action)
 }
 
 fun List<File>.sortedByAbsolutePath() = sortedBy { it.absolutePath }
