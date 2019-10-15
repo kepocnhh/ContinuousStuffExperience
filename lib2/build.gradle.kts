@@ -1,5 +1,5 @@
 plugins {
-    kotlin("jvm")
+    id(Plugin.kotlinJvm.name)
     id(Plugin.testCoverage.name)
 }
 
@@ -11,7 +11,7 @@ jacoco {
     toolVersion = Version.testCoverage
 }
 
-tasks.withType(JacocoReport::class) {
+tasks.withType<JacocoReport> {
     reports {
         xml.isEnabled = true
         html.isEnabled = true
@@ -19,7 +19,7 @@ tasks.withType(JacocoReport::class) {
     }
 }
 
-tasks.withType(JacocoCoverageVerification::class) {
+tasks.withType<JacocoCoverageVerification> {
     violationRules {
         rule {
             limit {
@@ -35,6 +35,6 @@ dependencies {
     testImplementation(Dependency.testing.notation())
 }
 
-tasks.withType(Test::class) {
+tasks.withType<Test> {
   useJUnitPlatform()
 }

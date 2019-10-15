@@ -20,7 +20,7 @@ class Lib1Class {
     val paramZero = 0
     val paramTrue = if(false) false else true
 
-    @Suppress("deprecation")
+//    @Suppress("deprecation")
     val paramDate = Date(2019, 5, 5)
 
     /**

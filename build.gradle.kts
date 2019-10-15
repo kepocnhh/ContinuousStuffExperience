@@ -4,6 +4,7 @@ import documentation.documentationHtmlPath
 import documentation.rewriteDocumentationSignature
 import io.gitlab.arturbosch.detekt.Detekt
 import org.jetbrains.dokka.gradle.DokkaTask
+import org.jetbrains.kotlin.gradle.tasks.AbstractKotlinCompile
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import readme.createCheckReadmeTask
 import testing.createCollectTestingReportTask
@@ -68,7 +69,7 @@ detekt {
 }
 
 task<Detekt>("runDocumentationVerification") {
-    setSource(subprojects.withPlugin("kotlin").srcDirs("main"))
+    source = files(subprojects.withPlugin("kotlin").srcDirs("main")).asFileTree
     config = files("buildSrc/src/main/resources/detekt/config/documentation.yml")
     reports {
         html.enabled = false
@@ -81,8 +82,24 @@ task<Delete>("clean") {
     delete = setOf(rootProject.buildDir)
 }
 
-allTasksWithType<KotlinCompile>().forEach {
-    it.kotlinOptions.allWarningsAsErrors = true
+subprojects.withPlugin("kotlin").forEach { project ->
+    project.task<KotlinCompile>("checkWarning") {
+        AbstractKotlinCompile::class.java.methods.single {
+            it.name == "setSourceSetName\$kotlin_gradle_plugin"
+        }.invoke(this, "main")
+        outputs.upToDateWhen { false }
+        val tasks = project.tasks.withType(AbstractKotlinCompile::class.java).filter { it != this }
+        dependsOn(tasks)
+        source = files(tasks.source()).asFileTree
+        destinationDir = File(project.buildDir.absolutePath + "/kotlin/checkWarning")
+        classpath = files(tasks.classpath())
+        kotlinOptions.allWarningsAsErrors = true
+    }
+}
+
+task<DefaultTask>("checkWarning") {
+    val tasks = subprojects.tasksWithType<KotlinCompile>().filterByName("checkWarning")
+    dependsOn(tasks)
 }
 
 task<DefaultTask>("compile") {

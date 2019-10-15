@@ -32,41 +32,56 @@ fi
 
 echo $TEST_COVERAGE_MESSAGE
 
-DOCUMENTATION_MESSAGE="- documentation "
-if [ $DOCUMENTATION_VERIFICATION_STATUS -ne 0 ]
-then
-  DOCUMENTATION_MESSAGE+=$emoji_grey_exclamation
-else
-  DOCUMENTATION_MESSAGE+=$emoji_heavy_check_mark
-fi
-if test -z "DOCUMENTATION_URL"
-then
-  echo "no documentation provided"
-else
-  DOCUMENTATION_MESSAGE+=" [link]($DOCUMENTATION_URL)"
-fi
-
-echo $DOCUMENTATION_MESSAGE
-
-STYLE_MESSAGE="- style "
-if [ $STYLE_VERIFICATION_STATUS -ne 0 ]
-then
-  STYLE_MESSAGE+=$emoji_heavy_exclamation_mark
-else
-  STYLE_MESSAGE+=$emoji_heavy_check_mark
-fi
-
-echo $STYLE_MESSAGE
-
 MESSAGE="$TELEGRAM_MESSAGE_PREFIX"
 MESSAGE+="${newline}${newline}"
 MESSAGE+="$TESTING_MESSAGE"
 MESSAGE+="${newline}"
 MESSAGE+="$TEST_COVERAGE_MESSAGE"
-MESSAGE+="${newline}"
-MESSAGE+="$DOCUMENTATION_MESSAGE"
-MESSAGE+="${newline}"
-MESSAGE+="$STYLE_MESSAGE"
+
+#__________ __________ documentation >
+
+if [ $DOCUMENTATION_VERIFICATION_STATUS -ne 0 ] && [ -z "$DOCUMENTATION_URL" ]
+then
+  MESSAGE+="${newline}"
+  MESSAGE+="- documentation $emoji_heavy_exclamation_mark"
+  echo "documentation is not complete"
+  echo "no documentation provided"
+elif [ $DOCUMENTATION_VERIFICATION_STATUS -ne 0 ]
+then
+  MESSAGE+="${newline}"
+  MESSAGE+="- documentation $emoji_grey_exclamation [link]($DOCUMENTATION_URL)"
+  echo "documentation is not complete"
+elif [ -z "$DOCUMENTATION_URL" ]
+then
+  MESSAGE+="${newline}"
+  MESSAGE+="- documentation $emoji_grey_exclamation"
+  echo "no documentation provided"
+else
+  MESSAGE+="${newline}"
+  MESSAGE+="- [documentation]($DOCUMENTATION_URL)"
+fi
+
+#__________ __________ documentation <
+
+#__________ __________ warning >
+
+if [ $CHECK_WARNING_STATUS -ne 0 ]
+then
+  MESSAGE+="${newline}"
+  MESSAGE+="- warnings in code $emoji_heavy_exclamation_mark"
+fi
+
+#__________ __________ warning <
+
+#__________ __________ code style >
+
+if [ $STYLE_VERIFICATION_STATUS -ne 0 ]
+then
+  MESSAGE+="${newline}"
+  MESSAGE+="- code style $emoji_heavy_exclamation_mark"
+fi
+
+#__________ __________ code style <
 
 if [ $BUILD_SUCCESS -ne 0 ]
 then
