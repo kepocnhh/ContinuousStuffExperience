@@ -1,0 +1,4 @@
+$dokka.format:html
+$dokka.linkExtension:html
+$dokka.location:continuous.stuff.experience$find(kotlin.reflect.KClass((continuous.stuff.experience.find.T)), kotlin.Function1((continuous.stuff.experience.find.T, kotlin.Boolean)))continuous.stuff.experience/kotlin.reflect.-k-class/find.html
+continuous.stuff.experience
