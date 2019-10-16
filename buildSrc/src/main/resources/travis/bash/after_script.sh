@@ -83,6 +83,16 @@ fi
 
 #__________ __________ code style <
 
+#__________ __________ readme >
+
+if [ $CHECK_README_STATUS -ne 0 ]
+then
+  MESSAGE+="${newline}"
+  MESSAGE+="- README file is not relevant $emoji_heavy_exclamation_mark"
+fi
+
+#__________ __________ readme <
+
 if [ $BUILD_SUCCESS -ne 0 ]
 then
   MESSAGE+="${newline}"

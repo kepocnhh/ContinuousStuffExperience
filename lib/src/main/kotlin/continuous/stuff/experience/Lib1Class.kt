@@ -1,6 +1,6 @@
 package continuous.stuff.experience
 
-import java.util.*
+import java.util.Date
 
 /**
  * This class is for researching. This text is an example of documentation.
@@ -18,9 +18,9 @@ class Lib1Class {
      */
     val paramType = Type.TYPE_1
     val paramZero = 0
-    val paramTrue = if(false) false else true
+    val paramTrue = if (false) false else true
 
-//    @Suppress("deprecation")
+    @Suppress("deprecation")
     val paramDate = Date(2019, 5, 5)
 
     /**

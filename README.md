@@ -1,6 +1,6 @@
-[![testing](https://img.shields.io/static/v1?label=testing&message=passed&labelColor=212121&color=00c853&style=flat)](https://kepocnhh.github.io/ContinuousStuffExperience/reports/testing/c7d19fb7aa706de8f3e7aab4899080788cbfcb6e4eabbef7014945c30506fa172457a99d9d184c955556dda164ddb423a6e5d9d29cc36e409c07bfd4b10c2aaf)
-[![test coverage](https://img.shields.io/static/v1?label=test%20coverage&message=86%25&labelColor=212121&color=00c853&style=flat)](https://kepocnhh.github.io/ContinuousStuffExperience/reports/coverage/4dbb71b79b458d64f75656c7c56f295f2e45213c95288b6bdea0f71584cdd3267e3378beed78dbb6c9cdc90f31c27a0ac62548fe253194f587e993a5f2827667)
-[![documentation](https://img.shields.io/badge/documentation-2962ff.svg?style=flat)](https://kepocnhh.github.io/ContinuousStuffExperience/documentation/5082f1ae61e80bc659d565056e88303b9ce83aecb3b8920365cd97713639a09ccb1abb329b824d3e0325f05d62a54df5eff07f70b34336d0d546efac113950fc)
+[![testing](https://img.shields.io/static/v1?label=testing&message=passed&labelColor=212121&color=00c853&style=flat)](https://kepocnhh.github.io/ContinuousStuffExperience/reports/testing/31f80a35a35e9d4cfc485786fbd1a18bd10315814e23848363e4ed02de33f28dab3b8d4bbba3b0cca0ede6c51d6dc6c6467cc4032b56cbe2510b6d273417010e)
+[![test coverage](https://img.shields.io/static/v1?label=test%20coverage&message=100%25&labelColor=212121&color=00c853&style=flat)](https://kepocnhh.github.io/ContinuousStuffExperience/reports/coverage/0e47d0ead364a7bfde07da23be9ee1a47e95b07f7496fcd90d5c6143bf6a0190d6a57dcef8ff05cb675cd92a0daebf256a07b548670110e87e9b1d3cc35d497e)
+[![documentation](https://img.shields.io/badge/documentation-2962ff.svg?style=flat)](https://kepocnhh.github.io/ContinuousStuffExperience/documentation/47b5fa72357873b58c3ee5ad4ed5f95baa79f3e648970a8cec3f33d6e2143713ea2ecdc745220f3bfb6ed8f8b815b1f5a15eecfc74383b2a83482f8188886fb7)
 [![code style](https://img.shields.io/static/v1?label=code%20style&message=Kotlin%20Coding%20Conventions&labelColor=212121&color=2962ff&style=flat)](https://kotlinlang.org/docs/reference/coding-conventions.html)
 
 # ContinuousStuffExperience
@@ -13,7 +13,7 @@ Testing continuous integration and continuous delivery and / or continuous deplo
 - [x] notifications | [Telegram Bot API](https://core.telegram.org/bots/api/)
 - [x] code documentation generate ([dokka](https://github.com/Kotlin/dokka/)) / verification ([detekt](https://github.com/arturbosch/detekt/))
 - [x] code style verification | [ktlint](https://ktlint.github.io/)
-- [ ] check warnings
+- [x] check warnings (only kotlin `allWarningsAsErrors = true`)
 - [ ] check `todo`/`fixme`
 - [ ] code analysis
 - [ ] check license
