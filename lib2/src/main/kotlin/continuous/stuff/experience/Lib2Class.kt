@@ -19,6 +19,23 @@ class Lib2Class {
     }
 
     /**
+     * Returns the next element, or `null` if the iterable is empty.
+     * @param T some of `Any`
+     * @param iterable some `Iterable` of `T`
+     * @see Iterable
+     * @see Any
+     * @return next element or `null`
+     * @version 0.00.01
+     * @since ContinuousStuffExperience:lib2 0.00.01
+     */
+    fun <T : Any> nextOrNull(iterable: Iterable<T>): T? {
+        return iterable.iterator().run {
+            if (hasNext()) next()
+            else null
+        }
+    }
+
+    /**
      * This method is for researching. This text is an example of documentation.
      * @return constant string with the name of the module, class and itself
      * @version 0.00.01

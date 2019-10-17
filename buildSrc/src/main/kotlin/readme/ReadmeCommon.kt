@@ -31,7 +31,7 @@ internal fun getTestCoverageBadge(signaturePath: String, reportXmlPath: String):
     )
     val hash = File(signaturePath).readText()
     check(hash.isNotEmpty()) { "Test coverage signature must not be empty!" }
-    val reportUrl = "${Repository.url}/reports/coverage/$hash"
+    val reportUrl = "${Repository.url}/reports/coverage/$hash/"
     return "[$testCoveragePrefix($badgeUrl)]($reportUrl)"
 }
 
@@ -45,14 +45,14 @@ internal fun getTestingBadge(signaturePath: String, reportHtmlPath: String): Str
     )
     val hash = File(signaturePath).readText()
     check(hash.isNotEmpty()) { "Testing signature must not be empty!" }
-    val reportUrl = "${Repository.url}/reports/testing/$hash"
+    val reportUrl = "${Repository.url}/reports/testing/$hash/"
     return "[$testingPrefix($badgeUrl)]($reportUrl)"
 }
 
 internal fun getDocumentationBadge(signaturePath: String): String {
     val hash = File(signaturePath).readText()
     check(hash.isNotEmpty()) { "Documentation signature must not be empty!" }
-    val url = "${Repository.url}/documentation/$hash"
+    val url = "${Repository.url}/documentation/$hash/"
     val badgeUrl = createBadgeUrl(
         message = "documentation",
         color = COLOR_BLUE
