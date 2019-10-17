@@ -156,7 +156,7 @@ fun Project.createFixReadmeTask(
             ).also {
                 results.add(it)
             }
-            if(results.firstOrNull { it != ReplaceType.NONE } != null) {
+            if (results.firstOrNull { it != ReplaceType.NONE } != null) {
                 val text = lines.reduce { accumulator, line -> accumulator + "\n" + line }
                 verifyFileText(readmeFullPath, text)
                 file.delete()
@@ -177,15 +177,15 @@ private fun MutableList<String>.replaceLine(
             "File text must contains only one line with \"$substring\""
         }
     }.firstOrNull()
-    if(line != null) {
-        if(line == newLine) return ReplaceType.NONE
+    if (line != null) {
+        if (line == newLine) return ReplaceType.NONE
         line.apply {
             check(indexOf(substring) == lastIndexOf(substring)) {
                 "Line must contains only one \"$substring\""
             }
         }
-        for(i in 0 until size) {
-            if(get(i) == line) {
+        for (i in 0 until size) {
+            if (get(i) == line) {
                 set(i, newLine)
                 return ReplaceType.REPLACED
             }
