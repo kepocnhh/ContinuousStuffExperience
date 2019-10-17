@@ -17,7 +17,7 @@ fi
 echo $TESTING_MESSAGE
 
 TEST_COVERAGE_MESSAGE="- test coverage "
-if [ $TEST_COVERAGE_VERIFICATION_STATUS -ne 0 ]
+if [ $VERIFY_TEST_COVERAGE_STATUS -ne 0 ]
 then
   TEST_COVERAGE_MESSAGE+=$emoji_heavy_exclamation_mark
 else
@@ -40,13 +40,13 @@ MESSAGE+="$TEST_COVERAGE_MESSAGE"
 
 #__________ __________ documentation >
 
-if [ $DOCUMENTATION_VERIFICATION_STATUS -ne 0 ] && [ -z "$DOCUMENTATION_URL" ]
+if [ $VERIFY_DOCUMENTATION_STATUS -ne 0 ] && [ -z "$DOCUMENTATION_URL" ]
 then
   MESSAGE+="${newline}"
   MESSAGE+="- documentation $emoji_heavy_exclamation_mark"
   echo "documentation is not complete"
   echo "no documentation provided"
-elif [ $DOCUMENTATION_VERIFICATION_STATUS -ne 0 ]
+elif [ $VERIFY_DOCUMENTATION_STATUS -ne 0 ]
 then
   MESSAGE+="${newline}"
   MESSAGE+="- documentation $emoji_grey_exclamation [link]($DOCUMENTATION_URL)"
@@ -63,19 +63,9 @@ fi
 
 #__________ __________ documentation <
 
-#__________ __________ warning >
-
-if [ $CHECK_WARNING_STATUS -ne 0 ]
-then
-  MESSAGE+="${newline}"
-  MESSAGE+="- warnings in code $emoji_heavy_exclamation_mark"
-fi
-
-#__________ __________ warning <
-
 #__________ __________ code style >
 
-if [ $STYLE_VERIFICATION_STATUS -ne 0 ]
+if [ $VERIFY_STYLE_STATUS -ne 0 ]
 then
   MESSAGE+="${newline}"
   MESSAGE+="- code style $emoji_heavy_exclamation_mark"
@@ -83,9 +73,19 @@ fi
 
 #__________ __________ code style <
 
+#__________ __________ warning >
+
+if [ $VERIFY_WARNING_STATUS -ne 0 ]
+then
+  MESSAGE+="${newline}"
+  MESSAGE+="- warnings in code $emoji_heavy_exclamation_mark"
+fi
+
+#__________ __________ warning <
+
 #__________ __________ readme >
 
-if [ $CHECK_README_STATUS -ne 0 ]
+if [ $VERIFY_README_STATUS -ne 0 ]
 then
   MESSAGE+="${newline}"
   MESSAGE+="- README file is not relevant $emoji_heavy_exclamation_mark"

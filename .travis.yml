@@ -13,11 +13,11 @@ before_script:
 script:
   - gradle runTest || TESTING_STATUS=$?; $(exit $TESTING_STATUS)
   - gradle collectTestingReport collectTestCoverageReport collectDocumentation
-  - gradle verifyTestCoverage || TEST_COVERAGE_VERIFICATION_STATUS=$?; $(exit $TEST_COVERAGE_VERIFICATION_STATUS)
-  - gradle verifyDocumentation || DOCUMENTATION_VERIFICATION_STATUS=1; $(exit $DOCUMENTATION_VERIFICATION_STATUS)
-  - gradle verifyStyle || STYLE_VERIFICATION_STATUS=$?; $(exit $STYLE_VERIFICATION_STATUS)
-  - gradle verifyWarning || CHECK_WARNING_STATUS=$?; $(exit $CHECK_WARNING_STATUS)
-  - gradle verifyReadme || CHECK_README_STATUS=$?; $(exit $CHECK_README_STATUS)
+  - gradle verifyTestCoverage || VERIFY_TEST_COVERAGE_STATUS=$?; $(exit $VERIFY_TEST_COVERAGE_STATUS)
+  - gradle verifyDocumentation || VERIFY_DOCUMENTATION_STATUS=1; $(exit $VERIFY_DOCUMENTATION_STATUS)
+  - gradle verifyStyle || VERIFY_STYLE_STATUS=$?; $(exit $VERIFY_STYLE_STATUS)
+  - gradle verifyWarning || VERIFY_WARNING_STATUS=$?; $(exit $VERIFY_WARNING_STATUS)
+  - gradle verifyReadme || VERIFY_README_STATUS=$?; $(exit $VERIFY_README_STATUS)
   - source ${BASH_PATH}/gh_pages_report.sh || GH_PAGES_REPORT_STATUS=$?; $(exit $GH_PAGES_REPORT_STATUS)
 
 after_failure:

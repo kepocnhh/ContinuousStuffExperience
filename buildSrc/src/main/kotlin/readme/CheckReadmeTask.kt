@@ -16,6 +16,14 @@ import org.gradle.kotlin.dsl.task
 import testing.getTestingResult
 import testing.testingReportHtmlIndexPath
 import testing.testingReportSignaturePath
+import util.log
+
+private const val testCoveragePrefix = "![test coverage]"
+private const val testingPrefix = "![testing]"
+private const val documentationPrefix = "![documentation]"
+private const val codeStylePrefix = "![code style]"
+
+private const val DEFAULT_README_FILE_PATH = "./README.md"
 
 private fun getTestCoverageBadge(signaturePath: String, reportXmlPath: String): String {
     val result = getTestCoverageResult(File(reportXmlPath))
@@ -27,7 +35,7 @@ private fun getTestCoverageBadge(signaturePath: String, reportXmlPath: String): 
     val hash = File(signaturePath).readText()
     check(hash.isNotEmpty()) { "Test coverage signature must not be empty!" }
     val reportUrl = "${Repository.url}/reports/coverage/$hash"
-    return "[![test coverage]($badgeUrl)]($reportUrl)"
+    return "[$testCoveragePrefix($badgeUrl)]($reportUrl)"
 }
 
 private fun getTestingBadge(signaturePath: String, reportHtmlPath: String): String {
@@ -41,7 +49,7 @@ private fun getTestingBadge(signaturePath: String, reportHtmlPath: String): Stri
     val hash = File(signaturePath).readText()
     check(hash.isNotEmpty()) { "Testing signature must not be empty!" }
     val reportUrl = "${Repository.url}/reports/testing/$hash"
-    return "[![testing]($badgeUrl)]($reportUrl)"
+    return "[$testingPrefix($badgeUrl)]($reportUrl)"
 }
 
 fun getDocumentationBadge(signaturePath: String): String {
@@ -52,46 +60,143 @@ fun getDocumentationBadge(signaturePath: String): String {
         message = "documentation",
         color = COLOR_BLUE
     )
-    return "[![documentation]($badgeUrl)]($url)"
+    return "[$documentationPrefix($badgeUrl)]($url)"
+}
+
+fun getCodeStyleBadge(): String {
+    val url = "https://kotlinlang.org/docs/reference/coding-conventions.html"
+    val badgeUrl = createBadgeUrl(
+        label = "code%20style",
+        message = "Kotlin%20Coding%20Conventions",
+        colorMessage = COLOR_BLUE
+    )
+    return "[$codeStylePrefix($badgeUrl)]($url)"
 }
 
 fun Project.createVerifyReadmeTask(
     name: String = "verifyReadme",
-    readmeFullPath: String = "./README.md"
+    readmeFullPath: String = DEFAULT_README_FILE_PATH
 ) {
-    val errorMessagePrefix = "File readme by path: \"$readmeFullPath\""
     task<DefaultTask>(name) {
         doLast {
-            val text = File(readmeFullPath).readText()
-            check(text.isNotEmpty()) { "$errorMessagePrefix must not be empty!" }
-            val testCoverageBadge = getTestCoverageBadge(
-                testCoverageReportSignaturePath,
-                testCoverageReportXmlPath
-            )
-            check(text.contains(testCoverageBadge)) {
-                "$errorMessagePrefix must contains test coverage result badge:\n$testCoverageBadge"
+            verifyFileText(readmeFullPath, File(readmeFullPath).readText())
+        }
+    }
+}
+
+private fun Project.verifyFileText(fileFullPath: String, text: String) {
+    val errorMessagePrefix = "File by path: \"$fileFullPath\""
+    check(text.isNotEmpty()) { "$errorMessagePrefix must not be empty!" }
+    val testCoverageBadge = getTestCoverageBadge(
+        testCoverageReportSignaturePath,
+        testCoverageReportXmlPath
+    )
+    check(text.contains(testCoverageBadge)) {
+        "$errorMessagePrefix must contains test coverage result badge:\n$testCoverageBadge"
+    }
+    val testingBadge = getTestingBadge(
+        testingReportSignaturePath,
+        testingReportHtmlIndexPath
+    )
+    check(text.contains(testingBadge)) {
+        "$errorMessagePrefix must contains testing result badge:\n$testingBadge"
+    }
+    val documentationBadge = getDocumentationBadge(
+        documentationSignaturePath
+    )
+    check(text.contains(documentationBadge)) {
+        "$errorMessagePrefix must contains documentation badge:\n$documentationBadge"
+    }
+    val codeStyleBadge = getCodeStyleBadge()
+    check(text.contains(codeStyleBadge)) {
+        "$errorMessagePrefix must contains documentation badge:\n$codeStyleBadge"
+    }
+}
+
+fun Project.createFixReadmeTask(
+    name: String = "fixReadme",
+    readmeFullPath: String = DEFAULT_README_FILE_PATH
+) {
+    val messagePrefix = "File readme by path: \"$readmeFullPath\""
+    task<DefaultTask>(name) {
+        doLast {
+            val file = File(readmeFullPath)
+            val lines = file.readLines().toMutableList()
+            check(lines.isNotEmpty() && !lines.all { it.isEmpty() }) { "$messagePrefix must not be empty!" }
+            val results = mutableListOf<ReplaceType>()
+            lines.replaceLine(
+                substring = testCoveragePrefix,
+                newLine = getTestCoverageBadge(
+                    testCoverageReportSignaturePath,
+                    testCoverageReportXmlPath
+                )
+            ).also {
+                results.add(it)
             }
-            val testingBadge = getTestingBadge(
-                testingReportSignaturePath,
-                testingReportHtmlIndexPath
-            )
-            check(text.contains(testingBadge)) {
-                "$errorMessagePrefix must contains testing result badge:\n$testingBadge"
+            lines.replaceLine(
+                substring = testingPrefix,
+                newLine = getTestingBadge(
+                    testingReportSignaturePath,
+                    testingReportHtmlIndexPath
+                )
+            ).also {
+                results.add(it)
             }
-            val documentationBadge = getDocumentationBadge(
-                documentationSignaturePath
-            )
-            check(text.contains(documentationBadge)) {
-                "$errorMessagePrefix must contains documentation badge:\n$documentationBadge"
+            lines.replaceLine(
+                substring = documentationPrefix,
+                newLine = getDocumentationBadge(
+                    documentationSignaturePath
+                )
+            ).also {
+                results.add(it)
             }
-            val codeStyleBadge = "[![code style](" + createBadgeUrl(
-                label = "code%20style",
-                message = "Kotlin%20Coding%20Conventions",
-                colorMessage = COLOR_BLUE
-            ) + ")](https://kotlinlang.org/docs/reference/coding-conventions.html)"
-            check(text.contains(codeStyleBadge)) {
-                "$errorMessagePrefix must contains documentation badge:\n$codeStyleBadge"
+            lines.replaceLine(
+                substring = codeStylePrefix,
+                newLine = getCodeStyleBadge()
+            ).also {
+                results.add(it)
+            }
+            if(results.firstOrNull { it != ReplaceType.NONE } != null) {
+                val text = lines.reduce { accumulator, line -> accumulator + "\n" + line }
+                verifyFileText(readmeFullPath, text)
+                file.delete()
+                file.writeText(text)
+            } else {
+                log("$messagePrefix already fixed")
             }
         }
     }
+}
+
+private fun MutableList<String>.replaceLine(
+    substring: CharSequence,
+    newLine: String
+): ReplaceType {
+    val line = filter { it.contains(substring) }.apply {
+        check(size < 2) {
+            "File text must contains only one line with \"$substring\""
+        }
+    }.firstOrNull()
+    if(line != null) {
+        if(line == newLine) return ReplaceType.NONE
+        line.apply {
+            check(indexOf(substring) == lastIndexOf(substring)) {
+                "Line must contains only one \"$substring\""
+            }
+        }
+        for(i in 0 until size) {
+            if(get(i) == line) {
+                set(i, newLine)
+                return ReplaceType.REPLACED
+            }
+        }
+        throw IllegalStateException("not possible")
+    } else {
+        set(0, newLine)
+        return ReplaceType.ADDED
+    }
+}
+
+private enum class ReplaceType {
+    REPLACED, ADDED, NONE
 }

@@ -6,6 +6,7 @@ import io.gitlab.arturbosch.detekt.Detekt
 import org.jetbrains.dokka.gradle.DokkaTask
 import org.jetbrains.kotlin.gradle.tasks.AbstractKotlinCompile
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+import readme.createFixReadmeTask
 import readme.createVerifyReadmeTask
 import testing.createCollectTestingReportTask
 import testing.createRunTestTask
@@ -122,3 +123,4 @@ task<DefaultTask>("verifyTestCoverage") {
 }
 
 createVerifyReadmeTask()
+createFixReadmeTask()
