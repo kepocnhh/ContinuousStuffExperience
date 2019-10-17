@@ -106,7 +106,7 @@ else
     echo "adding failed!"
     exit $ILLEGAL_STATE
   fi
-	git -C $LOCAL_PATH commit -m "add $testingSignature documentation" || ILLEGAL_STATE=$?
+	git -C $LOCAL_PATH commit -m "add $documentationSignature documentation" || ILLEGAL_STATE=$?
   if [ $ILLEGAL_STATE -ne 0 ]; then
     echo "commiting failed!"
     exit $ILLEGAL_STATE
