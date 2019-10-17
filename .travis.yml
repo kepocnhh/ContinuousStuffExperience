@@ -23,5 +23,8 @@ script:
 after_failure:
   - BUILD_SUCCESS=1
 
+after_success:
+  - bash ${BASH_PATH}/after_success.sh
+
 after_script:
   - bash ${BASH_PATH}/after_script.sh

@@ -14,11 +14,11 @@ Testing continuous integration and continuous delivery and / or continuous deplo
 - [x] code documentation generate ([dokka](https://github.com/Kotlin/dokka/)) / verification ([detekt](https://github.com/arturbosch/detekt/))
 - [x] code style verification | [ktlint](https://ktlint.github.io/)
 - [x] check warnings (only kotlin `allWarningsAsErrors = true`)
+- [ ] automatic merge
 - [ ] check `todo`/`fixme`
 - [ ] code analysis
 - [ ] check license
 - [ ] check/increment version
 - [ ] blocking pull/merge requests
-- [ ] automatic merge
 - [ ] assembly
 - [ ] delivery

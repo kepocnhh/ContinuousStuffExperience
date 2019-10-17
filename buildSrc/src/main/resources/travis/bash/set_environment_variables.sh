@@ -11,6 +11,9 @@ export REPO_URL="https://github.com/$TRAVIS_REPO_SLUG"
 export GIT_HUB_PAGES_URL="https://${REPO_OWNER}.github.io/$REPO_NAME"
 export TRAVIS_URL="https://travis-ci.com/$TRAVIS_REPO_SLUG"
 
+export DEVELOP_BRANCH_NAME="dev"
+export MASTER_BRANCH_NAME="master"
+
 export TESTING_STATUS=0
 export VERIFY_TEST_COVERAGE_STATUS=0
 export VERIFY_DOCUMENTATION_STATUS=0
