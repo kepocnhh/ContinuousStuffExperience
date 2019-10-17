@@ -10,22 +10,19 @@ import coverage.testCoverageReportSignaturePath
 import coverage.testCoverageReportXmlPath
 import documentation.documentationSignaturePath
 import java.io.File
-import org.gradle.api.DefaultTask
 import org.gradle.api.Project
-import org.gradle.kotlin.dsl.task
 import testing.getTestingResult
 import testing.testingReportHtmlIndexPath
 import testing.testingReportSignaturePath
-import util.log
 
-private const val testCoveragePrefix = "![test coverage]"
-private const val testingPrefix = "![testing]"
-private const val documentationPrefix = "![documentation]"
-private const val codeStylePrefix = "![code style]"
+internal const val testCoveragePrefix = "![test coverage]"
+internal const val testingPrefix = "![testing]"
+internal const val documentationPrefix = "![documentation]"
+internal const val codeStylePrefix = "![code style]"
 
-private const val DEFAULT_README_FILE_PATH = "./README.md"
+internal const val DEFAULT_README_FILE_PATH = "./README.md"
 
-private fun getTestCoverageBadge(signaturePath: String, reportXmlPath: String): String {
+internal fun getTestCoverageBadge(signaturePath: String, reportXmlPath: String): String {
     val result = getTestCoverageResult(File(reportXmlPath))
     val badgeUrl = createBadgeUrl(
         label = "test%20coverage",
@@ -38,7 +35,7 @@ private fun getTestCoverageBadge(signaturePath: String, reportXmlPath: String): 
     return "[$testCoveragePrefix($badgeUrl)]($reportUrl)"
 }
 
-private fun getTestingBadge(signaturePath: String, reportHtmlPath: String): String {
+internal fun getTestingBadge(signaturePath: String, reportHtmlPath: String): String {
     val isPassed = getTestingResult(reportHtmlPath)
     val resultText = if (isPassed) "passed" else "failed"
     val badgeUrl = createBadgeUrl(
@@ -52,7 +49,7 @@ private fun getTestingBadge(signaturePath: String, reportHtmlPath: String): Stri
     return "[$testingPrefix($badgeUrl)]($reportUrl)"
 }
 
-fun getDocumentationBadge(signaturePath: String): String {
+internal fun getDocumentationBadge(signaturePath: String): String {
     val hash = File(signaturePath).readText()
     check(hash.isNotEmpty()) { "Documentation signature must not be empty!" }
     val url = "${Repository.url}/documentation/$hash"
@@ -63,7 +60,7 @@ fun getDocumentationBadge(signaturePath: String): String {
     return "[$documentationPrefix($badgeUrl)]($url)"
 }
 
-fun getCodeStyleBadge(): String {
+internal fun getCodeStyleBadge(): String {
     val url = "https://kotlinlang.org/docs/reference/coding-conventions.html"
     val badgeUrl = createBadgeUrl(
         label = "code%20style",
@@ -73,18 +70,7 @@ fun getCodeStyleBadge(): String {
     return "[$codeStylePrefix($badgeUrl)]($url)"
 }
 
-fun Project.createVerifyReadmeTask(
-    name: String = "verifyReadme",
-    readmeFullPath: String = DEFAULT_README_FILE_PATH
-) {
-    task<DefaultTask>(name) {
-        doLast {
-            verifyFileText(readmeFullPath, File(readmeFullPath).readText())
-        }
-    }
-}
-
-private fun Project.verifyFileText(fileFullPath: String, text: String) {
+internal fun Project.verifyFileText(fileFullPath: String, text: String) {
     val errorMessagePrefix = "File by path: \"$fileFullPath\""
     check(text.isNotEmpty()) { "$errorMessagePrefix must not be empty!" }
     val testCoverageBadge = getTestCoverageBadge(
@@ -113,62 +99,7 @@ private fun Project.verifyFileText(fileFullPath: String, text: String) {
     }
 }
 
-fun Project.createFixReadmeTask(
-    name: String = "fixReadme",
-    readmeFullPath: String = DEFAULT_README_FILE_PATH
-) {
-    val messagePrefix = "File readme by path: \"$readmeFullPath\""
-    task<DefaultTask>(name) {
-        doLast {
-            val file = File(readmeFullPath)
-            val lines = file.readLines().toMutableList()
-            check(lines.isNotEmpty() && !lines.all { it.isEmpty() }) { "$messagePrefix must not be empty!" }
-            val results = mutableListOf<ReplaceType>()
-            lines.replaceLine(
-                substring = testCoveragePrefix,
-                newLine = getTestCoverageBadge(
-                    testCoverageReportSignaturePath,
-                    testCoverageReportXmlPath
-                )
-            ).also {
-                results.add(it)
-            }
-            lines.replaceLine(
-                substring = testingPrefix,
-                newLine = getTestingBadge(
-                    testingReportSignaturePath,
-                    testingReportHtmlIndexPath
-                )
-            ).also {
-                results.add(it)
-            }
-            lines.replaceLine(
-                substring = documentationPrefix,
-                newLine = getDocumentationBadge(
-                    documentationSignaturePath
-                )
-            ).also {
-                results.add(it)
-            }
-            lines.replaceLine(
-                substring = codeStylePrefix,
-                newLine = getCodeStyleBadge()
-            ).also {
-                results.add(it)
-            }
-            if (results.firstOrNull { it != ReplaceType.NONE } != null) {
-                val text = lines.reduce { accumulator, line -> accumulator + "\n" + line }
-                verifyFileText(readmeFullPath, text)
-                file.delete()
-                file.writeText(text)
-            } else {
-                log("$messagePrefix already fixed")
-            }
-        }
-    }
-}
-
-private fun MutableList<String>.replaceLine(
+internal fun MutableList<String>.replaceLine(
     substring: CharSequence,
     newLine: String
 ): ReplaceType {
@@ -197,6 +128,6 @@ private fun MutableList<String>.replaceLine(
     }
 }
 
-private enum class ReplaceType {
+internal enum class ReplaceType {
     REPLACED, ADDED, NONE
 }
