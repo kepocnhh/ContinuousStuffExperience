@@ -1,6 +1,6 @@
 plugins {
     application
-    kotlin("jvm")
+    id(Plugin.kotlinJvm.name)
 }
 
 repositories {

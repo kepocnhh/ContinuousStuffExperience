@@ -1,3 +1,6 @@
+private const val jetbrainsGroup = "org.jetbrains"
+private const val kotlinGroup = "$jetbrainsGroup.kotlin"
+
 data class Dependency(
     val group: String,
     val name: String,
@@ -5,7 +8,7 @@ data class Dependency(
 ) {
     companion object {
         val kotlinGradlePlugin = Dependency(
-            group = "org.jetbrains.kotlin",
+            group = kotlinGroup,
             name = "kotlin-gradle-plugin",
             version = Version.kotlin
         )
@@ -20,7 +23,7 @@ data class Dependency(
             version = Version.kotlinLintHtmlReporter
         )
         val kotlinStdlib = Dependency(
-            group = "org.jetbrains.kotlin",
+            group = kotlinGroup,
             name = "kotlin-stdlib",
             version = Version.kotlin
         )
@@ -46,12 +49,16 @@ data class Plugin(
             version = Version.analysis
         )
         val documentation = Plugin(
-            name = "org.jetbrains.dokka",
+            name = "$jetbrainsGroup.dokka",
             version = Version.documentation
         )
         val testCoverage = Plugin(
             name = "org.gradle.jacoco",
             version = Version.testCoverage
+        )
+        val kotlinJvm = Plugin(
+            name = "$kotlinGroup.jvm",
+            version = Version.kotlin
         )
     }
 }

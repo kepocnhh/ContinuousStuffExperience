@@ -1,6 +1,7 @@
 package continuous.stuff.experience
 
 import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.assertNotNull
 import org.junit.jupiter.api.Test
 
 internal class Lib1ClassTest {
@@ -18,6 +19,21 @@ internal class Lib1ClassTest {
     @Test
     fun paramTypeTest() {
         assertEquals(Lib1Class().paramType, Lib1Class.Type.TYPE_1)
+    }
+
+    @Test
+    fun paramZeroTest() {
+        assertEquals(Lib1Class().paramZero, 0)
+    }
+
+    @Test
+    fun paramTrueTest() {
+        assertEquals(Lib1Class().paramTrue, true)
+    }
+
+    @Test
+    fun paramDateTest() {
+        assertNotNull(Lib1Class().paramDate)
     }
 
     @Test

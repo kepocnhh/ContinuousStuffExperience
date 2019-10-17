@@ -1,6 +1,7 @@
 package util
 
 import org.gradle.api.Project
+import org.gradle.api.Task
 import org.gradle.api.tasks.SourceSetContainer
 import org.gradle.kotlin.dsl.get
 import org.gradle.kotlin.dsl.the
@@ -8,6 +9,13 @@ import org.gradle.kotlin.dsl.the
 fun Project.hasPlugin(id: String) = pluginManager.hasPlugin(id)
 
 fun Project.sourceSet(name: String) = the<SourceSetContainer>()[name]!!
+
+fun Project.log(message: String) {
+    println("\t$name: $message")
+}
+fun Project.log(task: Task, message: String) {
+    println("\t$name:${task.name}: $message")
+}
 
 fun Iterable<Project>.withPlugin(id: String) = filter {
     it.pluginManager.hasPlugin(id)

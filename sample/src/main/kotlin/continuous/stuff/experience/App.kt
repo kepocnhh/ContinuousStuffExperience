@@ -8,6 +8,7 @@ package continuous.stuff.experience
  * @version 0.00.01
  * @since ContinuousStuffExperience:sample 0.00.01
  */
+
 fun main() {
     println("Hello continuous.stuff.experience")
     println("Lib1Class().m1() ${Lib1Class().m1()}")
