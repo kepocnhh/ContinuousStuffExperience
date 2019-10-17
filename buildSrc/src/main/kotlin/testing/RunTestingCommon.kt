@@ -8,8 +8,8 @@ import util.filterByName
 import util.log
 import util.tasksWithType
 
-fun Project.createRunTestsTask(
-    name: String = "runTests"
+fun Project.createRunTestTask(
+    name: String = "runTest"
 ) {
     task<DefaultTask>(name) {
         val tasks = subprojects.tasksWithType<Test>().filterByName("test")

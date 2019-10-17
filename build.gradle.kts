@@ -6,9 +6,9 @@ import io.gitlab.arturbosch.detekt.Detekt
 import org.jetbrains.dokka.gradle.DokkaTask
 import org.jetbrains.kotlin.gradle.tasks.AbstractKotlinCompile
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
-import readme.createCheckReadmeTask
+import readme.createVerifyReadmeTask
 import testing.createCollectTestingReportTask
-import testing.createRunTestsTask
+import testing.createRunTestTask
 import util.*
 
 buildscript {
@@ -38,7 +38,7 @@ dependencies {
     kotlinLint(Dependency.kotlinLintHtmlReporter.notation())
 }
 
-task<JavaExec>("runStyleVerification") {
+task<JavaExec>("verifyStyle") {
     classpath = kotlinLint
     main = "com.pinterest.ktlint.Main"
     args(
@@ -68,7 +68,7 @@ detekt {
     toolVersion = Version.analysis
 }
 
-task<Detekt>("runDocumentationVerification") {
+task<Detekt>("verifyDocumentation") {
     source = files(subprojects.withPlugin("kotlin").srcDirs("main")).asFileTree
     config = files("buildSrc/src/main/resources/detekt/config/documentation.yml")
     reports {
@@ -82,24 +82,24 @@ task<Delete>("clean") {
     delete = setOf(rootProject.buildDir)
 }
 
-subprojects.withPlugin("kotlin").forEach { project ->
-    project.task<KotlinCompile>("checkWarning") {
-        AbstractKotlinCompile::class.java.methods.single {
-            it.name == "setSourceSetName\$kotlin_gradle_plugin"
-        }.invoke(this, "main")
-        outputs.upToDateWhen { false }
-        val tasks = project.tasks.withType(AbstractKotlinCompile::class.java).filter { it != this }
-        dependsOn(tasks)
-        source = files(tasks.source()).asFileTree
-        destinationDir = File(project.buildDir.absolutePath + "/kotlin/checkWarning")
-        classpath = files(tasks.classpath())
-        kotlinOptions.allWarningsAsErrors = true
+task<DefaultTask>("verifyWarning") {
+    val dependsOnTasks = mutableListOf<KotlinCompile>()
+    subprojects.withPlugin("kotlin").forEach { project ->
+        project.task<KotlinCompile>("checkWarning") {
+            AbstractKotlinCompile::class.java.methods.single {
+                it.name == "setSourceSetName\$kotlin_gradle_plugin"
+            }.invoke(this, "main")
+            outputs.upToDateWhen { false }
+            val tasks = project.tasks.withType(AbstractKotlinCompile::class.java).filter { it != this }
+            dependsOn(tasks)
+            source = files(tasks.source()).asFileTree
+            destinationDir = File(project.buildDir.absolutePath + "/kotlin/checkWarning")
+            classpath = files(tasks.classpath())
+            kotlinOptions.allWarningsAsErrors = true
+            dependsOnTasks.add(this)
+        }
     }
-}
-
-task<DefaultTask>("checkWarning") {
-    val tasks = subprojects.tasksWithType<KotlinCompile>().filterByName("checkWarning")
-    dependsOn(tasks)
+    dependsOn(dependsOnTasks)
 }
 
 task<DefaultTask>("compile") {
@@ -113,12 +113,12 @@ task<DefaultTask>("compile") {
 
 createCollectTestingReportTask()
 
-createRunTestsTask()
+createRunTestTask()
 
 createCollectTestCoverageReportTask()
 
-task<DefaultTask>("runTestCoverageVerification") {
+task<DefaultTask>("verifyTestCoverage") {
     dependsOn(subprojects.tasksWithType<JacocoCoverageVerification>())
 }
 
-createCheckReadmeTask()
+createVerifyReadmeTask()

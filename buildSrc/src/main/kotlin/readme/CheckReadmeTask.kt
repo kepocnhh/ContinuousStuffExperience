@@ -55,8 +55,8 @@ fun getDocumentationBadge(signaturePath: String): String {
     return "[![documentation]($badgeUrl)]($url)"
 }
 
-fun Project.createCheckReadmeTask(
-    name: String = "checkReadme",
+fun Project.createVerifyReadmeTask(
+    name: String = "verifyReadme",
     readmeFullPath: String = "./README.md"
 ) {
     val errorMessagePrefix = "File readme by path: \"$readmeFullPath\""
