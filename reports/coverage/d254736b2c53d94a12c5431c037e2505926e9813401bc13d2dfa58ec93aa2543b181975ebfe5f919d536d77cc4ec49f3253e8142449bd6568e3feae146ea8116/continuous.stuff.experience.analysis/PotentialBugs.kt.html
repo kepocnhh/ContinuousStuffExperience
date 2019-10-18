@@ -1,0 +1,165 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>PotentialBugs.kt</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">ContinuousStuffExperience</a> &gt; <a href="index.source.html" class="el_package">continuous.stuff.experience.analysis</a> &gt; <span class="el_source">PotentialBugs.kt</span></div><h1>PotentialBugs.kt</h1><pre class="source lang-java linenums">package continuous.stuff.experience.analysis
+
+import java.util.Date
+
+/**
+ * This method is for testing Deprecation analysis.
+ * @see `ClosedRange&lt;Double&gt;.contains(Int)`
+ * @see Date
+ * @version 0.00.01
+ * @since ContinuousStuffExperience:lib 0.00.01
+ */
+private fun deprecationSample() {
+<span class="fc" id="L13">    val r = 1 in 0.0..5.0</span>
+<span class="fc" id="L14">    Date(2019, 5, 5)</span>
+<span class="fc" id="L15">}</span>
+// todo https://github.com/arturbosch/detekt/issues/2038
+// potential-bugs:Deprecation
+
+private enum class Color {
+    RED,
+    GREEN,
+    BLUE;
+
+<span class="fc" id="L24">    private fun privateTest() = Unit</span>
+}
+
+private fun whenExhaustive(c: Color) {
+<span class="nc" id="L28">    when (c) {</span>
+        Color.BLUE -&gt; {
+        }
+        Color.GREEN -&gt; {
+        }
+    }
+<span class="nc" id="L34">}</span>
+// todo
+// potential-bugs:MissingWhenCase
+
+private fun whenElseRedundant(c: Color) {
+<span class="nc" id="L39">    when (c) {</span>
+        Color.BLUE -&gt; {
+        }
+        Color.GREEN -&gt; {
+        }
+        Color.RED -&gt; {
+        }
+        else -&gt; {
+        }
+    }
+<span class="nc" id="L49">}</span>
+// todo
+// potential-bugs:RedundantElseInWhen
+
+/**
+ * This internal class is for using in when operator.
+ * @version 0.00.01
+ * @since ContinuousStuffExperience:lib 0.00.01
+ */
+private enum class SomeEnum {
+    ITEM_1,
+    ITEM_2,
+    ITEM_3,
+}
+
+/**
+ * This method is for sample [SomeEnum] in when operator.
+ * @see SomeEnum
+ * @version 0.00.01
+ * @since ContinuousStuffExperience:lib 0.00.01
+ */
+private fun whenSample() {
+<span class="nc" id="L71">    val whenEnum = SomeEnum.values().first()</span>
+<span class="nc bnc" id="L72" title="All 3 branches missed.">    when (whenEnum) {</span>
+        SomeEnum.ITEM_1 -&gt; {
+<span class="nc" id="L74">            println(&quot;it is item 1&quot;)</span>
+        }
+        SomeEnum.ITEM_2 -&gt; {
+<span class="nc" id="L77">            println(&quot;it is item 2&quot;)</span>
+        }
+//        WhenEnum.ITEM_2 -&gt; {//potential-bugs:DuplicateCaseInWhenExpression
+//            println(&quot;it is item 2&quot;)
+//        }
+    }
+<span class="nc" id="L83">}</span>
+
+<span class="nc" id="L85">private class VerifyEqualsHashCode {</span>
+//    private fun equals(other: String) = super.equals(other)//potential-bugs:WrongEqualsTypeParameter
+
+    override fun equals(other: Any?): Boolean {
+//        return true//potential-bugs:EqualsAlwaysReturnsTrueOrFalse
+<span class="nc" id="L90">        return when (other) {</span>
+<span class="nc bnc" id="L91" title="All 2 branches missed.">            is VerifyEqualsHashCode -&gt; true</span>
+//            is String -&gt; true//todo
+<span class="nc" id="L93">            else -&gt; false</span>
+        }
+    }
+
+<span class="nc" id="L97">    override fun hashCode() = super.hashCode() // potential-bugs:EqualsWithHashCodeExist</span>
+}
+
+private fun explicitGarbageCollectionCall() {
+//    System.gc()//potential-bugs:ExplicitGarbageCollectionCall
+<span class="nc" id="L102">}</span>
+
+<span class="nc" id="L104">private fun getPlatformType() = System.getProperty(&quot;propertyName&quot;)</span>
+// todo
+// potential-bugs:HasPlatformType
+
+private fun verifyInvalidRange() {
+//    for (i in 2 until 1) {/*nop*/}
+//    for (i in 2..1) {/*nop*/}
+//    for (i in 1 downTo 2) {/*nop*/}
+//    val r1 = 2 until 1
+//    val r2 = 2..1
+//    val r3 = 1 downTo 2
+<span class="nc" id="L115">}</span>
+// todo `2 until 2` should be empty
+// potential-bugs:InvalidRange
+
+<span class="nc" id="L119">private class SomeIterator : Iterator&lt;String&gt; {</span>
+    private var isNextCalled = false
+    override fun next(): String {
+<span class="nc bnc" id="L122" title="All 2 branches missed.">        if (!isNextCalled) throw NoSuchElementException() // potential-bugs:IteratorNotThrowingNoSuchElementException</span>
+<span class="nc" id="L123">        isNextCalled = true</span>
+<span class="nc" id="L124">        return &quot;blabla&quot;</span>
+    }
+
+    override fun hasNext(): Boolean {
+//        val item = next()//potential-bugs:IteratorHasNextCallsNextMethod
+<span class="nc bnc" id="L129" title="All 2 branches missed.">        return !isNextCalled</span>
+    }
+}
+
+private fun unconditionalJumpStatementInLoop() {
+//    for (i in 1..2) break//potential-bugs:UnconditionalJumpStatementInLoop
+<span class="nc" id="L135">}</span>
+
+private fun unreachableCode() {
+//    for (i in 1..2) {break; println()}
+//    if (true) {throw IllegalArgumentException(); println()}
+//    if (true) {return; println() }
+<span class="nc" id="L141">}</span>
+// potential-bugs:UnreachableCode
+
+private fun unsafeCallOnNullableType() {
+<span class="nc" id="L145">    val whenEnum: SomeEnum? = SomeEnum.values().firstOrNull()</span>
+//    val whenEnum: SomeEnum? = if(System.currentTimeMillis().toInt() % 2 == 0) null else SomeEnum.ITEM_1
+<span class="nc" id="L147">    println(whenEnum!!.name)</span>
+<span class="nc" id="L148">}</span>
+// todo
+// potential-bugs:UnsafeCallOnNullableType
+
+private fun unsafeCast() {
+<span class="nc" id="L153">    val whenEnum: Any = SomeEnum.values().first().ordinal</span>
+<span class="nc" id="L154">    println(whenEnum as String)</span>
+<span class="nc" id="L155">    println(whenEnum as VerifyEqualsHashCode)</span>
+<span class="nc" id="L156">}</span>
+// todo
+// potential-bugs:UnsafeCast
+
+private fun uselessPostfixExpression() {
+<span class="nc" id="L161">    var i = 0</span>
+//    i = i++//potential-bugs:UselessPostfixExpression
+<span class="nc" id="L163">    println(i)</span>
+<span class="nc" id="L164">}</span>
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.4.201905082037</span></div></body></html>
