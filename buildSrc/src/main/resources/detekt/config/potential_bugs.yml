@@ -1,0 +1,47 @@
+build:
+  maxIssues: 0
+
+potential-bugs:
+  active: true
+  Deprecation:
+    active: false #todo https://github.com/arturbosch/detekt/issues/2038
+  DuplicateCaseInWhenExpression:
+    active: true
+  EqualsAlwaysReturnsTrueOrFalse:
+    active: true
+  EqualsWithHashCodeExist:
+    active: true
+  ExplicitGarbageCollectionCall:
+    active: true
+  HasPlatformType:
+    active: false #todo
+  InvalidRange:
+    active: true
+  IteratorHasNextCallsNextMethod:
+    active: true
+  IteratorNotThrowingNoSuchElementException:
+    active: true
+  LateinitUsage:
+    active: false
+    excludes: "**/test/**,**/androidTest/**,**/*.Test.kt,**/*.Spec.kt,**/*.Spek.kt"
+    excludeAnnotatedProperties: ""
+    ignoreOnClassesPattern: "" #todo
+  MissingWhenCase:
+    active: false #todo
+  RedundantElseInWhen:
+    active: false #todo
+  UnconditionalJumpStatementInLoop:
+    active: true
+  UnreachableCode:
+    active: true
+  UnsafeCallOnNullableType:
+    active: false #todo
+  UnsafeCast:
+    active: false #todo
+  UselessPostfixExpression:
+    active: true
+  WrongEqualsTypeParameter:
+    active: true
+
+processors:
+  active: false

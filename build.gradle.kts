@@ -1,3 +1,4 @@
+import analysis.analysisQualityHtmlPath
 import analysis.analysisStyleHtmlPath
 import coverage.*
 import documentation.documentationHtmlPath
@@ -74,6 +75,21 @@ task<Detekt>("verifyDocumentation") {
     config = files("buildSrc/src/main/resources/detekt/config/documentation.yml")
     reports {
         html.enabled = false
+        xml.enabled = false
+        txt.enabled = false
+    }
+}
+
+task<Detekt>("verifyQuality") {
+    source = files(subprojects.withPlugin("kotlin").srcDirs("main")).asFileTree
+    config = files(
+        "buildSrc/src/main/resources/detekt/config/potential_bugs.yml"
+    )
+    reports {
+        html {
+            enabled = true
+            destination = File(analysisQualityHtmlPath)
+        }
         xml.enabled = false
         txt.enabled = false
     }
