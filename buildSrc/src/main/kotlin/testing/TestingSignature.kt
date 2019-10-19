@@ -3,6 +3,7 @@ package testing
 import groovy.util.Node
 import groovy.util.NodeList
 import groovy.util.XmlNodePrinter
+import util.digestSha512
 import java.io.File
 import java.io.PrintWriter
 import java.io.StringWriter
@@ -66,9 +67,11 @@ fun getTestingSignature(files: Iterable<File>): String {
         }
         val signature = root.signatureRecurse()
         val result = accumulator + signature
-//        println("\n\t###\t###\t###")
-//        println("result: ${file.name}\n$signature")
-//        println("\n\t###\t###\t###")
+        println("\n\t###\t###\t###")
+        println("result: ${file.name}\n${signature.replace(" ", "@")}")
+        println("\n\t###\t###\t###")
+        println("hash: ${signature.digestSha512()}")
+        println("\n\t###\t###\t###")
         result
     }
 }
@@ -80,7 +83,7 @@ private fun Node.signatureRecurse(): String {
     }
     children().forEach {
         it as? Node ?: throw IllegalStateException("child of $this must be groovy.util.Node")
-        if(it.attributes().isNotEmpty() || it.children().isNotEmpty()) {
+        if (it.attributes().isNotEmpty() || it.children().isNotEmpty()) {
             result += "_" + it.signatureRecurse()
         }
     }
