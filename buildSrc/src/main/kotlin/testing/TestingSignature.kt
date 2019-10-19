@@ -1,5 +1,6 @@
 package testing
 
+import groovy.util.Node
 import groovy.util.XmlNodePrinter
 import java.io.File
 import java.io.PrintWriter
@@ -28,18 +29,31 @@ private fun getXmlsTestResultDirs(files: Iterable<File>): List<File> {
     return result
 }
 
+private val allowedKeys = setOf("name", "tests", "skipped", "failures", "errors")
+private val allowedNames = setOf("testcase")
+private val allowedTestCaseKeys = setOf("name", "classname")
 fun getTestingSignature(files: Iterable<File>): String {
     return getXmlsTestResultDirs(files).fold("") { accumulator, file ->
         val root = parseXml(file.readText())
-        root.attributes().apply {
-            remove("timestamp")
-            remove("hostname")
-            remove("time")
+        root.attributes().also { attributes ->
+            attributes.keys.toList().forEach { key ->
+                if (key !in allowedKeys) attributes.remove(key)
+            }
         }
-        root.forEachNode("testcase") { testcase ->
-            testcase.attributes().remove("time")
-            testcase.forEachNode("failure") { failure ->
-                failure.setValue(emptyMap<Any?, Any?>())
+        root.children().also { children ->
+            children.toList().forEach { child ->
+                child as? Node ?: throw IllegalStateException()
+                if (child.name() !in allowedNames) children.remove(child)
+            }
+        }
+        root.forEachNode("testcase") { node ->
+            node.attributes().also { attributes ->
+                attributes.keys.toList().forEach { key ->
+                    if (key !in allowedTestCaseKeys) attributes.remove(key)
+                }
+            }
+            node.forEachNode("failure") {
+                it.setValue(emptyMap<Any?, Any?>())
             }
         }
         accumulator + StringWriter().also { writer ->
