@@ -1,0 +1,193 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>PotentialBugs.kt</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">ContinuousStuffExperience</a> &gt; <a href="index.source.html" class="el_package">continuous.stuff.experience.analysis</a> &gt; <span class="el_source">PotentialBugs.kt</span></div><h1>PotentialBugs.kt</h1><pre class="source lang-java linenums">package continuous.stuff.experience.analysis
+
+import java.util.Date
+
+/**
+ * This function is for testing Deprecation analysis.
+ * @see `ClosedRange&lt;Double&gt;.contains(Int)`
+ * @see Date
+ * @version 0.00.01
+ * @since ContinuousStuffExperience:lib 0.00.01
+ */
+private fun deprecationSample() {
+<span class="fc" id="L13">    val r = 1 in 0.0..5.0</span>
+<span class="fc" id="L14">    Date(2019, 5, 5)</span>
+<span class="fc" id="L15">} // potential-bugs:Deprecation</span>
+// todo https://github.com/arturbosch/detekt/issues/2038
+
+/**
+ * This internal class is for using in when operator.
+ * @version 0.00.01
+ * @since ContinuousStuffExperience:lib 0.00.01
+ */
+private enum class SomeEnum {
+    ITEM_1,
+    ITEM_2,
+    ITEM_3,
+}
+
+/**
+ * This function is for sample [SomeEnum] in when operator.
+ * @see SomeEnum
+ * @version 0.00.01
+ * @since ContinuousStuffExperience:lib 0.00.01
+ */
+private fun whenSample() {
+<span class="nc" id="L36">    val someEnum = SomeEnum.values().first()</span>
+<span class="nc bnc" id="L37" title="All 4 branches missed.">    when (someEnum) {</span>
+        SomeEnum.ITEM_1 -&gt; {
+<span class="nc" id="L39">            println(&quot;it is item 1&quot;)</span>
+        }
+        SomeEnum.ITEM_2 -&gt; {
+<span class="nc" id="L42">            println(&quot;it is item 2&quot;)</span>
+        }
+//        WhenEnum.ITEM_2 -&gt; {
+//            println(&quot;it is item 2&quot;)
+//        } // potential-bugs:DuplicateCaseInWhenExpression
+        SomeEnum.ITEM_3 -&gt; {
+<span class="nc" id="L48">            println(&quot;it is item 3&quot;)</span>
+        } // potential-bugs:MissingWhenCase
+//        else -&gt; {} // potential-bugs:RedundantElseInWhen
+    }
+<span class="nc" id="L52">} // todo https://github.com/arturbosch/detekt/issues/2041</span>
+
+/**
+ * This class is for testing
+ * WrongEqualsTypeParameter, EqualsAlwaysReturnsTrueOrFalse, EqualsWithHashCodeExist
+ * analysis.
+ * @version 0.00.01
+ * @since ContinuousStuffExperience:lib 0.00.01
+ */
+<span class="fc" id="L61">private class VerifyEqualsHashCode {</span>
+//    private fun equals(other: String) = super.equals(other)//potential-bugs:WrongEqualsTypeParameter
+
+    override fun equals(other: Any?): Boolean {
+//        return true//potential-bugs:EqualsAlwaysReturnsTrueOrFalse
+<span class="fc" id="L66">        return when (other) {</span>
+<span class="fc bfc" id="L67" title="All 2 branches covered.">            is VerifyEqualsHashCode -&gt; true</span>
+//            is String -&gt; true//todo
+<span class="fc" id="L69">            else -&gt; false</span>
+        }
+    }
+
+<span class="fc" id="L73">    override fun hashCode() = super.hashCode() // potential-bugs:EqualsWithHashCodeExist</span>
+}
+
+/**
+ * This function is for testing ExplicitGarbageCollectionCall analysis.
+ * @see System.gc
+ * @version 0.00.01
+ * @since ContinuousStuffExperience:lib 0.00.01
+ */
+private fun explicitGarbageCollectionCall() {
+//    System.gc()//potential-bugs:ExplicitGarbageCollectionCall
+<span class="fc" id="L84">}</span>
+
+/**
+ * This function is for testing HasPlatformType analysis.
+ * @version 0.00.01
+ * @since ContinuousStuffExperience:lib 0.00.01
+ */
+<span class="nc" id="L91">private fun getPlatformType() = System.getProperty(&quot;propertyName&quot;) // potential-bugs:HasPlatformType</span>
+// todo https://github.com/arturbosch/detekt/issues/2042
+
+/**
+ * This function is for testing InvalidRange analysis.
+ * @see until
+ * @see rangeTo
+ * @see downTo
+ * @version 0.00.01
+ * @since ContinuousStuffExperience:lib 0.00.01
+ */
+private fun verifyInvalidRange() {
+//    for (i in 2 until 1) {/*nop*/}
+//    for (i in 2..1) {/*nop*/}
+//    for (i in 1 downTo 2) {/*nop*/}
+//    val r1 = 2 until 1
+//    val r2 = 2..1
+//    val r3 = 1 downTo 2
+<span class="nc" id="L109">}</span>
+// todo https://github.com/arturbosch/detekt/issues/2044
+// potential-bugs:InvalidRange
+
+/**
+ * This class is for testing
+ * IteratorNotThrowingNoSuchElementException, IteratorHasNextCallsNextMethod
+ * analysis.
+ * @see Iterator
+ * @version 0.00.01
+ * @since ContinuousStuffExperience:lib 0.00.01
+ */
+<span class="fc" id="L121">private class SomeIterator : Iterator&lt;String&gt; {</span>
+    private var isNextCalled = false
+    override fun next(): String {
+<span class="fc bfc" id="L124" title="All 2 branches covered.">        if (isNextCalled) throw NoSuchElementException() // potential-bugs:IteratorNotThrowingNoSuchElementException</span>
+<span class="fc" id="L125">        isNextCalled = true</span>
+<span class="fc" id="L126">        return &quot;blabla&quot;</span>
+    }
+
+    override fun hasNext(): Boolean {
+//        val item = next()//potential-bugs:IteratorHasNextCallsNextMethod
+<span class="fc bfc" id="L131" title="All 2 branches covered.">        return !isNextCalled</span>
+    }
+}
+
+/**
+ * This function is for testing UnconditionalJumpStatementInLoop analysis.
+ * @version 0.00.01
+ * @since ContinuousStuffExperience:lib 0.00.01
+ */
+private fun unconditionalJumpStatementInLoop() {
+//    for (i in 1..2) break//potential-bugs:UnconditionalJumpStatementInLoop
+<span class="fc" id="L142">}</span>
+
+/**
+ * This function is for testing UnreachableCode analysis.
+ * @version 0.00.01
+ * @since ContinuousStuffExperience:lib 0.00.01
+ */
+private fun unreachableCode() {
+//    for (i in 1..2) {break; println()}
+//    if (true) {throw IllegalArgumentException(); println()}
+//    if (true) {return; println() }
+<span class="fc" id="L153">}</span>
+// potential-bugs:UnreachableCode
+
+/**
+ * This function is for testing UnsafeCallOnNullableType analysis.
+ * @version 0.00.01
+ * @since ContinuousStuffExperience:lib 0.00.01
+ */
+private fun unsafeCallOnNullableType() {
+<span class="nc" id="L162">    val someEnum: SomeEnum? = SomeEnum.values().firstOrNull()</span>
+//    val someEnum: SomeEnum? = if(System.currentTimeMillis().toInt() % 2 == 0) null else SomeEnum.ITEM_1
+<span class="nc" id="L164">    println(someEnum!!.name)</span>
+<span class="nc" id="L165">}</span>
+// todo https://github.com/arturbosch/detekt/issues/2043
+// potential-bugs:UnsafeCallOnNullableType
+
+/**
+ * This function is for testing UnsafeCast analysis.
+ * @version 0.00.01
+ * @since ContinuousStuffExperience:lib 0.00.01
+ */
+private fun unsafeCast() {
+<span class="nc" id="L175">    val someEnum: Any = SomeEnum.values().first().ordinal</span>
+<span class="nc" id="L176">    println(someEnum as String)</span>
+<span class="nc" id="L177">    println(someEnum as VerifyEqualsHashCode)</span>
+<span class="nc" id="L178">}</span>
+// todo https://github.com/arturbosch/detekt/issues/2043
+// potential-bugs:UnsafeCast
+
+/**
+ * This function is for testing UselessPostfixExpression analysis.
+ * @see inc
+ * @version 0.00.01
+ * @since ContinuousStuffExperience:lib 0.00.01
+ */
+private fun uselessPostfixExpression() {
+<span class="fc" id="L189">    var i = 0</span>
+//    i = i++//potential-bugs:UselessPostfixExpression
+<span class="fc" id="L191">    println(i)</span>
+<span class="fc" id="L192">}</span>
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.4.201905082037</span></div></body></html>
