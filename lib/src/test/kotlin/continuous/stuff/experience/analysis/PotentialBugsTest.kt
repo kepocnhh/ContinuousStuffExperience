@@ -1,19 +1,119 @@
 package continuous.stuff.experience.analysis
 
-import org.junit.jupiter.api.Test
 import java.lang.reflect.Method
 import kotlin.reflect.KClass
+import org.junit.jupiter.api.Assertions.assertFalse
+import org.junit.jupiter.api.Assertions.assertNotNull
+import org.junit.jupiter.api.Assertions.assertThrows
+import org.junit.jupiter.api.Assertions.assertTrue
+import org.junit.jupiter.api.Test
 
 internal class PotentialBugsTest {
+    private val packageName = this::class.java.`package`.name
+
     @Test
     fun deprecationSampleTest() {
-        classByName("PotentialBugsKt").declaredMethods.invokeByName("deprecationSample")
+        invokePrivateStatic(
+            className = "$packageName.PotentialBugsKt",
+            methodName = "deprecationSample"
+        )
     }
 
     @Test
-    fun colorTest() {
-        classByName("Color").enumConstants.first().invokeDeclaredMethodByName("privateTest")
+    fun equalsVerifyEqualsHashCodeTest() {
+        val any = invokePrivateConstructor("$packageName.VerifyEqualsHashCode")
+        assertFalse(any == "blabla")
+        val other = invokePrivateConstructor("$packageName.VerifyEqualsHashCode")
+        assertTrue(any == other)
     }
+    @Test
+    fun hashCodeVerifyEqualsHashCodeTest() {
+        invokePrivateConstructor("$packageName.VerifyEqualsHashCode").hashCode()
+    }
+
+    @Test
+    fun explicitGarbageCollectionCallTest() {
+        invokePrivateStatic(
+            className = "$packageName.PotentialBugsKt",
+            methodName = "explicitGarbageCollectionCall"
+        )
+    }
+
+    @Test
+    fun nextSomeIteratorTest() {
+        val iterator = invokePrivateConstructor("$packageName.SomeIterator") as Iterator<*>
+        assertNotNull(iterator.next())
+    }
+    @Test
+    fun nextTwiceSomeIteratorTest() {
+        val iterator = invokePrivateConstructor("$packageName.SomeIterator") as Iterator<*>
+        assertNotNull(iterator.next())
+        assertThrows(NoSuchElementException::class.java) {
+            iterator.next()
+        }
+    }
+    @Test
+    fun hasNextSomeIteratorTest() {
+        val iterator = invokePrivateConstructor("$packageName.SomeIterator") as Iterator<*>
+        assertTrue(iterator.hasNext())
+        iterator.next()
+        assertFalse(iterator.hasNext())
+    }
+
+    @Test
+    fun unconditionalJumpStatementInLoopTest() {
+        invokePrivateStatic(
+            className = "$packageName.PotentialBugsKt",
+            methodName = "unconditionalJumpStatementInLoop"
+        )
+    }
+
+    @Test
+    fun unreachableCodeTest() {
+        invokePrivateStatic(
+            className = "$packageName.PotentialBugsKt",
+            methodName = "unreachableCode"
+        )
+    }
+
+    @Test
+    fun uselessPostfixExpressionTest() {
+        invokePrivateStatic(
+            className = "$packageName.PotentialBugsKt",
+            methodName = "uselessPostfixExpression"
+        )
+    }
+}
+
+private fun invokePrivateStatic(
+    className: String,
+    methodName: String
+) {
+    val c = Class.forName(className)
+    val method = c.declaredMethods.single { it.name == methodName }
+    check(!method.isAccessible) { "method $methodName must be not accessible" }
+    method.isAccessible = true
+    method.invoke(null)
+}
+
+private fun invokePrivate(
+    any: Any,
+    methodName: String
+) {
+    val method = any::class.java.declaredMethods.single { it.name == methodName }
+    check(!method.isAccessible) { "method $methodName must be not accessible" }
+    method.isAccessible = true
+    method.invoke(any)
+}
+
+private fun invokePrivateConstructor(
+    className: String
+): Any {
+    val c = Class.forName(className)
+    val constructor = c.declaredConstructors.single { it.parameterCount == 0 }
+    check(!constructor.isAccessible) { "constructor must be not accessible" }
+    constructor.isAccessible = true
+    return constructor.newInstance()
 }
 
 private fun Array<Method>.singleByName(name: String) = single { it.name == name }.apply {

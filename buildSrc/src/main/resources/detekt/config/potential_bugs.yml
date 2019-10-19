@@ -14,7 +14,7 @@ potential-bugs:
   ExplicitGarbageCollectionCall:
     active: true
   HasPlatformType:
-    active: false #todo
+    active: false #todo https://github.com/arturbosch/detekt/issues/2042
   InvalidRange:
     active: true
   IteratorHasNextCallsNextMethod:
@@ -27,17 +27,17 @@ potential-bugs:
     excludeAnnotatedProperties: ""
     ignoreOnClassesPattern: "" #todo
   MissingWhenCase:
-    active: false #todo
+    active: false #todo https://github.com/arturbosch/detekt/issues/2041
   RedundantElseInWhen:
-    active: false #todo
+    active: fasle #todo https://github.com/arturbosch/detekt/issues/2041
   UnconditionalJumpStatementInLoop:
     active: true
   UnreachableCode:
     active: true
   UnsafeCallOnNullableType:
-    active: false #todo
+    active: false #todo https://github.com/arturbosch/detekt/issues/2043
   UnsafeCast:
-    active: false #todo
+    active: false #todo https://github.com/arturbosch/detekt/issues/2043
   UselessPostfixExpression:
     active: true
   WrongEqualsTypeParameter:
