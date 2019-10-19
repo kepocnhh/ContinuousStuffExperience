@@ -1,6 +1,7 @@
 package testing
 
 import groovy.util.Node
+import groovy.util.NodeList
 import groovy.util.XmlNodePrinter
 import java.io.File
 import java.io.PrintWriter
@@ -32,6 +33,7 @@ private fun getXmlsTestResultDirs(files: Iterable<File>): List<File> {
 private val allowedKeys = setOf("name", "tests", "skipped", "failures", "errors")
 private val allowedNames = setOf("testcase")
 private val allowedTestCaseKeys = setOf("name", "classname")
+private val allowedTestCaseNames = setOf("failure")
 fun getTestingSignature(files: Iterable<File>): String {
     return getXmlsTestResultDirs(files).fold("") { accumulator, file ->
         val root = parseXml(file.readText())
@@ -52,14 +54,35 @@ fun getTestingSignature(files: Iterable<File>): String {
                     if (key !in allowedTestCaseKeys) attributes.remove(key)
                 }
             }
+            node.children().also { children ->
+                children.toList().forEach { child ->
+                    child as? Node ?: throw IllegalStateException()
+                    if (child.name() !in allowedTestCaseNames) children.remove(child)
+                }
+            }
             node.forEachNode("failure") {
-                it.setValue(emptyMap<Any?, Any?>())
+                it.setValue(Node(node, ""))
             }
         }
-        accumulator + StringWriter().also { writer ->
-            XmlNodePrinter(PrintWriter(writer)).apply {
-                isPreserveWhitespace = true
-            }.print(root)
-        }.toString()
+        val signature = root.signatureRecurse()
+        val result = accumulator + signature
+//        println("\n\t###\t###\t###")
+//        println("result: ${file.name}\n$signature")
+//        println("\n\t###\t###\t###")
+        result
     }
+}
+
+private fun Node.signatureRecurse(): String {
+    var result = name().toString()
+    result += attributes().toList().fold("") { signature, (key, value) ->
+        signature + "_" + key.toString() + value.toString()
+    }
+    children().forEach {
+        it as? Node ?: throw IllegalStateException("child of $this must be groovy.util.Node")
+        if(it.attributes().isNotEmpty() || it.children().isNotEmpty()) {
+            result += "_" + it.signatureRecurse()
+        }
+    }
+    return result
 }
