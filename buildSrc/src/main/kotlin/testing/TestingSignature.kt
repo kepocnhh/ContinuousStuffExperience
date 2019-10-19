@@ -36,7 +36,7 @@ private val allowedNames = setOf("testcase")
 private val allowedTestCaseKeys = setOf("name", "classname")
 private val allowedTestCaseNames = setOf("failure")
 fun getTestingSignature(files: Iterable<File>): String {
-    return getXmlsTestResultDirs(files).fold("") { accumulator, file ->
+    return getXmlsTestResultDirs(files).sortedBy { it.absolutePath }.fold("") { accumulator, file ->
         val root = parseXml(file.readText())
         root.attributes().also { attributes ->
             attributes.keys.toList().forEach { key ->
@@ -78,11 +78,12 @@ fun getTestingSignature(files: Iterable<File>): String {
 
 private fun Node.signatureRecurse(): String {
     var result = name().toString()
-    result += attributes().toList().fold("") { signature, (key, value) ->
+    result += attributes().toList().sortedBy { (key, _) -> key.toString() }.fold("") { signature, (key, value) ->
         signature + "_" + key.toString() + value.toString()
     }
-    children().forEach {
+    children().map {
         it as? Node ?: throw IllegalStateException("child of $this must be groovy.util.Node")
+    }.sortedBy { it.name().toString() }.forEach {
         if (it.attributes().isNotEmpty() || it.children().isNotEmpty()) {
             result += "_" + it.signatureRecurse()
         }
