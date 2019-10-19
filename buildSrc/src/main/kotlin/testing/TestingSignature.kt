@@ -1,12 +1,7 @@
 package testing
 
 import groovy.util.Node
-import groovy.util.NodeList
-import groovy.util.XmlNodePrinter
-import util.digestSha512
 import java.io.File
-import java.io.PrintWriter
-import java.io.StringWriter
 import util.forEachFile
 import util.forEachNode
 import util.parseXml
@@ -65,14 +60,7 @@ fun getTestingSignature(files: Iterable<File>): String {
                 it.setValue(Node(node, ""))
             }
         }
-        val signature = root.signatureRecurse()
-        val result = accumulator + signature
-        println("\n\t###\t###\t###")
-        println("result: ${file.name}\n${signature.replace(" ", "@")}")
-        println("\n\t###\t###\t###")
-        println("hash: ${signature.digestSha512()}")
-        println("\n\t###\t###\t###")
-        result
+        accumulator + root.signatureRecurse()
     }
 }
 

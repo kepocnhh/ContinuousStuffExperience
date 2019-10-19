@@ -17,6 +17,7 @@ internal class PotentialBugsTest {
             className = "$packageName.PotentialBugsKt",
             methodName = "deprecationSample"
         )
+        TODO()
     }
 
     @Test
