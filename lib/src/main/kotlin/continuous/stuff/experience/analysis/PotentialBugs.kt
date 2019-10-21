@@ -62,10 +62,9 @@ private class VerifyEqualsHashCode {
 //    private fun equals(other: String) = super.equals(other)//potential-bugs:WrongEqualsTypeParameter
 
     override fun equals(other: Any?): Boolean {
-//        return true//potential-bugs:EqualsAlwaysReturnsTrueOrFalse
+//        return true // potential-bugs:EqualsAlwaysReturnsTrueOrFalse
         return when (other) {
             is VerifyEqualsHashCode -> true
-//            is String -> true//todo
             else -> false
         }
     }

@@ -17,9 +17,28 @@ class Lib1Class {
      * @since ContinuousStuffExperience:lib 0.00.01
      */
     val paramType = Type.TYPE_1
+
+    /**
+     * This field is for researching. This text is an example of documentation.
+     * Always return `0`.
+     * @version 0.00.01
+     * @since ContinuousStuffExperience:lib 0.00.01
+     */
     val paramZero = 0
+
+    /**
+     * This field is for researching. This text is an example of documentation.
+     * Always return `true`.
+     * @version 0.00.01
+     * @since ContinuousStuffExperience:lib 0.00.01
+     */
     val paramTrue = if (false) false else true
 
+    /**
+     * This field is for researching suppress deprecation.
+     * @version 0.00.01
+     * @since ContinuousStuffExperience:lib 0.00.01
+     */
     @Suppress("deprecation")
     val paramDate = Date(2019, 5, 5)
 
