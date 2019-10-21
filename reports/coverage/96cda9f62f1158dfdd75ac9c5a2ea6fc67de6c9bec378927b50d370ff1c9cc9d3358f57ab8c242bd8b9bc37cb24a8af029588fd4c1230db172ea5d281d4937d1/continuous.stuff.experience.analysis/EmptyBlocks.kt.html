@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>EmptyBlocks.kt</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">ContinuousStuffExperience</a> &gt; <a href="index.source.html" class="el_package">continuous.stuff.experience.analysis</a> &gt; <span class="el_source">EmptyBlocks.kt</span></div><h1>EmptyBlocks.kt</h1><pre class="source lang-java linenums">package continuous.stuff.experience.analysis
+
+private fun verifyEmptyCatchBlock() {
+<span class="nc" id="L4">    try {</span>
+<span class="nc" id="L5">        &quot;1&quot;.toInt()</span>
+//    } catch (e: Throwable) {
+<span class="nc" id="L7">    } catch (e: NumberFormatException) {</span>
+<span class="nc" id="L8">        e.printStackTrace()</span>
+<span class="nc" id="L9">    } catch (ignored: Throwable) {</span>
+    }
+    // empty-blocks:EmptyCatchBlock
+    // todo EmptyCatchBlock with comment
+<span class="nc" id="L13">}</span>
+
+// class EmptyClassBlock {} // empty-blocks:EmptyClassBlock
+// todo EmptyClassBlock with comment
+private fun verifyEmptyClassBlock() {
+//    class EmptyClassBlock {} // todo
+<span class="nc" id="L19">}</span>
+
+private fun verifyEmptyDefaultConstructor() {
+//    class EmptyDefaultConstructor() // empty-blocks:EmptyDefaultConstructor
+<span class="nc" id="L23">}</span>
+
+private fun verifyEmptyDoWhileBlock() {
+//    do {} while (false) // empty-blocks:EmptyDoWhileBlock
+// todo EmptyDoWhileBlock with comment
+<span class="nc" id="L28">}</span>
+
+private fun verifyEmptyElseBlock() {
+<span class="nc" id="L31">    val b = false</span>
+<span class="nc" id="L32">    if (b) b.toString()</span>
+//    else {} // empty-blocks:EmptyElseBlock
+// todo EmptyElseBlock with comment
+<span class="nc" id="L35">}</span>
+
+private fun verifyEmptyFinallyBlock() {
+//    try { &quot;1&quot;.toInt() } finally {} // empty-blocks:EmptyElseBlock
+    // todo EmptyFinallyBlock with comment
+<span class="nc" id="L40">}</span>
+
+private fun verifyEmptyForBlock() {
+<span class="nc" id="L43">    val last = 10</span>
+//    for (i in 0..last) {} // empty-blocks:EmptyForBlock
+    // todo EmptyForBlock with comment
+<span class="nc" id="L46">}</span>
+
+private fun verifyEmptyFunctionBlock() {
+<span class="nc" id="L49">    &quot;1&quot;.hashCode()</span>
+//    fun f() {} // empty-blocks:EmptyFunctionBlock
+    // todo EmptyFunctionBlock with comment
+<span class="nc" id="L52">}</span>
+
+private fun verifyEmptyIfBlock() {
+<span class="nc" id="L55">    val last = 10</span>
+//    if (last &gt; 5) {} // empty-blocks:EmptyIfBlock
+    // todo EmptyIfBlock with comment
+<span class="nc" id="L58">}</span>
+
+private fun verifyEmptyInitBlock() {
+<span class="nc" id="L61">    class EmptyInitBlock {</span>
+//        init {} // empty-blocks:EmptyInitBlock
+    }
+    // todo EmptyInitBlock with comment
+<span class="nc" id="L65">}</span>
+
+private fun verifyEmptySecondaryConstructor() {
+<span class="nc" id="L68">    class EmptySecondaryConstructor {</span>
+//        constructor() {} // empty-blocks:EmptySecondaryConstructor
+    }
+    // todo EmptySecondaryConstructor with comment
+<span class="nc" id="L72">}</span>
+
+private fun verifyEmptyWhenBlock() {
+<span class="nc" id="L75">    val last = 10</span>
+//    when (last &gt; 5) {} // empty-blocks:EmptyWhenBlock
+<span class="nc" id="L77">}</span>
+
+private fun verifyEmptyWhileBlock() {
+<span class="nc" id="L80">    val last = 10</span>
+//    while (last &lt; 5) {} // empty-blocks:EmptyWhileBlock
+    // todo EmptyWhileBlock with comment
+<span class="nc" id="L83">}</span>
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.4.201905082037</span></div></body></html>
