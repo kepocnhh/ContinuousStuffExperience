@@ -15,7 +15,7 @@ git -C $LOCAL_PATH config user.email "$USER"
 
 testCoverageSignature=$(<"$TRAVIS_BUILD_DIR/build/reports/coverage/signature")
 testCoveragePath="$LOCAL_PATH/reports/coverage/$testCoverageSignature"
-TEST_COVERAGE_REPORT_URL="$GIT_HUB_PAGES_URL/reports/coverage/$testCoverageSignature"
+TEST_COVERAGE_REPORT_URL="$GIT_HUB_PAGES_URL/reports/coverage/$testCoverageSignature/"
 
 ILLEGAL_STATE=0
 
@@ -52,7 +52,7 @@ fi
 
 testingSignature=$(<"$TRAVIS_BUILD_DIR/build/reports/testing/signature")
 testingPath="$LOCAL_PATH/reports/testing/$testingSignature"
-TESTING_REPORT_URL="$GIT_HUB_PAGES_URL/reports/testing/$testingSignature"
+TESTING_REPORT_URL="$GIT_HUB_PAGES_URL/reports/testing/$testingSignature/"
 
 if [ -d $testingPath ]
 then
@@ -87,7 +87,7 @@ fi
 
 documentationSignature=$(<"$TRAVIS_BUILD_DIR/build/documentation/signature")
 documentationPath="$LOCAL_PATH/documentation/$documentationSignature"
-DOCUMENTATION_URL="$GIT_HUB_PAGES_URL/documentation/$documentationSignature"
+DOCUMENTATION_URL="$GIT_HUB_PAGES_URL/documentation/$documentationSignature/"
 
 if [ -d $documentationPath ]
 then

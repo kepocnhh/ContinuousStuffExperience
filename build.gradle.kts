@@ -1,3 +1,4 @@
+import analysis.analysisQualityHtmlPath
 import analysis.analysisStyleHtmlPath
 import coverage.*
 import documentation.documentationHtmlPath
@@ -74,6 +75,36 @@ task<Detekt>("verifyDocumentation") {
     config = files("buildSrc/src/main/resources/detekt/config/documentation.yml")
     reports {
         html.enabled = false
+        xml.enabled = false
+        txt.enabled = false
+    }
+}
+
+task<Detekt>("verifyQuality") {
+    //comments
+    //todo complexity
+    //todo empty-blocks
+    //todo exceptions
+    //todo formatting
+    //todo naming
+    //todo performance
+    //todo potential-bugs
+    //todo style
+    source = files(subprojects.withPlugin("kotlin").srcDirs("main")).asFileTree
+    val configPath = "buildSrc/src/main/resources/detekt/config"
+    config.setFrom(
+        "$configPath/common.yml",
+//        "$configPath/comments.yml"
+//        "$configPath/complexity.yml"
+        "$configPath/empty_blocks.yml"
+//        "$configPath/potential_bugs.yml"
+//        "$configPath/performance.yml"
+    )//todo https://github.com/arturbosch/detekt/issues/2045
+    reports {
+        html {
+            enabled = true
+            destination = File(analysisQualityHtmlPath)
+        }
         xml.enabled = false
         txt.enabled = false
     }
