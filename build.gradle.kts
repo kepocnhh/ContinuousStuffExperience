@@ -12,6 +12,8 @@ import readme.createVerifyReadmeTask
 import testing.createCollectTestingReportTask
 import testing.createRunTestTask
 import util.*
+import version.createIncrementVersionPatchTask
+import version.createIncrementVersionMinorTask
 
 buildscript {
     repositories {
@@ -33,6 +35,8 @@ repositories {
     jcenter()
 }
 
+version = versionName()
+
 val kotlinLint: Configuration by configurations.creating
 
 dependencies {
@@ -52,6 +56,37 @@ task<JavaExec>("verifyStyle") {
 }
 
 evaluationDependsOnChildren()
+
+task<DefaultTask>("version") {
+    val dependsOnTasks = mutableListOf<DefaultTask>()
+    subprojects.forEach { project ->
+        project.task<DefaultTask>(name) {
+            dependsOnTasks.add(this)
+            doLast {
+                println("${project.name}:version: ${project.version}")
+            }
+        }
+    }
+    dependsOn(dependsOnTasks)
+    doLast {
+        println("${project.name}:version: $version")
+    }
+}
+
+createIncrementVersionPatchTask()
+subprojects.withPropertiesNotEmpty(
+    "versionPatch"
+).forEach {
+    it.createIncrementVersionPatchTask()
+}
+
+createIncrementVersionMinorTask()
+subprojects.withPropertiesNotEmpty(
+    "versionMinor",
+    "versionPatch"
+).forEach {
+    it.createIncrementVersionMinorTask()
+}
 
 task<DokkaTask>("collectDocumentation") {
     outputFormat = "html"
@@ -117,7 +152,7 @@ task<Delete>("clean") {
 task<DefaultTask>("verifyWarning") {
     val dependsOnTasks = mutableListOf<KotlinCompile>()
     subprojects.withPlugin("kotlin").forEach { project ->
-        project.task<KotlinCompile>("checkWarning") {
+        project.task<KotlinCompile>(name) {
             AbstractKotlinCompile::class.java.methods.single {
                 it.name == "setSourceSetName\$kotlin_gradle_plugin"
             }.invoke(this, "main")
@@ -125,7 +160,7 @@ task<DefaultTask>("verifyWarning") {
             val tasks = project.tasks.withType(AbstractKotlinCompile::class.java).filter { it != this }
             dependsOn(tasks)
             source = files(tasks.source()).asFileTree
-            destinationDir = File(project.buildDir.absolutePath + "/kotlin/checkWarning")
+            destinationDir = File(project.buildDir.absolutePath + "/kotlin/$name")
             classpath = files(tasks.classpath())
             kotlinOptions.allWarningsAsErrors = true
             dependsOnTasks.add(this)

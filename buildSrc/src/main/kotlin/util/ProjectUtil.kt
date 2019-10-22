@@ -21,6 +21,14 @@ fun Iterable<Project>.withPlugin(id: String) = filter {
     it.pluginManager.hasPlugin(id)
 }
 
+fun Iterable<Project>.withProperties(first: String, vararg other: String) = filter { project ->
+    project.propertyOrNull(first) != null && other.firstOrNull { key -> project.propertyOrNull(key) == null } == null
+}
+fun Iterable<Project>.withPropertiesNotEmpty(first: String, vararg other: String) = filter { project ->
+    project.propertyNotEmptyOrNull(first) != null &&
+    other.firstOrNull { key -> project.propertyNotEmptyOrNull(key) == null } == null
+}
+
 fun Iterable<Project>.sourceSets(name: String) = map {
     it.sourceSet(name)
 }
@@ -38,3 +46,21 @@ fun Iterable<Project>.tasks() = flatMap {
 }
 
 fun Iterable<Project>.tasksByName(name: String) = tasksBy { it.name == name }
+
+fun Project.requireProperty(key: String): String {
+    return property(key) as? String ?: throw IllegalStateException("Project \"$name\" must have property \"$key\"")
+}
+fun Project.requirePropertyNotEmpty(key: String): String {
+    val result = requireProperty(key)
+    check(result.isNotEmpty()) { "Project \"$name\" must have not empty property \"$key\"" }
+    return result
+}
+
+fun Project.propertyOrNull(key: String): String? {
+    return if(!hasProperty(key)) null
+    else property(key) as? String
+}
+fun Project.propertyNotEmptyOrNull(key: String): String? {
+    val result = propertyOrNull(key)
+    return if(result.isNullOrEmpty()) null else result
+}

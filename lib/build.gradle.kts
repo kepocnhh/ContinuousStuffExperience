@@ -7,6 +7,8 @@ repositories {
     jcenter()
 }
 
+version = versionName()
+
 jacoco {
     toolVersion = Version.testCoverage
 }
