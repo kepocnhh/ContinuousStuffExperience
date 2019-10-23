@@ -67,7 +67,9 @@ fi
 echo $newline
 echo "verify diff \"origin/$TRAVIS_BRANCH\" and \"head\"..."
 
-bash ${BASH_PATH}/increment_version_patch.sh "$(gradle -q subprojects)" "$(git diff --name-only origin/$TRAVIS_BRANCH head)"
+modules=$(gradle -q subprojects)
+lines=$(git diff --name-only origin/$TRAVIS_BRANCH $TRAVIS_BRANCH)
+bash ${BASH_PATH}/increment_version_patch.sh "$modules" "$lines"
 
 git -C $LOCAL_PATH add --all . || ILLEGAL_STATE=$?
 if [ $ILLEGAL_STATE -ne 0 ]
