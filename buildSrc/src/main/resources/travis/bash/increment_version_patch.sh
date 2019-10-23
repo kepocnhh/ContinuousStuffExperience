@@ -55,6 +55,7 @@ done
 echo $newline
 echo "versions of all modules incremented"
 
+ILLEGAL_STATE=0
 echo $newline
 echo "adding..."
 git -C $LOCAL_PATH add --all . || ILLEGAL_STATE=$?
