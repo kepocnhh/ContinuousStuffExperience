@@ -67,24 +67,8 @@ fi
 echo $newline
 echo "verify diff \"origin/$TRAVIS_BRANCH\" and \"$TRAVIS_BRANCH\"..."
 
-echo $newline
-echo "git log --graph --oneline --all -16"
-git log --graph --oneline --all -16
-
-echo $newline
-echo "git diff \"origin/$TRAVIS_BRANCH\" and \"$TRAVIS_BRANCH\"..."
-git diff --name-only origin/$TRAVIS_BRANCH $TRAVIS_BRANCH
-
-echo $newline
 modules=$(gradle -q subprojects)
-lines=$(git diff --name-only origin/$TRAVIS_BRANCH $TRAVIS_BRANCH)
-
-echo "modules: [${modules[@]}]"
-echo "modules size: ${#modules[@]}"
-echo "lines: [${lines[@]}]"
-echo "lines size: ${#lines[@]}"
-
-echo $newline
+lines=$(git -C $LOCAL_PATH diff --name-only origin/$TRAVIS_BRANCH $TRAVIS_BRANCH)
 
 bash ${BASH_PATH}/increment_version_patch.sh "$modules" "$lines"
 
