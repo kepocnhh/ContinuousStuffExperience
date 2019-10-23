@@ -55,7 +55,7 @@ PULL_REQUEST_COMMIT_MESSAGE="Merge \"$TRAVIS_PULL_REQUEST_BRANCH\" -> \"$TRAVIS_
 
 echo $newline
 echo "merging \"$TRAVIS_PULL_REQUEST_BRANCH\" -> \"$TRAVIS_BRANCH\"..."
-git -C $LOCAL_PATH merge --no-ff -m "$PULL_REQUEST_COMMIT_MESSAGE" $PULL_REQUEST_BRANCH_NAME || ILLEGAL_STATE=$?
+git -C $LOCAL_PATH merge -q --no-ff -m "$PULL_REQUEST_COMMIT_MESSAGE" $PULL_REQUEST_BRANCH_NAME || ILLEGAL_STATE=$?
 if [ $ILLEGAL_STATE -ne 0 ]
 then
   echo "Merge \"$TRAVIS_PULL_REQUEST_BRANCH\" -> \"$TRAVIS_BRANCH\" failed!"
@@ -69,6 +69,12 @@ echo "verify diff \"origin/$TRAVIS_BRANCH\" and \"head\"..."
 
 modules=$(gradle -q subprojects)
 lines=$(git diff --name-only origin/$TRAVIS_BRANCH $TRAVIS_BRANCH)
+
+echo "modules: [${modules[@]}]"
+echo "modules size: ${#modules[@]}"
+echo "lines: [${lines[@]}]"
+echo "lines size: ${#lines[@]}"
+
 bash ${BASH_PATH}/increment_version_patch.sh "$modules" "$lines"
 
 git -C $LOCAL_PATH add --all . || ILLEGAL_STATE=$?
