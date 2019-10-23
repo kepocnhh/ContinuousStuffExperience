@@ -48,18 +48,24 @@ for line in ${lines[@]}; do
     rootVersionIncremented=1
   fi
   if [ ${#modules[@]} -eq 0 ] && [ $rootVersionIncremented -ne 0 ]; then
-    echo "versions of all modules incremented"
     break
   fi
 done
 
-git -C $LOCAL_PATH add -q --all . || ILLEGAL_STATE=$?
+echo $newline
+echo "versions of all modules incremented"
+
+echo $newline
+echo "adding..."
+git -C $LOCAL_PATH add --all . || ILLEGAL_STATE=$?
 if [ $ILLEGAL_STATE -ne 0 ]
 then
   echo "adding failed!"
   exit $ILLEGAL_STATE
 fi
 
+echo $newline
+echo "commiting..."
 git -C $LOCAL_PATH commit -q -m "Increment version patch by $USER" || ILLEGAL_STATE=$?
 if [ $ILLEGAL_STATE -ne 0 ]
 then
