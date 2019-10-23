@@ -7,6 +7,8 @@ repositories {
     jcenter()
 }
 
+version = versionName()
+
 application {
     mainClassName = "continuous.stuff.experience.AppKt"
 }

@@ -38,7 +38,7 @@ fi
 
 COMPILE_STATUS=0
 
-gradle compile || COMPILE_STATUS=$?
+gradle -q compile || COMPILE_STATUS=$?
 
 if [[ COMPILE_STATUS -ne 0 ]]
 then
