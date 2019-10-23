@@ -62,6 +62,27 @@ then
   exit $ILLEGAL_STATE
 fi
 
+#__________ __________ verify diff >
+
+echo $newline
+echo "verify diff \"origin/$TRAVIS_BRANCH\" and \"head\"..."
+
+bash ${BASH_PATH}/increment_version_patch.sh "$(gradle -q subprojects)" "$(git diff --name-only origin/$TRAVIS_BRANCH head)"
+
+git -C $LOCAL_PATH add --all . || ILLEGAL_STATE=$?
+if [ $ILLEGAL_STATE -ne 0 ]
+then
+  echo "adding failed!"
+  exit $ILLEGAL_STATE
+fi
+
+git -C $LOCAL_PATH commit -m "Increment version patch by $USER" || ILLEGAL_STATE=$?
+if [ $ILLEGAL_STATE -ne 0 ]
+then
+  echo "commiting failed!"
+  exit $ILLEGAL_STATE
+fi
+
 #__________ __________ pushing >
 
 echo $newline

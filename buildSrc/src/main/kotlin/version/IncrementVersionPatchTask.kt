@@ -1,11 +1,11 @@
 package version
 
+import java.io.File
 import org.gradle.api.DefaultTask
 import org.gradle.api.Project
 import org.gradle.kotlin.dsl.task
 import versionMinor
 import versionPatch
-import java.io.File
 
 fun Project.createIncrementVersionPatchTask(
     name: String = "incrementVersionPatch",
@@ -52,11 +52,11 @@ fun Project.createIncrementVersionMinorTask(
                 if (lines[i].startsWith("versionPatch=")) {
                     lines[i] = "versionPatch=0"
                     isPatchFind = true
-                    if(isMinorFind) break
+                    if (isMinorFind) break
                 } else if (lines[i].startsWith("versionMinor=")) {
                     lines[i] = "versionMinor=${versionMinor + 1}"
                     isMinorFind = true
-                    if(isPatchFind) break
+                    if (isPatchFind) break
                 }
             }
             check(isPatchFind && isMinorFind) {

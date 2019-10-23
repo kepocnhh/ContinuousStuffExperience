@@ -190,3 +190,11 @@ task<DefaultTask>("verifyTestCoverage") {
 
 createVerifyReadmeTask()
 createFixReadmeTask()
+
+task<DefaultTask>("subprojects") {
+    doLast {
+        subprojects.forEach {
+            println(it.name)
+        }
+    }
+}
