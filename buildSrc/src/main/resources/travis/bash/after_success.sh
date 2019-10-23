@@ -67,24 +67,7 @@ fi
 echo $newline
 echo "verify diff \"origin/$TRAVIS_BRANCH\" and \"$TRAVIS_BRANCH\"..."
 
-modules=$(gradle -q subprojects)
-lines=$(git -C $LOCAL_PATH diff --name-only origin/$TRAVIS_BRANCH $TRAVIS_BRANCH)
-
-bash ${BASH_PATH}/increment_version_patch.sh "$modules" "$lines"
-
-git -C $LOCAL_PATH add --all . || ILLEGAL_STATE=$?
-if [ $ILLEGAL_STATE -ne 0 ]
-then
-  echo "adding failed!"
-  exit $ILLEGAL_STATE
-fi
-
-git -C $LOCAL_PATH commit -m "Increment version patch by $USER" || ILLEGAL_STATE=$?
-if [ $ILLEGAL_STATE -ne 0 ]
-then
-  echo "commiting failed!"
-  exit $ILLEGAL_STATE
-fi
+bash ${BASH_PATH}/increment_version_patch.sh $LOCAL_PATH
 
 #__________ __________ pushing >
 
