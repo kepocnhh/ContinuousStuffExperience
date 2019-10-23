@@ -53,14 +53,14 @@ for line in ${lines[@]}; do
   fi
 done
 
-git -C $LOCAL_PATH -q add --all . || ILLEGAL_STATE=$?
+git -C $LOCAL_PATH add -q --all . || ILLEGAL_STATE=$?
 if [ $ILLEGAL_STATE -ne 0 ]
 then
   echo "adding failed!"
   exit $ILLEGAL_STATE
 fi
 
-git -C $LOCAL_PATH -q commit -m "Increment version patch by $USER" || ILLEGAL_STATE=$?
+git -C $LOCAL_PATH commit -q -m "Increment version patch by $USER" || ILLEGAL_STATE=$?
 if [ $ILLEGAL_STATE -ne 0 ]
 then
   echo "commiting failed!"

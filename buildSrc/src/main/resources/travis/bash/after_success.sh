@@ -67,7 +67,12 @@ fi
 echo $newline
 echo "verify diff \"origin/$TRAVIS_BRANCH\" and \"$TRAVIS_BRANCH\"..."
 
-bash ${BASH_PATH}/increment_version_patch.sh $LOCAL_PATH
+bash ${BASH_PATH}/increment_version_patch.sh $LOCAL_PATH || ILLEGAL_STATE=$?
+if [ $ILLEGAL_STATE -ne 0 ]
+then
+  echo "Verify diff \"origin/$TRAVIS_BRANCH\" and \"$TRAVIS_BRANCH\" failed!"
+  exit $ILLEGAL_STATE
+fi
 
 #__________ __________ pushing >
 
