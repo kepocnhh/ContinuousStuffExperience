@@ -89,12 +89,14 @@ fi
 #__________ __________ version >
 
 if test -z "$PR_NUMBER"; then
-  if test "$BRANCH_NAME" == "$DEVELOP_BRANCH_NAME"; then
+  echo "it is not pull request"
+else
+  if [[ "$BRANCH_NAME" == "$DEVELOP_BRANCH_NAME" ]]; then
     if [[ "$VERIFY_VERSION_STATUS" == "$VERIFY_VERSION_STATUS_SUCCESS" ]]; then
       echo "version ok"
     elif [[ "$VERIFY_VERSION_STATUS" == "$VERIFY_VERSION_STATUS_UNKNOWN" ]]; then
       MESSAGE+="${newline}"
-      MESSAGE+="- You must check the versions manually $emoji_grey_exclamation"
+      MESSAGE+="- you must verify the versions manually $emoji_grey_exclamation"
     else
       MESSAGE+="${newline}"
       MESSAGE+="- verify version failed $emoji_heavy_exclamation_mark"
@@ -102,8 +104,6 @@ if test -z "$PR_NUMBER"; then
   else
     echo "it is not pull request to branch \"$DEVELOP_BRANCH_NAME\" but to branch \"$BRANCH_NAME\""
   fi
-else
-  echo "it is not pull request"
 fi
 
 if [ $BUILD_SUCCESS -ne 0 ]
