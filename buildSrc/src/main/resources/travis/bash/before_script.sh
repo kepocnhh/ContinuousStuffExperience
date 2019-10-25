@@ -18,17 +18,13 @@ if test -z "$REPO_URL"; then
   echo "Variable \"REPO_URL\" is not set"
   SCRIPT_STATUS=1
 fi
-if test -z "$PR_NUMBER"; then
-  echo "Variable \"PR_NUMBER\" is not set"
-  SCRIPT_STATUS=1
-fi
 
 if test $SCRIPT_STATUS -ne 0; then
   bash ${BASH_PATH}/telegram-send-message.sh "script failed $emoji_heavy_exclamation_mark"
   exit $SCRIPT_STATUS
 fi
 
-if [[ $PR_NUMBER =~ ^[0-9]+$ ]]
+if [[ $PR_NUMBER =~ $IS_INTEGER_REGEX ]]
 then
   TELEGRAM_MESSAGE_PREFIX+="${newline}pull request "
   TELEGRAM_MESSAGE_PREFIX+="[#$PR_NUMBER]($REPO_URL/pull/$PR_NUMBER)"
