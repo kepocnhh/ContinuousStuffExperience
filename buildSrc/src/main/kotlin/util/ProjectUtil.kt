@@ -26,9 +26,23 @@ fun Iterable<Project>.withProperties(first: String, vararg other: String) = filt
     project.propertyOrNull(first) != null && other.firstOrNull { key -> project.propertyOrNull(key) == null } == null
 }
 
-fun Iterable<Project>.withPropertiesNotEmpty(first: String, vararg other: String) = filter { project ->
-    project.propertyNotEmptyOrNull(first) != null &&
-            other.firstOrNull { key -> project.propertyNotEmptyOrNull(key) == null } == null
+fun Iterable<Project>.withPropertiesNotEmpty(first: String, vararg other: String) = filter {
+    it.hasPropertiesNotEmpty(first, *other)
+}
+
+fun Project.hasPropertiesNotEmpty(first: String, vararg other: String): Boolean {
+    return propertyNotEmptyOrNull(first) != null &&
+            other.firstOrNull { key -> propertyNotEmptyOrNull(key) == null } == null
+}
+
+fun Project.ifHasPropertiesNotEmpty(first: String, vararg other: String, action: Project.() -> Unit) {
+    if (hasPropertiesNotEmpty(first, *other)) action()
+}
+
+fun Project.protectedName(): String {
+    return parent?.let {
+        it.protectedName() + ":$name"
+    } ?: "@:rootProject"
 }
 
 fun Iterable<Project>.sourceSets(name: String) = map {
@@ -67,4 +81,23 @@ fun Project.propertyOrNull(key: String): String? {
 fun Project.propertyNotEmptyOrNull(key: String): String? {
     val result = propertyOrNull(key)
     return if (result.isNullOrEmpty()) null else result
+}
+
+fun Project.allProjects(): List<Project> {
+    val result = mutableListOf<Project>()
+    result.add(rootProject)
+    rootProject.subprojects.forEach {
+        result.add(it)
+        result.addAll(it.subrojectsRecurse())
+    }
+    return result
+}
+
+fun Project.subrojectsRecurse(): List<Project> {
+    val result = mutableListOf<Project>()
+    subprojects.forEach {
+        result.add(it)
+        result.addAll(it.subrojectsRecurse())
+    }
+    return result
 }
