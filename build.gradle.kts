@@ -57,19 +57,39 @@ task<JavaExec>("verifyStyle") {
 
 evaluationDependsOnChildren()
 
-task<DefaultTask>("version") {
-    val dependsOnTasks = mutableListOf<DefaultTask>()
-    subprojects.forEach { project ->
-        project.task<DefaultTask>(name) {
-            dependsOnTasks.add(this)
-            doLast {
-                println("${project.name}:version: ${project.version}")
+allProjects().forEach { project ->
+    project.task<DefaultTask>("protectedName") {
+        doLast {
+            println(project.protectedName())
+        }
+    }
+}
+
+allProjects().withPropertiesNotEmpty(
+    "versionMajor",
+    "versionMinor",
+    "versionPatch"
+).forEach { project ->
+    project.task<DefaultTask>("version") {
+        doLast {
+            if(project.parent == null) {
+                println(project.version)
+            } else {
+                println(project.name + ":" + project.version)
             }
         }
     }
-    dependsOn(dependsOnTasks)
+}
+
+task<DefaultTask>("versions") {
     doLast {
-        println("${project.name}:version: $version")
+        allProjects().withPropertiesNotEmpty(
+            "versionMajor",
+            "versionMinor",
+            "versionPatch"
+        ).sortedBy { it.protectedName() }.forEach {
+            println(it.protectedName() + ":" + it.version)
+        }
     }
 }
 
@@ -191,10 +211,30 @@ task<DefaultTask>("verifyTestCoverage") {
 createVerifyReadmeTask()
 createFixReadmeTask()
 
+task<DefaultTask>("allProjects") {
+    doLast {
+        allProjects().forEach {
+            println(it.protectedName())
+        }
+    }
+}
+
 task<DefaultTask>("subprojects") {
     doLast {
-        subprojects.forEach {
-            println(it.name)
+        subrojectsRecurse().forEach {
+            println(it.protectedName())
+        }
+    }
+}
+
+task<DefaultTask>("allProjectsWithVersion") {
+    doLast {
+        allProjects().withPropertiesNotEmpty(
+            "versionMajor",
+            "versionMinor",
+            "versionPatch"
+        ).sortedBy { it.protectedName() }.forEach {
+            println(it.protectedName())
         }
     }
 }

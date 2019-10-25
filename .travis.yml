@@ -18,7 +18,7 @@ script:
   - gradle -q verifyStyle || VERIFY_STYLE_STATUS=$?; $(exit $VERIFY_STYLE_STATUS)
   - gradle -q verifyWarning || VERIFY_WARNING_STATUS=$?; $(exit $VERIFY_WARNING_STATUS)
   - gradle -q verifyReadme || VERIFY_README_STATUS=$?; $(exit $VERIFY_README_STATUS)
-  - bash ${BASH_PATH}/verify_version.sh || VERIFY_VERSION_STATUS=$?; $(exit $VERIFY_VERSION_STATUS)
+  - source ${BASH_PATH}/verify_version.sh
   - source ${BASH_PATH}/gh_pages_report.sh || GH_PAGES_REPORT_STATUS=$?; $(exit $GH_PAGES_REPORT_STATUS)
 
 after_failure:
