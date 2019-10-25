@@ -19,6 +19,9 @@ export PR_NUMBER=""
 if [[ $TRAVIS_PULL_REQUEST =~ $IS_INTEGER_REGEX ]]
 then
   PR_NUMBER=$TRAVIS_PULL_REQUEST
+  echo "pull request number: $PR_NUMBER"
+else
+  echo "it is not pull request"
 fi
 
 export PR_SOURCE_BRANCH_NAME=$TRAVIS_PULL_REQUEST_BRANCH
