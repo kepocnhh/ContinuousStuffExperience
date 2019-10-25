@@ -1,11 +1,11 @@
 LOCAL_PATH="~/gh-pages"
 
-GIT_URL="https://$git_hub_personal_access_token@github.com/$TRAVIS_REPO_SLUG"
+GIT_URL="https://$git_hub_personal_access_token@github.com/$REPO_SLUG"
 
 #__________ __________ cloning >
 
 echo $newline
-echo "cloning $TRAVIS_REPO_SLUG to $LOCAL_PATH..."
+echo "cloning $REPO_SLUG to $LOCAL_PATH..."
 git clone -q --depth=1 --branch=gh-pages $GIT_URL.git $LOCAL_PATH || exit 1
 
 git -C $LOCAL_PATH config user.name "$USER"
@@ -13,7 +13,7 @@ git -C $LOCAL_PATH config user.email "$USER"
 
 #__________ __________ test coverage >
 
-testCoverageSignature=$(<"$TRAVIS_BUILD_DIR/build/reports/coverage/signature")
+testCoverageSignature=$(<"$BUILD_DIR/build/reports/coverage/signature")
 testCoveragePath="$LOCAL_PATH/reports/coverage/$testCoverageSignature"
 TEST_COVERAGE_REPORT_URL="$GIT_HUB_PAGES_URL/reports/coverage/$testCoverageSignature/"
 
@@ -28,7 +28,7 @@ else
 	echo "make dir $testCoveragePath..."
 	mkdir -p $testCoveragePath
 	echo "move test coverage report"
-	mv $TRAVIS_BUILD_DIR/build/reports/coverage/html/* $testCoveragePath
+	mv $BUILD_DIR/build/reports/coverage/html/* $testCoveragePath
 
   echo $newline
 	git -C $LOCAL_PATH add --all . || ILLEGAL_STATE=$?
@@ -50,7 +50,7 @@ fi
 
 #__________ __________ testing >
 
-testingSignature=$(<"$TRAVIS_BUILD_DIR/build/reports/testing/signature")
+testingSignature=$(<"$BUILD_DIR/build/reports/testing/signature")
 testingPath="$LOCAL_PATH/reports/testing/$testingSignature"
 TESTING_REPORT_URL="$GIT_HUB_PAGES_URL/reports/testing/$testingSignature/"
 
@@ -63,7 +63,7 @@ else
 	echo "make dir $testingPath..."
 	mkdir -p $testingPath
 	echo "move test report"
-	mv $TRAVIS_BUILD_DIR/build/reports/testing/html/* $testingPath
+	mv $BUILD_DIR/build/reports/testing/html/* $testingPath
 
   echo $newline
 	git -C $LOCAL_PATH add --all . || ILLEGAL_STATE=$?
@@ -85,7 +85,7 @@ fi
 
 #__________ __________ documentation >
 
-documentationSignature=$(<"$TRAVIS_BUILD_DIR/build/documentation/signature")
+documentationSignature=$(<"$BUILD_DIR/build/documentation/signature")
 documentationPath="$LOCAL_PATH/documentation/$documentationSignature"
 DOCUMENTATION_URL="$GIT_HUB_PAGES_URL/documentation/$documentationSignature/"
 
@@ -98,7 +98,7 @@ else
 	echo "make dir $documentationPath..."
 	mkdir -p $documentationPath
 	echo "move documentation"
-	mv $TRAVIS_BUILD_DIR/build/documentation/html/* $documentationPath
+	mv $BUILD_DIR/build/documentation/html/* $documentationPath
 
   echo $newline
 	git -C $LOCAL_PATH add --all . || ILLEGAL_STATE=$?

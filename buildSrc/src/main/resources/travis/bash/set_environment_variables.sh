@@ -1,16 +1,31 @@
 echo "set environment variables..."
 
 export newline=$'\n'
+export IS_INTEGER_REGEX="^[1-9][0-9]*$"
 
 export BUILD_SUCCESS=0
 
+export BUILD_DIR=$TRAVIS_BUILD_DIR
+
 export REPO_OWNER=${TRAVIS_REPO_SLUG%/*}
 export REPO_NAME=${TRAVIS_REPO_SLUG#*/}
+export REPO_SLUG=$TRAVIS_REPO_SLUG
 export REPO_OWNER_URL="https://github.com/$REPO_OWNER"
 export REPO_URL="https://github.com/$TRAVIS_REPO_SLUG"
 export GIT_HUB_PAGES_URL="https://${REPO_OWNER}.github.io/$REPO_NAME"
 export TRAVIS_URL="https://travis-ci.com/$TRAVIS_REPO_SLUG"
 
+export PR_NUMBER=""
+if [[ $TRAVIS_PULL_REQUEST =~ $IS_INTEGER_REGEX ]]
+then
+  PR_NUMBER=$TRAVIS_PULL_REQUEST
+fi
+
+export PR_SOURCE_BRANCH_NAME=$TRAVIS_PULL_REQUEST_BRANCH
+
+export COMMIT=$TRAVIS_COMMIT
+export COMMIT_MESSAGE=$TRAVIS_COMMIT_MESSAGE
+export BRANCH_NAME=$TRAVIS_BRANCH
 export DEVELOP_BRANCH_NAME="dev"
 export MASTER_BRANCH_NAME="master"
 
@@ -20,6 +35,7 @@ export VERIFY_DOCUMENTATION_STATUS=0
 export VERIFY_STYLE_STATUS=0
 export VERIFY_WARNING_STATUS=0
 export VERIFY_README_STATUS=0
+export VERIFY_VERSION_STATUS=0
 export GH_PAGES_REPORT_STATUS=0
 
 export TEST_COVERAGE_REPORT_URL=""

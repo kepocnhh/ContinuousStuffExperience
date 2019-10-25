@@ -1,8 +1,8 @@
 echo "before script..."
 
-echo "commit: $TRAVIS_COMMIT"
-echo "commit message: $TRAVIS_COMMIT_MESSAGE"
-echo "branch: $TRAVIS_BRANCH"
+echo "commit: $COMMIT"
+echo "commit message: $COMMIT_MESSAGE"
+echo "branch: $BRANCH"
 
 if test -z "$BASH_PATH"; then
   echo "Variable \"BASH_PATH\" is not set"
@@ -18,8 +18,8 @@ if test -z "$REPO_URL"; then
   echo "Variable \"REPO_URL\" is not set"
   SCRIPT_STATUS=1
 fi
-if test -z "$TRAVIS_PULL_REQUEST"; then
-  echo "Variable \"TRAVIS_PULL_REQUEST\" is not set"
+if test -z "$PULL_REQUEST_NUMBER"; then
+  echo "Variable \"PULL_REQUEST_NUMBER\" is not set"
   SCRIPT_STATUS=1
 fi
 
@@ -28,10 +28,10 @@ if test $SCRIPT_STATUS -ne 0; then
   exit $SCRIPT_STATUS
 fi
 
-if [[ $TRAVIS_PULL_REQUEST =~ ^[0-9]+$ ]]
+if [[ $PULL_REQUEST_NUMBER =~ ^[0-9]+$ ]]
 then
   TELEGRAM_MESSAGE_PREFIX+="${newline}pull request "
-  TELEGRAM_MESSAGE_PREFIX+="[#$TRAVIS_PULL_REQUEST]($REPO_URL/pull/$TRAVIS_PULL_REQUEST)"
+  TELEGRAM_MESSAGE_PREFIX+="[#$PULL_REQUEST_NUMBER]($REPO_URL/pull/$PULL_REQUEST_NUMBER)"
 else
   echo "it is not a pull request"
 fi

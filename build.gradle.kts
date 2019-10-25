@@ -10,7 +10,7 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import readme.createFixReadmeTask
 import readme.createVerifyReadmeTask
 import testing.createCollectTestingReportTask
-import testing.createRunTestTask
+import testing.createRunTestingTask
 import util.*
 import version.createIncrementVersionPatchTask
 import version.createIncrementVersionMinorTask
@@ -180,7 +180,7 @@ task<DefaultTask>("compile") {
 
 createCollectTestingReportTask()
 
-createRunTestTask()
+createRunTestingTask()
 
 createCollectTestCoverageReportTask()
 
