@@ -18,8 +18,8 @@ if test -z "$REPO_URL"; then
   echo "Variable \"REPO_URL\" is not set"
   SCRIPT_STATUS=1
 fi
-if test -z "$PULL_REQUEST_NUMBER"; then
-  echo "Variable \"PULL_REQUEST_NUMBER\" is not set"
+if test -z "$PR_NUMBER"; then
+  echo "Variable \"PR_NUMBER\" is not set"
   SCRIPT_STATUS=1
 fi
 
@@ -28,10 +28,10 @@ if test $SCRIPT_STATUS -ne 0; then
   exit $SCRIPT_STATUS
 fi
 
-if [[ $PULL_REQUEST_NUMBER =~ ^[0-9]+$ ]]
+if [[ $PR_NUMBER =~ ^[0-9]+$ ]]
 then
   TELEGRAM_MESSAGE_PREFIX+="${newline}pull request "
-  TELEGRAM_MESSAGE_PREFIX+="[#$PULL_REQUEST_NUMBER]($REPO_URL/pull/$PULL_REQUEST_NUMBER)"
+  TELEGRAM_MESSAGE_PREFIX+="[#$PR_NUMBER]($REPO_URL/pull/$PR_NUMBER)"
 else
   echo "it is not a pull request"
 fi
