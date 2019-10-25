@@ -36,7 +36,7 @@ fun Project.hasPropertiesNotEmpty(first: String, vararg other: String): Boolean 
 }
 
 fun Project.ifHasPropertiesNotEmpty(first: String, vararg other: String, action: Project.() -> Unit) {
-    if(hasPropertiesNotEmpty(first, *other)) action()
+    if (hasPropertiesNotEmpty(first, *other)) action()
 }
 
 fun Project.protectedName(): String {
