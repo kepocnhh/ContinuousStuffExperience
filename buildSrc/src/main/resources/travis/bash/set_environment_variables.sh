@@ -53,11 +53,15 @@ export emoji_heavy_check_mark="%E2%9C%94%EF%B8%8F"
 export emoji_heavy_exclamation_mark="%E2%9D%97%EF%B8%8F"
 export emoji_grey_exclamation="%E2%9D%95"
 
-commit_message_encoded=$TRAVIS_COMMIT_MESSAGE
+commit_message_encoded=$COMMIT_MESSAGE
 commit_message_encoded=${commit_message_encoded//"_"/"\_"}
 commit_message_encoded=${commit_message_encoded//"*"/"\*"}
 
 TRAVIS_MESSAGE="Travis build [#$TRAVIS_BUILD_NUMBER]($TRAVIS_URL/builds/$TRAVIS_BUILD_ID)"
 REPOSITORY_MESSAGE="Repository [$REPO_NAME]($REPO_URL) of [$REPO_OWNER]($REPO_OWNER_URL)"
-COMMIT_MESSAGE="commit [${TRAVIS_COMMIT::7}]($REPO_URL/commit/$TRAVIS_COMMIT) \"$commit_message_encoded\""
-export TELEGRAM_MESSAGE_PREFIX="$TRAVIS_MESSAGE${newline}${newline}$REPOSITORY_MESSAGE${newline}${newline}$COMMIT_MESSAGE"
+TELEGRAM_COMMIT_MESSAGE="commit [${TRAVIS_COMMIT::7}]($REPO_URL/commit/$TRAVIS_COMMIT) \"$commit_message_encoded\""
+export TELEGRAM_MESSAGE_PREFIX="$TRAVIS_MESSAGE"
+TELEGRAM_MESSAGE_PREFIX="${newline}${newline}"
+TELEGRAM_MESSAGE_PREFIX="$REPOSITORY_MESSAGE"
+TELEGRAM_MESSAGE_PREFIX="${newline}${newline}"
+TELEGRAM_MESSAGE_PREFIX="$TELEGRAM_COMMIT_MESSAGE"

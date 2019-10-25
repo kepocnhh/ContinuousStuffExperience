@@ -12,7 +12,7 @@ if test -z "$PR_NUMBER"; then
   $EXIT 0
 fi
 
-if test "$BRANCH_NAME" != "$DEVELOP_BRANCH_NAME"; then
+if [[ "$BRANCH_NAME" != "$DEVELOP_BRANCH_NAME" ]]; then
   echo "it is not pull request to branch \"$DEVELOP_BRANCH_NAME\" but to branch \"$BRANCH_NAME\""
   VERIFY_VERSION_STATUS=$VERIFY_VERSION_STATUS_SUCCESS
   $EXIT 0
@@ -40,13 +40,13 @@ VERIFY_VERSION_STATUS=$VERIFY_VERSION_STATUS_UNKNOWN
 
 task_name="allProjectsWithVersion"
 allProjectsDst=$(gradle -p $LOCAL_PATH -q $task_name) || ILLEGAL_STATE=$?
-if [ $ILLEGAL_STATE -ne 0 ]; then
+if [[ $ILLEGAL_STATE -ne 0 ]]; then
   echo "Task \"$task_name\" must be completed successfully for destination."
   $EXIT 0
 fi
 
 allProjectsSrc=$(gradle -q $task_name) || ILLEGAL_STATE=$?
-if [ $ILLEGAL_STATE -ne 0 ]; then
+if [[ $ILLEGAL_STATE -ne 0 ]]; then
   echo "Task \"$task_name\" must be completed successfully for source."
   $EXIT 0
 fi
@@ -58,13 +58,13 @@ fi
 
 task_name="versions"
 versionsDst=$(gradle -p $LOCAL_PATH -q $task_name) || ILLEGAL_STATE=$?
-if [ $ILLEGAL_STATE -ne 0 ]; then
+if [[ $ILLEGAL_STATE -ne 0 ]]; then
   echo "Task \"$task_name\" must be completed successfully for destination."
   $EXIT 0
 fi
 
 versionsSrc=$(gradle -q $task_name) || ILLEGAL_STATE=$?
-if [ $ILLEGAL_STATE -ne 0 ]; then
+if [[ $ILLEGAL_STATE -ne 0 ]]; then
   echo "Task \"$task_name\" must be completed successfully for source."
   $EXIT 0
 fi
