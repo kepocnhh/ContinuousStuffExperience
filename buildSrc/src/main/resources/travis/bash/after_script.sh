@@ -7,8 +7,7 @@ then
 else
   TESTING_MESSAGE+=$emoji_heavy_check_mark
 fi
-if test -z "$TESTING_REPORT_URL" 
-then
+if test -z "$TESTING_REPORT_URL"; then
   echo "no testing report provided"
 else
   TESTING_MESSAGE+=" [report]($TESTING_REPORT_URL)"
@@ -23,8 +22,7 @@ then
 else
   TEST_COVERAGE_MESSAGE+=$emoji_heavy_check_mark
 fi
-if test -z "$TEST_COVERAGE_REPORT_URL"
-then
+if test -z "$TEST_COVERAGE_REPORT_URL"; then
   echo "no test coverage report provided"
 else
   TEST_COVERAGE_MESSAGE+=" [report]($TEST_COVERAGE_REPORT_URL)"
@@ -40,19 +38,16 @@ MESSAGE+="$TEST_COVERAGE_MESSAGE"
 
 #__________ __________ documentation >
 
-if [ $VERIFY_DOCUMENTATION_STATUS -ne 0 ] && [ -z "$DOCUMENTATION_URL" ]
-then
+if [ $VERIFY_DOCUMENTATION_STATUS -ne 0 ] && [ -z "$DOCUMENTATION_URL" ]; then
   MESSAGE+="${newline}"
   MESSAGE+="- documentation $emoji_heavy_exclamation_mark"
   echo "documentation is not complete"
   echo "no documentation provided"
-elif [ $VERIFY_DOCUMENTATION_STATUS -ne 0 ]
-then
+elif [ $VERIFY_DOCUMENTATION_STATUS -ne 0 ]; then
   MESSAGE+="${newline}"
   MESSAGE+="- documentation $emoji_grey_exclamation [link]($DOCUMENTATION_URL)"
   echo "documentation is not complete"
-elif [ -z "$DOCUMENTATION_URL" ]
-then
+elif [ -z "$DOCUMENTATION_URL" ]; then
   MESSAGE+="${newline}"
   MESSAGE+="- documentation $emoji_grey_exclamation"
   echo "no documentation provided"

@@ -1,16 +1,17 @@
 echo "after success..."
 
 if test -z "$PR_NUMBER"; then
-  if test "$BRANCH_NAME" != "$DEVELOP_BRANCH_NAME"; then
-    echo "it is not pull request to branch \"$DEVELOP_BRANCH_NAME\" but to branch \"$BRANCH_NAME\""
-    exit 1
-  fi
-  if test -z "$PR_SOURCE_BRANCH_NAME"; then
-    echo "source branch of pull request #$PR_NUMBER undefined"
-    exit 2
-  fi
-else
   echo "it is not pull request"
+  exit 1
+fi
+
+if test "$BRANCH_NAME" != "$DEVELOP_BRANCH_NAME"; then
+  echo "it is not pull request to branch \"$DEVELOP_BRANCH_NAME\", but to branch \"$BRANCH_NAME\""
+  exit 2
+fi
+
+if test -z "$PR_SOURCE_BRANCH_NAME"; then
+  echo "source branch of pull request #$PR_NUMBER undefined"
   exit 3
 fi
 
@@ -40,7 +41,7 @@ ILLEGAL_STATE=0
 echo $newline
 echo "fetching origin pull/$PR_NUMBER/head..."
 git -C $LOCAL_PATH fetch origin pull/$PR_NUMBER/head:$PR_BRANCH_NAME || ILLEGAL_STATE=$?
-if [ $ILLEGAL_STATE -ne 0 ]
+if test $ILLEGAL_STATE -ne 0
 then
   echo "Fetching origin pull/$PR_NUMBER/head failed!"
   exit $ILLEGAL_STATE
@@ -53,21 +54,9 @@ PULL_REQUEST_COMMIT_MESSAGE="Merge $COMMIT -> \"$BRANCH_NAME\" by $USER"
 echo $newline
 echo "merging $COMMIT -> \"$BRANCH_NAME\"..."
 git -C $LOCAL_PATH merge -q --no-ff -m "$PULL_REQUEST_COMMIT_MESSAGE" $PR_BRANCH_NAME || ILLEGAL_STATE=$?
-if [ $ILLEGAL_STATE -ne 0 ]
+if test $ILLEGAL_STATE -ne 0
 then
   echo "Merge $COMMIT -> \"$BRANCH_NAME\" failed!"
-  exit $ILLEGAL_STATE
-fi
-
-#__________ __________ verify diff >
-
-echo $newline
-echo "verify diff \"origin/$BRANCH_NAME\" and \"$BRANCH_NAME\"..."
-
-bash ${BASH_PATH}/increment_version_patch.sh $LOCAL_PATH || ILLEGAL_STATE=$?
-if [ $ILLEGAL_STATE -ne 0 ]
-then
-  echo "Verify diff \"origin/$BRANCH_NAME\" and \"$BRANCH_NAME\" failed!"
   exit $ILLEGAL_STATE
 fi
 
@@ -76,7 +65,7 @@ fi
 echo $newline
 echo "pushing merge $COMMIT -> \"$BRANCH_NAME\"..."
 git -C $LOCAL_PATH push -f -q || ILLEGAL_STATE=$?
-if [ $ILLEGAL_STATE -ne 0 ]
+if test $ILLEGAL_STATE -ne 0
 then
   echo "Push merge $COMMIT -> \"$BRANCH_NAME\" failed!"
   exit $ILLEGAL_STATE
