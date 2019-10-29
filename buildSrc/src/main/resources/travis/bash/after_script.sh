@@ -39,7 +39,7 @@ if [[ "$ROOT_PROJECT_VERSION" == "" ]]; then
   echo "Root project version not provided"
   MESSAGE+="Root project version not provided $emoji_heavy_exclamation_mark"
 else
-  MESSAGE+="version `$ROOT_PROJECT_VERSION`"
+  MESSAGE+="version \`$ROOT_PROJECT_VERSION\`"
 fi
 
 MESSAGE+="${newline}${newline}"
