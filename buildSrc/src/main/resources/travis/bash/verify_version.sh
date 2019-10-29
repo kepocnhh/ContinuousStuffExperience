@@ -74,3 +74,98 @@ if [[ "$versionsDst" == "$versionsSrc" ]]; then
   VERIFY_VERSION_STATUS="error"
   $EXIT 1
 fi
+
+task_name=":protectedName"
+rootProjectProtectedName=$(gradle -q $task_name) || ILLEGAL_STATE=$?
+if [[ $ILLEGAL_STATE -ne 0 ]]; then
+  echo "Task \"$task_name\" must be completed successfully."
+  $EXIT 1
+fi
+
+lines=($(git diff --name-only origin/$BRANCH_NAME $BRANCH_NAME))
+
+if [ -z "${lines//$' '/""}" ] || [ ${#lines[@]} -eq 0 ]; then
+  echo "lines must be not empty"
+  VERIFY_VERSION_STATUS="error"
+  $EXIT 1
+fi
+
+for line in ${lines[@]}; do
+  if [[ "$line" == "" ]]; then
+    echo "line must be not empty"
+    VERIFY_VERSION_STATUS="error"
+    $EXIT 1
+  fi
+done
+
+function isProjectChanged {
+  if test $# -ne 1; then
+      echo "Script needs for 1 arguments but actual $#"
+      return 1
+  fi
+
+  project=$1
+
+  if [[ "$rootProjectProtectedName" == "$project" ]]; then
+    echo "true"
+    return 0
+  fi
+
+  for line in ${lines[@]}; do
+    if [[ "$rootProjectProtectedName/$line" == "$project/"* ]]; then
+      echo "true"
+      return 0
+    fi
+  done
+
+  echo "false"
+  return 0
+}
+
+function isVersionChanged {
+  if test $# -ne 1; then
+      echo "Script needs for 1 arguments but actual $#"
+      return 1
+  fi
+
+  project=$1
+
+  for versionsDst in ${versionsDst[@]}; do
+    if [[ "$versionsDst" == "$project:"* ]]; then
+      for versionsSrc in ${versionsSrc[@]}; do
+        if [[ "$versionsSrc" == "$project:"* ]]; then
+          if [[ "$versionsDst" != "$versionsSrc" ]]; then
+            echo "true"
+            return 0
+          else
+            echo "false"
+            return 0
+          fi
+        fi
+      done
+    fi
+  done
+
+  echo "version for project \"$project\" must exist"
+  VERIFY_VERSION_STATUS="error"
+  $EXIT 1
+}
+
+for project in ${allProjectsDst[@]}; do
+  if [[ "$(isProjectChanged $project)" == "true" ]]; then
+    if [[ "$(isVersionChanged $project)" != "true" ]]; then
+      echo "version of project $project must be changed"
+      VERIFY_VERSION_STATUS="error"
+      $EXIT 1
+    fi
+  else
+    if [[ "$(isVersionChanged $project)" == "true" ]]; then
+      echo "version of project $project must be NOT changed"
+      VERIFY_VERSION_STATUS="error"
+      $EXIT 1
+    fi
+  fi
+done
+
+VERIFY_VERSION_STATUS=$VERIFY_VERSION_STATUS_SUCCESS
+$EXIT 0

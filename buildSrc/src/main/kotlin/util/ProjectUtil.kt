@@ -1,5 +1,7 @@
 package util
 
+import groovy.json.JsonSlurper
+import java.io.File
 import org.gradle.api.Project
 import org.gradle.api.Task
 import org.gradle.api.tasks.SourceSetContainer
@@ -39,10 +41,12 @@ fun Project.ifHasPropertiesNotEmpty(first: String, vararg other: String, action:
     if (hasPropertiesNotEmpty(first, *other)) action()
 }
 
+const val PROTECTED_ROOT_NAME = "@:rootProject"
+
 fun Project.protectedName(): String {
     return parent?.let {
-        it.protectedName() + ":$name"
-    } ?: "@:rootProject"
+        it.protectedName() + "/$name"
+    } ?: PROTECTED_ROOT_NAME
 }
 
 fun Iterable<Project>.sourceSets(name: String) = map {
@@ -63,8 +67,41 @@ fun Iterable<Project>.tasks() = flatMap {
 
 fun Iterable<Project>.tasksByName(name: String) = tasksBy { it.name == name }
 
+const val PROPERTIES_JSON_FILE_NAME = "properties.json"
+
+fun Project.verifyPropertiesJson() {
+    val file = File(projectDir.absolutePath + "/$PROPERTIES_JSON_FILE_NAME")
+    if (file.exists()) when (val jsonNode = JsonSlurper().parseText(file.readText())) {
+        is Map<*, *> -> {
+            jsonNode.forEach { (key, value) ->
+                check(key is String) { "key must be string" }
+                if (value != null) check(value is String) {
+                    "value by \"$key\" must be `null` or `string` but it is `${value::class.java.name}`"
+                }
+            }
+        }
+        else -> throw IllegalStateException("file \"$PROPERTIES_JSON_FILE_NAME\" must contains json object")
+    }
+}
+
+fun Project.propertyOrNull(key: String): String? {
+    val file = File(projectDir.absolutePath + "/$PROPERTIES_JSON_FILE_NAME")
+    if (!file.exists()) return null
+    when (val jsonNode = JsonSlurper().parseText(file.readText())) {
+        is Map<*, *> -> {
+            return jsonNode[key]?.let { it as String }
+        }
+        else -> throw IllegalStateException("file \"$PROPERTIES_JSON_FILE_NAME\" must contains json object")
+    }
+}
+
+fun Project.propertyNotEmptyOrNull(key: String): String? {
+    val result = propertyOrNull(key)
+    return if (result.isNullOrEmpty()) null else result
+}
+
 fun Project.requireProperty(key: String): String {
-    return property(key) as? String ?: throw IllegalStateException("Project \"$name\" must have property \"$key\"")
+    return propertyOrNull(key) ?: throw IllegalStateException("Project \"$name\" must have property \"$key\"")
 }
 
 fun Project.requirePropertyNotEmpty(key: String): String {
@@ -73,31 +110,9 @@ fun Project.requirePropertyNotEmpty(key: String): String {
     return result
 }
 
-fun Project.propertyOrNull(key: String): String? {
-    return if (!hasProperty(key)) null
-    else property(key) as? String
-}
-
-fun Project.propertyNotEmptyOrNull(key: String): String? {
-    val result = propertyOrNull(key)
-    return if (result.isNullOrEmpty()) null else result
-}
-
 fun Project.allProjects(): List<Project> {
     val result = mutableListOf<Project>()
     result.add(rootProject)
-    rootProject.subprojects.forEach {
-        result.add(it)
-        result.addAll(it.subrojectsRecurse())
-    }
-    return result
-}
-
-fun Project.subrojectsRecurse(): List<Project> {
-    val result = mutableListOf<Project>()
-    subprojects.forEach {
-        result.add(it)
-        result.addAll(it.subrojectsRecurse())
-    }
+    result.addAll(rootProject.subprojects)
     return result
 }
