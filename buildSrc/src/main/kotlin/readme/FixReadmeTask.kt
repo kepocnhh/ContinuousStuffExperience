@@ -10,6 +10,7 @@ import org.gradle.kotlin.dsl.task
 import testing.testingReportHtmlIndexPath
 import testing.testingReportSignaturePath
 import util.log
+import versionName
 
 fun Project.createFixReadmeTask(
     name: String = "fixReadme",
@@ -54,6 +55,14 @@ fun Project.createFixReadmeTask(
             ).also {
                 results.add(it)
             }
+
+            lines.replaceLine(
+                substring = currentVersionPrefix,
+                newLine = getCurrentVersionBadge(versionName())
+            ).also {
+                results.add(it)
+            }
+
             if (results.firstOrNull { it != ReplaceType.NONE } != null) {
                 val text = lines.reduce { accumulator, line -> accumulator + "\n" + line }
                 verifyFileText(readmeFullPath, text)

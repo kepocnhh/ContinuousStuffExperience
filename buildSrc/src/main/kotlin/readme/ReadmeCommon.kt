@@ -14,11 +14,13 @@ import org.gradle.api.Project
 import testing.getTestingResult
 import testing.testingReportHtmlIndexPath
 import testing.testingReportSignaturePath
+import versionName
 
 internal const val testCoveragePrefix = "![test coverage]"
 internal const val testingPrefix = "![testing]"
 internal const val documentationPrefix = "![documentation]"
 internal const val codeStylePrefix = "![code style]"
+internal const val currentVersionPrefix = "![current version]"
 
 internal const val DEFAULT_README_FILE_PATH = "./README.md"
 
@@ -70,6 +72,16 @@ internal fun getCodeStyleBadge(): String {
     return "[$codeStylePrefix($badgeUrl)]($url)"
 }
 
+internal fun getCurrentVersionBadge(versionName: String): String {
+    val url = "https://github.com/kepocnhh/ContinuousStuffExperience/releases"
+    val badgeUrl = createBadgeUrl(
+        label = "current%20version",
+        message = versionName,
+        colorMessage = COLOR_BLUE
+    )
+    return "[$currentVersionPrefix($badgeUrl)]($url)"
+}
+
 internal fun Project.verifyFileText(fileFullPath: String, text: String) {
     val errorMessagePrefix = "File by path: \"$fileFullPath\""
     check(text.isNotEmpty()) { "$errorMessagePrefix must not be empty!" }
@@ -95,7 +107,12 @@ internal fun Project.verifyFileText(fileFullPath: String, text: String) {
     }
     val codeStyleBadge = getCodeStyleBadge()
     check(text.contains(codeStyleBadge)) {
-        "$errorMessagePrefix must contains documentation badge:\n$codeStyleBadge"
+        "$errorMessagePrefix must contains code style badge:\n$codeStyleBadge"
+    }
+
+    val currentVersionBadge = getCurrentVersionBadge(versionName())
+    check(text.contains(currentVersionBadge)) {
+        "$errorMessagePrefix must contains current version badge:\n$currentVersionBadge"
     }
 }
 
@@ -123,7 +140,7 @@ internal fun MutableList<String>.replaceLine(
         }
         throw IllegalStateException("not possible")
     } else {
-        set(0, newLine)
+        add(0, newLine)
         return ReplaceType.ADDED
     }
 }

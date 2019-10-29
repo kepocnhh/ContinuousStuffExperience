@@ -32,6 +32,18 @@ echo $TEST_COVERAGE_MESSAGE
 
 MESSAGE="$TELEGRAM_MESSAGE_PREFIX"
 MESSAGE+="${newline}${newline}"
+
+#__________ __________ version >
+
+if [[ "$ROOT_PROJECT_VERSION" == "" ]]; then
+  echo "Root project version not provided"
+  MESSAGE+="Root project version not provided $emoji_heavy_exclamation_mark"
+else
+  MESSAGE+="version \`$ROOT_PROJECT_VERSION\`"
+fi
+
+MESSAGE+="${newline}${newline}"
+
 MESSAGE+="$TESTING_MESSAGE"
 MESSAGE+="${newline}"
 MESSAGE+="$TEST_COVERAGE_MESSAGE"

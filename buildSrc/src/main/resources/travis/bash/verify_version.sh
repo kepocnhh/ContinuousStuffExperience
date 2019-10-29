@@ -6,6 +6,20 @@ else
   EXIT=exit
 fi
 
+task_name=":version"
+rootProjectVersion=$(gradle -q $task_name) || ILLEGAL_STATE=$?
+if [[ $ILLEGAL_STATE -ne 0 ]]; then
+  echo "Task \"$task_name\" must be completed successfully for destination."
+  VERIFY_VERSION_STATUS="error"
+  $EXIT 1
+fi
+if [[ "$rootProjectVersion" == "" ]]; then
+  echo "Root project version must be not empty"
+  VERIFY_VERSION_STATUS="error"
+  $EXIT 1
+fi
+ROOT_PROJECT_VERSION=$rootProjectVersion
+
 if test -z "$PR_NUMBER"; then
   echo "it is not pull request"
   VERIFY_VERSION_STATUS=$VERIFY_VERSION_STATUS_SUCCESS
@@ -82,7 +96,7 @@ if [[ $ILLEGAL_STATE -ne 0 ]]; then
   $EXIT 1
 fi
 
-lines=($(git diff --name-only origin/$BRANCH_NAME $BRANCH_NAME))
+lines=($(git diff --name-only origin/$BRANCH_NAME))
 
 if [ -z "${lines//$' '/""}" ] || [ ${#lines[@]} -eq 0 ]; then
   echo "lines must be not empty"

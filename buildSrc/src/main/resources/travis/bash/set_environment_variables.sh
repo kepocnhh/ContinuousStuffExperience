@@ -39,6 +39,8 @@ export VERIFY_STYLE_STATUS=0
 export VERIFY_WARNING_STATUS=0
 export VERIFY_README_STATUS=0
 
+export ROOT_PROJECT_VERSION=""
+
 export VERIFY_VERSION_STATUS_SUCCESS="verify_version_status_success"
 export VERIFY_VERSION_STATUS_UNKNOWN="verify_version_status_unknown"
 export VERIFY_VERSION_STATUS=$VERIFY_VERSION_STATUS_UNKNOWN
@@ -56,6 +58,8 @@ export emoji_grey_exclamation="%E2%9D%95"
 commit_message_encoded=$COMMIT_MESSAGE
 commit_message_encoded=${commit_message_encoded//"_"/"\_"}
 commit_message_encoded=${commit_message_encoded//"*"/"\*"}
+commit_message_encoded=${commit_message_encoded//"\`"/"\\\`"}
+commit_message_encoded=${commit_message_encoded//"+"/"%2B"}
 
 TRAVIS_MESSAGE="Travis build [#$TRAVIS_BUILD_NUMBER]($TRAVIS_URL/builds/$TRAVIS_BUILD_ID)"
 REPOSITORY_MESSAGE="Repository [$REPO_NAME]($REPO_URL) of [$REPO_OWNER]($REPO_OWNER_URL)"
