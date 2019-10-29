@@ -96,7 +96,7 @@ if [[ $ILLEGAL_STATE -ne 0 ]]; then
   $EXIT 1
 fi
 
-lines=($(git diff --name-only origin/$BRANCH_NAME $BRANCH_NAME))
+lines=($(git diff --name-only origin/$BRANCH_NAME))
 
 if [ -z "${lines//$' '/""}" ] || [ ${#lines[@]} -eq 0 ]; then
   echo "lines must be not empty"
