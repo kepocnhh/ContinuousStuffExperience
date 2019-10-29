@@ -11,16 +11,21 @@ object Version {
     const val kotlinLintHtmlReporter = "0.2.3"
 }
 
+const val VERSION_PATCH_KEY = "versionPatch"
+const val VERSION_MINOR_KEY = "versionMinor"
+const val VERSION_MAJOR_KEY = "versionMajor"
+
 fun Project.versionName(): String {
-    val versionMajor = requirePropertyNotEmpty("versionMajor")
-    val versionMinor = requirePropertyNotEmpty("versionMinor")
-    val versionPatch = requirePropertyNotEmpty("versionPatch")
+    val versionMajor = requirePropertyNotEmpty(VERSION_MAJOR_KEY)
+    val versionMinor = requirePropertyNotEmpty(VERSION_MINOR_KEY)
+    val versionPatch = requirePropertyNotEmpty(VERSION_PATCH_KEY)
     return "$versionMajor.$versionMinor.$versionPatch"
 }
 
 fun Project.versionPatch(): Int {
-    return requirePropertyNotEmpty("versionPatch").toInt()
+    return requirePropertyNotEmpty(VERSION_PATCH_KEY).toInt()
 }
+
 fun Project.versionMinor(): Int {
-    return requirePropertyNotEmpty("versionMinor").toInt()
+    return requirePropertyNotEmpty(VERSION_MINOR_KEY).toInt()
 }

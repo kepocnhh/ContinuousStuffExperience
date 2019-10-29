@@ -1,3 +1,9 @@
+if [[ "$0" != "$BASH_SOURCE" ]]; then
+  EXIT=return
+else
+  EXIT=exit
+fi
+
 LOCAL_PATH="~/gh-pages"
 
 GIT_URL="https://$git_hub_personal_access_token@github.com/$REPO_SLUG"
@@ -6,7 +12,7 @@ GIT_URL="https://$git_hub_personal_access_token@github.com/$REPO_SLUG"
 
 echo $newline
 echo "cloning $REPO_SLUG to $LOCAL_PATH..."
-git clone -q --depth=1 --branch=gh-pages $GIT_URL.git $LOCAL_PATH || exit 1
+git clone -q --depth=1 --branch=gh-pages $GIT_URL.git $LOCAL_PATH || $EXIT 1
 
 git -C $LOCAL_PATH config user.name "$USER"
 git -C $LOCAL_PATH config user.email "$USER"
@@ -34,17 +40,17 @@ else
 	git -C $LOCAL_PATH add --all . || ILLEGAL_STATE=$?
   if [ $ILLEGAL_STATE -ne 0 ]; then
     echo "adding failed!"
-    exit $ILLEGAL_STATE
+    $EXIT $ILLEGAL_STATE
   fi
 	git -C $LOCAL_PATH commit -m "add $testCoverageSignature test coverage report" || ILLEGAL_STATE=$?
   if [ $ILLEGAL_STATE -ne 0 ]; then
     echo "commiting failed!"
-    exit $ILLEGAL_STATE
+    $EXIT $ILLEGAL_STATE
   fi
 	git -C $LOCAL_PATH push -f -q || ILLEGAL_STATE=$?
   if [ $ILLEGAL_STATE -ne 0 ]; then
     echo "pushing failed!"
-    exit $ILLEGAL_STATE
+    $EXIT $ILLEGAL_STATE
   fi
 fi
 
@@ -69,17 +75,17 @@ else
 	git -C $LOCAL_PATH add --all . || ILLEGAL_STATE=$?
   if [ $ILLEGAL_STATE -ne 0 ]; then
     echo "adding failed!"
-    exit $ILLEGAL_STATE
+    $EXIT $ILLEGAL_STATE
   fi
 	git -C $LOCAL_PATH commit -m "add $testingSignature test report" || ILLEGAL_STATE=$?
   if [ $ILLEGAL_STATE -ne 0 ]; then
     echo "commiting failed!"
-    exit $ILLEGAL_STATE
+    $EXIT $ILLEGAL_STATE
   fi
 	git -C $LOCAL_PATH push -f -q || ILLEGAL_STATE=$?
   if [ $ILLEGAL_STATE -ne 0 ]; then
     echo "pushing failed!"
-    exit $ILLEGAL_STATE
+    $EXIT $ILLEGAL_STATE
   fi
 fi
 
@@ -104,16 +110,16 @@ else
 	git -C $LOCAL_PATH add --all . || ILLEGAL_STATE=$?
   if [ $ILLEGAL_STATE -ne 0 ]; then
     echo "adding failed!"
-    exit $ILLEGAL_STATE
+    $EXIT $ILLEGAL_STATE
   fi
 	git -C $LOCAL_PATH commit -m "add $documentationSignature documentation" || ILLEGAL_STATE=$?
   if [ $ILLEGAL_STATE -ne 0 ]; then
     echo "commiting failed!"
-    exit $ILLEGAL_STATE
+    $EXIT $ILLEGAL_STATE
   fi
 	git -C $LOCAL_PATH push -f -q || ILLEGAL_STATE=$?
   if [ $ILLEGAL_STATE -ne 0 ]; then
     echo "pushing failed!"
-    exit $ILLEGAL_STATE
+    $EXIT $ILLEGAL_STATE
   fi
 fi

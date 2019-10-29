@@ -6,7 +6,7 @@
 !/lib2
 !/sample
 !build.gradle.kts
-!gradle.properties
+!properties.json
 !LICENSE
 !README.md
 !settings.gradle.kts

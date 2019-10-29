@@ -35,6 +35,10 @@ repositories {
     jcenter()
 }
 
+allProjects().forEach {
+    it.verifyPropertiesJson()
+}
+
 version = versionName()
 
 val kotlinLint: Configuration by configurations.creating
@@ -66,9 +70,9 @@ allProjects().forEach { project ->
 }
 
 allProjects().withPropertiesNotEmpty(
-    "versionMajor",
-    "versionMinor",
-    "versionPatch"
+    VERSION_MAJOR_KEY,
+    VERSION_MINOR_KEY,
+    VERSION_PATCH_KEY
 ).forEach { project ->
     project.task<DefaultTask>("version") {
         doLast {
@@ -84,26 +88,24 @@ allProjects().withPropertiesNotEmpty(
 task<DefaultTask>("versions") {
     doLast {
         allProjects().withPropertiesNotEmpty(
-            "versionMajor",
-            "versionMinor",
-            "versionPatch"
+            VERSION_MAJOR_KEY,
+            VERSION_MINOR_KEY,
+            VERSION_PATCH_KEY
         ).sortedBy { it.protectedName() }.forEach {
             println(it.protectedName() + ":" + it.version)
         }
     }
 }
 
-createIncrementVersionPatchTask()
-subprojects.withPropertiesNotEmpty(
-    "versionPatch"
+allProjects().withPropertiesNotEmpty(
+    VERSION_PATCH_KEY
 ).forEach {
     it.createIncrementVersionPatchTask()
 }
 
-createIncrementVersionMinorTask()
-subprojects.withPropertiesNotEmpty(
-    "versionMinor",
-    "versionPatch"
+allProjects().withPropertiesNotEmpty(
+    VERSION_MINOR_KEY,
+    VERSION_PATCH_KEY
 ).forEach {
     it.createIncrementVersionMinorTask()
 }
@@ -127,7 +129,7 @@ detekt {
 
 task<Detekt>("verifyDocumentation") {
     source = files(subprojects.withPlugin("kotlin").srcDirs("main")).asFileTree
-    config = files("buildSrc/src/main/resources/detekt/config/documentation.yml")
+    config.setFrom("buildSrc/src/main/resources/detekt/config/documentation.yml")
     reports {
         html.enabled = false
         xml.enabled = false
@@ -219,20 +221,12 @@ task<DefaultTask>("allProjects") {
     }
 }
 
-task<DefaultTask>("subprojects") {
-    doLast {
-        subrojectsRecurse().forEach {
-            println(it.protectedName())
-        }
-    }
-}
-
 task<DefaultTask>("allProjectsWithVersion") {
     doLast {
         allProjects().withPropertiesNotEmpty(
-            "versionMajor",
-            "versionMinor",
-            "versionPatch"
+            VERSION_MAJOR_KEY,
+            VERSION_MINOR_KEY,
+            VERSION_PATCH_KEY
         ).sortedBy { it.protectedName() }.forEach {
             println(it.protectedName())
         }

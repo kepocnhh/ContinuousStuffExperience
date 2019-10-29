@@ -1,5 +1,5 @@
 /*
 !.gitignore
 !build.gradle.kts
-!gradle.properties
+!properties.json
 !/src
