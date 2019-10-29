@@ -6,6 +6,8 @@ else
   EXIT=exit
 fi
 
+LOCAL_PATH="~/version"
+
 task_name=":version"
 rootProjectVersion=$(gradle -p $LOCAL_PATH -q $task_name) || ILLEGAL_STATE=$?
 if [[ $ILLEGAL_STATE -ne 0 ]]; then
@@ -41,8 +43,6 @@ fi
 echo $newline
 echo "it is pull request #$PR_NUMBER $COMMIT -> \"$BRANCH_NAME\""
 echo $newline
-
-LOCAL_PATH="~/version"
 
 GIT_URL="https://$git_hub_personal_access_token@github.com/$REPO_SLUG"
 
