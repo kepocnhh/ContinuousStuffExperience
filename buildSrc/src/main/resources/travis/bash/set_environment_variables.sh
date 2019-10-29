@@ -58,7 +58,7 @@ export emoji_grey_exclamation="%E2%9D%95"
 commit_message_encoded=$COMMIT_MESSAGE
 commit_message_encoded=${commit_message_encoded//"_"/"\_"}
 commit_message_encoded=${commit_message_encoded//"*"/"\*"}
-commit_message_encoded=${commit_message_encoded//"\`"/"\\`"}
+commit_message_encoded=${commit_message_encoded//"\`"/"\\\`"}
 commit_message_encoded=${commit_message_encoded//"+"/"%2B"}
 
 TRAVIS_MESSAGE="Travis build [#$TRAVIS_BUILD_NUMBER]($TRAVIS_URL/builds/$TRAVIS_BUILD_ID)"
