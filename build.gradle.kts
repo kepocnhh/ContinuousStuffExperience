@@ -69,6 +69,22 @@ allProjects().forEach { project ->
     }
 }
 
+allProjects().forEach { project ->
+    project.task<DefaultTask>("canonicalName") {
+        doLast {
+            println(project.canonicalName())
+        }
+    }
+}
+
+allProjects().forEach { project ->
+    project.task<DefaultTask>("simpleName") {
+        doLast {
+            println(project.name)
+        }
+    }
+}
+
 allProjects().withPropertiesNotEmpty(
     VERSION_MAJOR_KEY,
     VERSION_MINOR_KEY,
@@ -76,10 +92,15 @@ allProjects().withPropertiesNotEmpty(
 ).forEach { project ->
     project.task<DefaultTask>("version") {
         doLast {
+            println(project.version)
+        }
+    }
+    project.task<DefaultTask>("canonicalVersion") {
+        doLast {
             if(project.parent == null) {
-                println(project.version)
+                println(":" + project.version)
             } else {
-                println(project.name + ":" + project.version)
+                println(project.canonicalName() + ":" + project.version)
             }
         }
     }
@@ -230,5 +251,13 @@ task<DefaultTask>("allProjectsWithVersion") {
         ).sortedBy { it.protectedName() }.forEach {
             println(it.protectedName())
         }
+    }
+}
+
+task<DefaultTask>("allProjectsForAssembly") {
+    doLast {
+        allProjects().filter {
+            it.propertyOrNull("assembly") == "true"
+        }.map { it.canonicalName() }.sorted().forEach(::println)
     }
 }

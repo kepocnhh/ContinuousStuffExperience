@@ -44,6 +44,20 @@ fi
 
 MESSAGE+="${newline}${newline}"
 
+#__________ __________ assembly >
+
+if [ $ASSEMBLY_STATUS -ne 0 ]
+then
+  MESSAGE+="${newline}"
+  MESSAGE+="assembly failed $emoji_heavy_exclamation_mark"
+else
+  MESSAGE+="${newline}"
+  MESSAGE+="assembly ok but not implemented $emoji_grey_exclamation"
+  # todo
+fi
+
+MESSAGE+="${newline}${newline}"
+
 MESSAGE+="$TESTING_MESSAGE"
 MESSAGE+="${newline}"
 MESSAGE+="$TEST_COVERAGE_MESSAGE"

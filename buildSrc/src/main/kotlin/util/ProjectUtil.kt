@@ -49,6 +49,12 @@ fun Project.protectedName(): String {
     } ?: PROTECTED_ROOT_NAME
 }
 
+fun Project.canonicalName(): String {
+    val parentProject = parent ?: return ":"
+    return if (parentProject.parent == null) ":$name"
+    else parentProject.canonicalName() + ":" + name
+}
+
 fun Iterable<Project>.sourceSets(name: String) = map {
     it.sourceSet(name)
 }
