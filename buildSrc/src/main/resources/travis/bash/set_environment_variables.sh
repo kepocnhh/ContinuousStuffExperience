@@ -15,6 +15,10 @@ export REPO_URL="https://github.com/$TRAVIS_REPO_SLUG"
 export GIT_HUB_PAGES_URL="https://${REPO_OWNER}.github.io/$REPO_NAME"
 export TRAVIS_URL="https://travis-ci.com/$TRAVIS_REPO_SLUG"
 
+export DEVELOP_BRANCH_NAME="dev"
+export MASTER_BRANCH_NAME="master"
+export BRANCH_NAME=$TRAVIS_BRANCH
+
 export PR_NUMBER=""
 export PR_SOURCE_BRANCH_NAME=""
 if [[ $TRAVIS_PULL_REQUEST =~ $IS_INTEGER_REGEX ]]
@@ -32,9 +36,6 @@ fi
 
 export COMMIT=$TRAVIS_COMMIT
 export COMMIT_MESSAGE=$TRAVIS_COMMIT_MESSAGE
-export BRANCH_NAME=$TRAVIS_BRANCH
-export DEVELOP_BRANCH_NAME="dev"
-export MASTER_BRANCH_NAME="master"
 
 export TESTING_STATUS=0
 export VERIFY_TEST_COVERAGE_STATUS=0

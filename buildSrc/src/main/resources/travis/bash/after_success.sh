@@ -16,7 +16,7 @@ if test -z "$PR_SOURCE_BRANCH_NAME"; then
 fi
 
 echo $newline
-echo "it is pull request #$PR_NUMBER $COMMIT -> \"$BRANCH_NAME\""
+echo "it is pull request #$PR_NUMBER \"$PR_SOURCE_BRANCH_NAME\" -> \"$BRANCH_NAME\""
 echo $newline
 
 LOCAL_PATH="~/automerge"
@@ -47,26 +47,26 @@ then
   exit $ILLEGAL_STATE
 fi
 
-PULL_REQUEST_COMMIT_MESSAGE="Merge $COMMIT -> \"$BRANCH_NAME\" by $USER"
+PULL_REQUEST_COMMIT_MESSAGE="Merge \"$PR_SOURCE_BRANCH_NAME\" -> \"$BRANCH_NAME\" by $USER"
 
 #__________ __________ merging >
 
 echo $newline
-echo "merging $COMMIT -> \"$BRANCH_NAME\"..."
+echo "merging \"$PR_SOURCE_BRANCH_NAME\" -> \"$BRANCH_NAME\"..."
 git -C $LOCAL_PATH merge -q --no-ff -m "$PULL_REQUEST_COMMIT_MESSAGE" $PR_BRANCH_NAME || ILLEGAL_STATE=$?
 if test $ILLEGAL_STATE -ne 0
 then
-  echo "Merge $COMMIT -> \"$BRANCH_NAME\" failed!"
+  echo "Merge \"$PR_SOURCE_BRANCH_NAME\" -> \"$BRANCH_NAME\" failed!"
   exit $ILLEGAL_STATE
 fi
 
 #__________ __________ pushing >
 
 echo $newline
-echo "pushing merge $COMMIT -> \"$BRANCH_NAME\"..."
+echo "pushing merge \"$PR_SOURCE_BRANCH_NAME\" -> \"$BRANCH_NAME\"..."
 git -C $LOCAL_PATH push -f -q || ILLEGAL_STATE=$?
 if test $ILLEGAL_STATE -ne 0
 then
-  echo "Push merge $COMMIT -> \"$BRANCH_NAME\" failed!"
+  echo "Push merge \"$PR_SOURCE_BRANCH_NAME\" -> \"$BRANCH_NAME\" failed!"
   exit $ILLEGAL_STATE
 fi
