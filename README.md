@@ -2,7 +2,7 @@
 [![test coverage](https://img.shields.io/static/v1?label=test%20coverage&message=100%25&labelColor=212121&color=00c853&style=flat)](https://kepocnhh.github.io/ContinuousStuffExperience/reports/coverage/98ad10d65852cb3b16bd0477632b87f890c8810233ed2c0ab590f5236734c25305ccd5fe65210304f99957d1842cd1102677dc8d13638426d957e6c3e5783532/)
 [![documentation](https://img.shields.io/badge/documentation-2962ff.svg?style=flat)](https://kepocnhh.github.io/ContinuousStuffExperience/documentation/253a69f28304bb898f2ce211d23823172f9a49606701118f7e3774f1b7bc59e61d5b35be72da1520bfa15fe423d5174decc89501e323ba4bc5bdd81d77c5ab2d/)
 [![code style](https://img.shields.io/static/v1?label=code%20style&message=Kotlin%20Coding%20Conventions&labelColor=212121&color=2962ff&style=flat)](https://kotlinlang.org/docs/reference/coding-conventions.html)
-[![current version](https://img.shields.io/static/v1?label=current%20version&message=0.0.5&labelColor=212121&color=2962ff&style=flat)](https://github.com/kepocnhh/ContinuousStuffExperience/releases)
+[![current version](https://img.shields.io/static/v1?label=current%20version&message=0.0.6&labelColor=212121&color=2962ff&style=flat)](https://github.com/kepocnhh/ContinuousStuffExperience/releases)
 
 # ContinuousStuffExperience
 Testing continuous integration and continuous delivery and / or continuous deployment capabilities.
