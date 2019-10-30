@@ -16,7 +16,7 @@ if test -z "$PR_SOURCE_BRANCH_NAME"; then
 fi
 
 echo $newline
-echo "it is pull request #$PR_NUMBER $COMMIT -> \"$BRANCH_NAME\""
+echo "it is pull request #$PR_NUMBER \"$PR_SOURCE_BRANCH_NAME\" -> \"$BRANCH_NAME\""
 echo $newline
 
 gh_url="https://api.github.com"

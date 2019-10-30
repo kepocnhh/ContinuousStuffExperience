@@ -16,15 +16,19 @@ export GIT_HUB_PAGES_URL="https://${REPO_OWNER}.github.io/$REPO_NAME"
 export TRAVIS_URL="https://travis-ci.com/$TRAVIS_REPO_SLUG"
 
 export PR_NUMBER=""
+export PR_SOURCE_BRANCH_NAME=""
 if [[ $TRAVIS_PULL_REQUEST =~ $IS_INTEGER_REGEX ]]
 then
   PR_NUMBER=$TRAVIS_PULL_REQUEST
-  echo "pull request number: $PR_NUMBER"
+  PR_SOURCE_BRANCH_NAME=$TRAVIS_PULL_REQUEST_BRANCH
+  if test -z "$PR_SOURCE_BRANCH_NAME"; then
+    echo "name of the branch from which the PR originated must be not empty"
+    exit 1
+  fi
+  echo "it is pull request #$PR_NUMBER \"$PR_SOURCE_BRANCH_NAME\" -> \"$BRANCH_NAME\""
 else
-  echo "it is not pull request"
+  echo "it is not a pull request"
 fi
-
-export PR_SOURCE_BRANCH_NAME=$TRAVIS_PULL_REQUEST_BRANCH
 
 export COMMIT=$TRAVIS_COMMIT
 export COMMIT_MESSAGE=$TRAVIS_COMMIT_MESSAGE
