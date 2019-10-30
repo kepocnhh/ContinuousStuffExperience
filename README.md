@@ -16,10 +16,11 @@ Testing continuous integration and continuous delivery and / or continuous deplo
 - [x] code style verification | [ktlint](https://ktlint.github.io/)
 - [x] check warnings (only kotlin `allWarningsAsErrors = true`)
 - [x] automatic merge (only success build of PR to `dev`)
-- [ ] check/increment version
+- [x] automatic reject PR (only failed build of PR to `dev`)
+- [x] check version
+- [ ] increment version
 - [ ] check `todo`/`fixme`
 - [ ] code analysis
 - [ ] check license
-- [ ] blocking pull/merge requests
 - [ ] assembly
 - [ ] delivery
