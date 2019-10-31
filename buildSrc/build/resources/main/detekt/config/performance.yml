@@ -1,0 +1,10 @@
+performance:
+  active: true
+  ArrayPrimitive:
+    active: true
+  ForEachOnRange:
+    active: true
+  SpreadOperator:
+    active: false #todo "type resolution is enabled"
+  UnnecessaryTemporaryInstantiation:
+    active: true
