@@ -59,7 +59,8 @@ if [ "$BRANCH_NAME" != "$DEVELOP_BRANCH_NAME" ]; then # todo master branch
   remotePath="$remotePath/$mergeBase"
 fi
 resultUrl="$GIT_HUB_PAGES_URL/$remotePath/"
-localPath="$LOCAL_PATH/$remotePath/index.html"
+localDir="$LOCAL_PATH/$remotePath"
+localPath="$localDir/index.html"
 
 text="<html><body><h3>Deploy summary</h3><ul>"
 
@@ -123,6 +124,7 @@ if [ -f $localPath ]; then
 fi
 
 echo "create file by path \"$localPath\"..."
+mkdir -p "$localDir"
 echo "$text" > "$localPath"
 
 if [ -f $localPath ]; then
