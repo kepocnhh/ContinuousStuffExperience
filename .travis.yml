@@ -20,7 +20,13 @@ script:
   - gradle -q verifyReadme || VERIFY_README_STATUS=$?; $(exit $VERIFY_README_STATUS)
   - source ${BASH_PATH}/verify_version.sh
   - source ${BASH_PATH}/gh_pages_report.sh || GH_PAGES_REPORT_STATUS=$?; $(exit $GH_PAGES_REPORT_STATUS)
-  - (bash ${BASH_PATH}/assembly/assembly.sh && source ${BASH_PATH}/assembly/deploy_summary.sh) || ASSEMBLY_STATUS=$?; $(exit $ASSEMBLY_STATUS)
+  - bash ${BASH_PATH}/assembly/assembly.sh || ASSEMBLY_STATUS=$?; $(exit $ASSEMBLY_STATUS)
+  - |
+    DEPLOY_STATUS=$ASSEMBLY_STATUS
+    if [[ $DEPLOY_STATUS -eq 0 ]];then
+      source ${BASH_PATH}/assembly/deploy_summary.sh || DEPLOY_STATUS=$?
+    fi
+    $(exit $DEPLOY_STATUS)
 
 after_failure:
   - BUILD_SUCCESS=1
