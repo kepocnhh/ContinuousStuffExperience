@@ -22,7 +22,7 @@ for project in ${projects[@]}; do
 done
 
 for project in ${projects[@]}; do
-  bash ${BASH_PATH}/deploy_project.sh "$project" || ILLEGAL_STATE=$?
+  bash ${BASH_PATH}/assembly/deploy_project.sh "$project" || ILLEGAL_STATE=$?
   if [[ $ILLEGAL_STATE -ne 0 ]]; then
     echo -e "deploy project \"$project\" \033[91;1mfailed\033[0m"
     exit $ILLEGAL_STATE
