@@ -20,7 +20,7 @@ ILLEGAL_STATE=0
 pathRemote="assembly/$BRANCH_NAME"
 if [ "$BRANCH_NAME" != "$DEVELOP_BRANCH_NAME" ]; then # todo master branch
 
-  task="git merge-base head origin/$DEVELOP_BRANCH_NAME"
+  task="git merge-base $BRANCH_NAME origin/$DEVELOP_BRANCH_NAME"
   mergeBase=$($task) || ILLEGAL_STATE=$?
   if [[ $ILLEGAL_STATE -ne 0 ]]; then
     echo "Task \"$task\" must be completed successfully for assembly."
