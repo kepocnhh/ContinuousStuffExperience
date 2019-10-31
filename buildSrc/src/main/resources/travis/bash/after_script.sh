@@ -49,7 +49,7 @@ if [ $ASSEMBLY_STATUS -ne 0 ]; then
   MESSAGE+="assembly failed $emoji_heavy_exclamation_mark"
 else
   if test -z "$DEPLOY_SUMMARY_URL"; then
-    MESSAGE+="assembly ok but no deploy summary url provided $emoji_grey_exclamation"
+    MESSAGE+="assembly ok but no deploy summary url provided $emoji_heavy_exclamation_mark"
   else
     MESSAGE+="assembly [summary]($DEPLOY_SUMMARY_URL)"
   fi

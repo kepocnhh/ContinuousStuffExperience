@@ -108,12 +108,12 @@ if [[ $ILLEGAL_STATE -ne 0 ]]; then
   $EXIT $ILLEGAL_STATE
 fi
 
-task="git -C $LOCAL_PATH reset --hard head"
-$task || ILLEGAL_STATE=$?
-if [[ $ILLEGAL_STATE -ne 0 ]]; then
-  echo "Task \"$task\" must be completed successfully for assembly."
-  $EXIT $ILLEGAL_STATE
-fi
+#task="git -C $LOCAL_PATH reset --hard gh-pages"
+#$task || ILLEGAL_STATE=$?
+#if [[ $ILLEGAL_STATE -ne 0 ]]; then
+#  echo "Task \"$task\" must be completed successfully for assembly."
+#  $EXIT $ILLEGAL_STATE
+#fi
 
 if [ -f $localPath ]; then
   oldSummaryData=$(<"$localPath")
