@@ -8,13 +8,27 @@ fi
 
 LOCAL_PATH="~/deploy/summary"
 
+ILLEGAL_STATE=0
+
+task="rm -R -f $LOCAL_PATH"
+$task || ILLEGAL_STATE=$?
+if [[ $ILLEGAL_STATE -ne 0 ]]; then
+  echo "Task \"$task\" must be completed successfully for assembly."
+  exit $ILLEGAL_STATE
+fi
+
 GIT_URL="https://$git_hub_personal_access_token@github.com/$REPO_SLUG"
 
 # __________ __________ cloning >
 
 echo $newline
 echo "cloning $REPO_SLUG to $LOCAL_PATH..."
-git clone -q --depth=1 --branch=gh-pages $GIT_URL.git $LOCAL_PATH || $EXIT 1
+task="git clone -q --depth=1 --no-single-branch --branch=$BRANCH_NAME $GIT_URL.git $LOCAL_PATH"
+$task || ILLEGAL_STATE=$?
+if [[ $ILLEGAL_STATE -ne 0 ]]; then
+  echo "Task \"$task\" must be completed successfully for assembly."
+  $EXIT $ILLEGAL_STATE
+fi
 
 git -C $LOCAL_PATH config user.name "$USER"
 git -C $LOCAL_PATH config user.email "$USER"
@@ -24,7 +38,14 @@ git -C $LOCAL_PATH config user.email "$USER"
 remotePath="assembly/$BRANCH_NAME"
 if [ "$BRANCH_NAME" != "$DEVELOP_BRANCH_NAME" ]; then # todo master branch
 
-  task="git merge-base $BRANCH_NAME origin/$DEVELOP_BRANCH_NAME"
+  task="git -C $LOCAL_PATH pull origin $BRANCH_NAME --unshallow"
+  $task || ILLEGAL_STATE=$?
+  if [[ $ILLEGAL_STATE -ne 0 ]]; then
+    echo "Task \"$task\" must be completed successfully for assembly."
+    $EXIT $ILLEGAL_STATE
+  fi
+
+  task="git -C $LOCAL_PATH merge-base $BRANCH_NAME origin/$DEVELOP_BRANCH_NAME"
   mergeBase=$($task) || ILLEGAL_STATE=$?
   if [[ $ILLEGAL_STATE -ne 0 ]]; then
     echo "Task \"$task\" must be completed successfully for assembly."
@@ -40,11 +61,9 @@ fi
 resultUrl="$GIT_HUB_PAGES_URL/$remotePath/"
 localPath="$LOCAL_PATH/$remotePath/index.html"
 
-ILLEGAL_STATE=0
-
 text="<html><body><h3>Deploy summary</h3><ul>"
 
-task="gradle -q allProjectsForAssembly"
+task="gradle -p $LOCAL_PATH -q allProjectsForAssembly"
 projects=$($task) || ILLEGAL_STATE=$?
 if [[ $ILLEGAL_STATE -ne 0 ]]; then
   echo "Task \"$task\" must be completed successfully for deploy summary."
@@ -64,10 +83,10 @@ bucket="continuousstuffexperience.appspot.com"
 baseUrl="https://firebasestorage.googleapis.com/v0/b/$bucket/o"
 for project in ${projects[@]}; do
 
-  task="gradle -q ${project}:version"
+  task="gradle -p $LOCAL_PATH -q ${project}:version"
   version=$($task) || ILLEGAL_STATE=$?
   if [[ $ILLEGAL_STATE -ne 0 ]]; then
-    echo "Task \"$task\" must be completed successfully for assembly."
+    echo "Task \"$task\" must be completed successfully for deploy summary."
     $EXIT $ILLEGAL_STATE
   fi
   if test -z "$version"; then
@@ -80,6 +99,13 @@ for project in ${projects[@]}; do
 done
 
 text="$text</ul></body></html>"
+
+task="git -C $LOCAL_PATH checkout gh-pages"
+$task || ILLEGAL_STATE=$?
+if [[ $ILLEGAL_STATE -ne 0 ]]; then
+  echo "Task \"$task\" must be completed successfully for assembly."
+  $EXIT $ILLEGAL_STATE
+fi
 
 if [ -f $localPath ]; then
   oldSummaryData=$(<"$localPath")

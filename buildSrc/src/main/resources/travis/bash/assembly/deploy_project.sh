@@ -1,11 +1,18 @@
 echo "deploy project..."
 
-if test $# -ne 1; then
-    echo "Script needs for 1 arguments but actual $#"
+if test $# -ne 2; then
+    echo "Script needs for 2 arguments but actual $#"
     exit 1
 fi
 
-project=$1
+LOCAL_PATH=$1
+
+if [ -z "${LOCAL_PATH//$' '/""}" ] || [ "${LOCAL_PATH//$' '/""}" != "$LOCAL_PATH" ]; then
+  echo "local path must be not empty"
+  exit 1
+fi
+
+project=$2
 
 if [ -z "${project//$' '/""}" ] || [ "${project//$' '/""}" != "$project" ]; then
   echo "project must be not empty"
@@ -20,10 +27,10 @@ ILLEGAL_STATE=0
 pathRemote="assembly/$BRANCH_NAME"
 if [ "$BRANCH_NAME" != "$DEVELOP_BRANCH_NAME" ]; then # todo master branch
 
-  task="git merge-base $BRANCH_NAME origin/$DEVELOP_BRANCH_NAME"
+  task="git -C $LOCAL_PATH merge-base $BRANCH_NAME origin/$DEVELOP_BRANCH_NAME"
   mergeBase=$($task) || ILLEGAL_STATE=$?
   if [[ $ILLEGAL_STATE -ne 0 ]]; then
-    echo "Task \"$task\" must be completed successfully for assembly."
+    echo "Task \"$task\" must be completed successfully for deploy project."
     exit $ILLEGAL_STATE
   fi
   if test -z "$mergeBase"; then
@@ -34,17 +41,17 @@ if [ "$BRANCH_NAME" != "$DEVELOP_BRANCH_NAME" ]; then # todo master branch
   pathRemote="$pathRemote/$mergeBase"
 fi
 
-task="gradle -q clean ${project}:assemble"
+task="gradle -p $LOCAL_PATH -q clean ${project}:assemble"
 $task || ILLEGAL_STATE=$?
 if [[ $ILLEGAL_STATE -ne 0 ]]; then
-  echo "Task \"$task\" must be completed successfully for assembly."
+  echo "Task \"$task\" must be completed successfully for deploy project."
   exit $ILLEGAL_STATE
 fi
 
-task="gradle -q ${project}:version"
+task="gradle -p $LOCAL_PATH -q ${project}:version"
 projectVersion=$($task) || ILLEGAL_STATE=$?
 if [[ $ILLEGAL_STATE -ne 0 ]]; then
-  echo "Task \"$task\" must be completed successfully for assembly."
+  echo "Task \"$task\" must be completed successfully for deploy project."
   exit $ILLEGAL_STATE
 fi
 if test -z "$projectVersion"; then
@@ -52,10 +59,10 @@ if test -z "$projectVersion"; then
   exit 2
 fi
 
-task="gradle -q ${project}:simpleName"
+task="gradle -p $LOCAL_PATH -q ${project}:simpleName"
 projectName=$($task) || ILLEGAL_STATE=$?
 if [[ $ILLEGAL_STATE -ne 0 ]]; then
-  echo "Task \"$task\" must be completed successfully for assembly."
+  echo "Task \"$task\" must be completed successfully for deploy project."
   exit $ILLEGAL_STATE
 fi
 if test -z "$projectName"; then
@@ -63,10 +70,10 @@ if test -z "$projectName"; then
   exit 3
 fi
 
-task="gradle -q ${project}:simpleName"
+task="gradle -p $LOCAL_PATH -q ${project}:simpleName"
 projectName=$($task) || ILLEGAL_STATE=$?
 if [[ $ILLEGAL_STATE -ne 0 ]]; then
-  echo "Task \"$task\" must be completed successfully for assembly."
+  echo "Task \"$task\" must be completed successfully for deploy project."
   exit $ILLEGAL_STATE
 fi
 if test -z "$projectName"; then
@@ -76,7 +83,7 @@ fi
 
 projectPath=${project//://}
 fileName="$projectName-$projectVersion.jar"
-filePath=".$projectPath/build/libs/$fileName"
+filePath="$LOCAL_PATH$projectPath/build/libs/$fileName"
 if test -f $filePath; then
   echo "File by path \"$filePath\" exists"
 else
