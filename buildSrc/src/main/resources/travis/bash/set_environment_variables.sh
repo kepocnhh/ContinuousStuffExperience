@@ -56,6 +56,7 @@ export GH_PAGES_REPORT_STATUS=0
 export TEST_COVERAGE_REPORT_URL=""
 export TESTING_REPORT_URL=""
 export DOCUMENTATION_URL=""
+export DEPLOY_SUMMARY_URL=""
 
 export emoji_heavy_check_mark="%E2%9C%94%EF%B8%8F"
 export emoji_heavy_exclamation_mark="%E2%9D%97%EF%B8%8F"

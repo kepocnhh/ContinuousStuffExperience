@@ -35,25 +35,24 @@ MESSAGE+="${newline}${newline}"
 
 #__________ __________ version >
 
-if [[ "$ROOT_PROJECT_VERSION" == "" ]]; then
+if test -z "$ROOT_PROJECT_VERSION"; then
   echo "Root project version not provided"
   MESSAGE+="Root project version not provided $emoji_heavy_exclamation_mark"
 else
   MESSAGE+="version \`$ROOT_PROJECT_VERSION\`"
 fi
 
-MESSAGE+="${newline}${newline}"
-
 #__________ __________ assembly >
 
-if [ $ASSEMBLY_STATUS -ne 0 ]
-then
-  MESSAGE+="${newline}"
+MESSAGE+="${newline}"
+if [ $ASSEMBLY_STATUS -ne 0 ]; then
   MESSAGE+="assembly failed $emoji_heavy_exclamation_mark"
 else
-  MESSAGE+="${newline}"
-  MESSAGE+="assembly ok but not implemented $emoji_grey_exclamation"
-  # todo
+  if test -z "$DEPLOY_SUMMARY_URL"; then
+    MESSAGE+="assembly ok but no deploy summary url provided $emoji_grey_exclamation"
+  else
+    MESSAGE+="assembly [summary]($DEPLOY_SUMMARY_URL)"
+  fi
 fi
 
 MESSAGE+="${newline}${newline}"
