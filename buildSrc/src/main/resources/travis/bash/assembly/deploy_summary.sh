@@ -70,7 +70,7 @@ localDir="$LOCAL_PATH/$remotePath"
 relativePath="$remotePath/index.html"
 localPath="$LOCAL_PATH/$relativePath"
 
-text="<html><body><h3>Deploy summary</h3><ul>"
+text="<html><body><h3><a href=\"$REPO_URL\">$REPO_NAME</a> deploy summary</h3><ul>"
 
 task="gradle -p $LOCAL_PATH -q allProjectsForAssembly"
 projects=$($task) || ILLEGAL_STATE=$?
@@ -118,7 +118,7 @@ for project in ${projects[@]}; do
   fileName="$projectName-$projectVersion.jar"
   filePathRemote="$remotePath$projectPath/$projectVersion/$fileName"
 
-  link="$baseUrl?name=$filePathRemote"
+  link="$baseUrl?name=$filePathRemote&alt=media"
   text="$text<li><a href=\"$link\">$projectPath-$projectVersion</a></li>"
 done
 

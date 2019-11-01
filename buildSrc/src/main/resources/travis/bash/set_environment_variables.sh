@@ -11,7 +11,7 @@ export REPO_OWNER=${TRAVIS_REPO_SLUG%/*}
 export REPO_NAME=${TRAVIS_REPO_SLUG#*/}
 export REPO_SLUG=$TRAVIS_REPO_SLUG
 export REPO_OWNER_URL="https://github.com/$REPO_OWNER"
-export REPO_URL="https://github.com/$TRAVIS_REPO_SLUG"
+export REPO_URL="https://github.com/$REPO_SLUG"
 export GIT_HUB_PAGES_URL="https://${REPO_OWNER}.github.io/$REPO_NAME"
 export TRAVIS_URL="https://travis-ci.com/$TRAVIS_REPO_SLUG"
 

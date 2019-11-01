@@ -80,6 +80,38 @@ else
   exit 5
 fi
 
+SERVICE_ACCOUNT_TOKEN=""
+url="https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=$firebase_server_key"
+requestBody="{
+\"email\":\"$service_account_email\",
+\"password\":\"$service_account_password\",
+\"returnSecureToken\":true
+}"
+outputFilePath="/tmp/output"
+RESPONSE_CODE=$(
+  curl -w '%{http_code}\n' -X POST \
+    -s -o "$outputFilePath" \
+    $url \
+    -H 'Content-Type: application/json' \
+    -d "$requestBody"
+)
+if [ "$RESPONSE_CODE" == "200" ]; then
+  responseBody=$(<"$outputFilePath")
+  rightPart=${responseBody/*"\"idToken\""/}
+  rightPart=${rightPart#*\"}
+  SERVICE_ACCOUNT_TOKEN="${rightPart%%\"*}"
+else
+  echo "response code $RESPONSE_CODE but expected 200"
+  echo -e "sign in service account \033[91;1mfailed\033[0m"
+  exit 6
+fi
+rm "$outputFilePath"
+
+if test -z "$SERVICE_ACCOUNT_TOKEN"; then
+  echo "Service account token must be not empty"
+  exit 6
+fi
+
 filePathRemote="$pathRemote$projectPath/$projectVersion/$fileName"
 url="$baseUrl?name=$filePathRemote"
 RESPONSE_CODE=$(
@@ -100,6 +132,7 @@ fi
 RESPONSE_CODE=$(
   curl -w '%{http_code}\n' -X POST --data-binary @$filePath \
     --silent --output /dev/null \
+    -H "Authorization: Bearer $SERVICE_ACCOUNT_TOKEN" \
     $url
 )
 if [ "$RESPONSE_CODE" == "200" ]; then
