@@ -67,7 +67,8 @@ if [ "$BRANCH_NAME" != "$DEVELOP_BRANCH_NAME" ]; then # todo master branch
 fi
 resultUrl="$GIT_HUB_PAGES_URL/$remotePath/"
 localDir="$LOCAL_PATH/$remotePath"
-localPath="$localDir/index.html"
+relativePath="$remotePath/index.html"
+localPath="$LOCAL_PATH/$relativePath"
 
 text="<html><body><h3>Deploy summary</h3><ul>"
 
@@ -157,7 +158,7 @@ else
 fi
 
 echo $newline
-git -C $LOCAL_PATH add $localPath || ILLEGAL_STATE=$?
+git -C $LOCAL_PATH add $relativePath || ILLEGAL_STATE=$?
 if [ $ILLEGAL_STATE -ne 0 ]; then
   echo "adding failed!"
   $EXIT $ILLEGAL_STATE
