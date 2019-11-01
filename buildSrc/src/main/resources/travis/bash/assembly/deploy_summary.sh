@@ -45,7 +45,7 @@ if [ "$BRANCH_NAME" != "$DEVELOP_BRANCH_NAME" ]; then # todo master branch
     $EXIT $ILLEGAL_STATE
   fi
 
-  task="git -C $LOCAL_PATH pull origin $DEVELOP_BRANCH_NAME --unshallow"
+  task="git -C $LOCAL_PATH pull origin $DEVELOP_BRANCH_NAME"
   $task || ILLEGAL_STATE=$?
   if [[ $ILLEGAL_STATE -ne 0 ]]; then
     echo "Task \"$task\" must be completed successfully for assembly."
