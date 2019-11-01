@@ -70,17 +70,6 @@ if test -z "$projectName"; then
   exit 3
 fi
 
-task="gradle -p $LOCAL_PATH -q ${project}:simpleName"
-projectName=$($task) || ILLEGAL_STATE=$?
-if [[ $ILLEGAL_STATE -ne 0 ]]; then
-  echo "Task \"$task\" must be completed successfully for deploy project."
-  exit $ILLEGAL_STATE
-fi
-if test -z "$projectName"; then
-  echo "Project name by \"$project\" must be not empty"
-  exit 4
-fi
-
 projectPath=${project//://}
 fileName="$projectName-$projectVersion.jar"
 filePath="$LOCAL_PATH$projectPath/build/libs/$fileName"

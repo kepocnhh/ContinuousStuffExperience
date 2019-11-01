@@ -45,6 +45,13 @@ if [ "$BRANCH_NAME" != "$DEVELOP_BRANCH_NAME" ]; then # todo master branch
     $EXIT $ILLEGAL_STATE
   fi
 
+  task="git -C $LOCAL_PATH pull origin $DEVELOP_BRANCH_NAME --unshallow"
+  $task || ILLEGAL_STATE=$?
+  if [[ $ILLEGAL_STATE -ne 0 ]]; then
+    echo "Task \"$task\" must be completed successfully for assembly."
+    $EXIT $ILLEGAL_STATE
+  fi
+
   task="git -C $LOCAL_PATH merge-base $BRANCH_NAME origin/$DEVELOP_BRANCH_NAME"
   mergeBase=$($task) || ILLEGAL_STATE=$?
   if [[ $ILLEGAL_STATE -ne 0 ]]; then
@@ -85,18 +92,33 @@ baseUrl="https://firebasestorage.googleapis.com/v0/b/$bucket/o"
 for project in ${projects[@]}; do
 
   task="gradle -p $LOCAL_PATH -q ${project}:version"
-  version=$($task) || ILLEGAL_STATE=$?
+  projectVersion=$($task) || ILLEGAL_STATE=$?
   if [[ $ILLEGAL_STATE -ne 0 ]]; then
     echo "Task \"$task\" must be completed successfully for deploy summary."
     $EXIT $ILLEGAL_STATE
   fi
-  if test -z "$version"; then
+  if test -z "$projectVersion"; then
     echo "Project version by \"$project\" must be not empty"
     $EXIT 4
   fi
 
-  link="$baseUrl?name=$remotePath/$project/$version/$project-$version.jar"
-  text="$text<li><a href=\"$link\">$project-$version</a></li>"
+  task="gradle -p $LOCAL_PATH -q ${project}:simpleName"
+  projectName=$($task) || ILLEGAL_STATE=$?
+  if [[ $ILLEGAL_STATE -ne 0 ]]; then
+    echo "Task \"$task\" must be completed successfully for deploy project."
+    $EXIT $ILLEGAL_STATE
+  fi
+  if test -z "$projectName"; then
+    echo "Project name by \"$project\" must be not empty"
+    $EXIT 5
+  fi
+
+  projectPath=${project//://}
+  fileName="$projectName-$projectVersion.jar"
+  filePathRemote="$remotePath$projectPath/$projectVersion/$fileName"
+
+  link="$baseUrl?name=$filePathRemote"
+  text="$text<li><a href=\"$link\">$projectPath-$projectVersion</a></li>"
 done
 
 text="$text</ul></body></html>"
@@ -107,13 +129,6 @@ if [[ $ILLEGAL_STATE -ne 0 ]]; then
   echo "Task \"$task\" must be completed successfully for assembly."
   $EXIT $ILLEGAL_STATE
 fi
-
-#task="git -C $LOCAL_PATH reset --hard gh-pages"
-#$task || ILLEGAL_STATE=$?
-#if [[ $ILLEGAL_STATE -ne 0 ]]; then
-#  echo "Task \"$task\" must be completed successfully for assembly."
-#  $EXIT $ILLEGAL_STATE
-#fi
 
 if [ -f $localPath ]; then
   oldSummaryData=$(<"$localPath")
@@ -138,7 +153,7 @@ if [ -f $localPath ]; then
   echo -e "create file by path \"$localPath\" \033[32;1msuccess\033[0m"
 else
   echo -e "create file by path \"$localPath\" \033[91;1mfailed\033[0m"
-  $EXIT 5
+  $EXIT 6
 fi
 
 echo $newline
