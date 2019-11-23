@@ -42,4 +42,9 @@ internal class Lib1ClassTest {
         val dataClass = Lib1DataClass(paramString = paramString)
         assertEquals(paramString, dataClass.paramString)
     }
+
+    @Test
+    fun getZeroTest() {
+        assertEquals(0, Lib1Class().getZero())
+    }
 }

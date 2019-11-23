@@ -68,8 +68,10 @@ class Lib1Class {
         return "string from lib: Lib1Class: m1"
     }
 
-    fun getZero(): Int
-    {
+    /**
+     * This method is for researching. This text is an example of documentation.
+     */
+    fun getZero(): Int {
         return 0
     }
 }
